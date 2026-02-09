@@ -1,23 +1,26 @@
-import { Controller, Get, NotFoundException } from '@nestjs/common'; // <--- Agregamos NotFoundException
+import { Controller, Get, NotFoundException } from '@nestjs/common';
 import { AcademicCareerService } from './academic-career.service';
+import { SubjectNodeDto } from './dto/subject-node.dto';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 @Controller('academic-career')
 export class AcademicCareerController {
   constructor(private readonly academicCareerService: AcademicCareerService) {}
 
   @Get('graph')
-  async getGraph() { // <--- Agregamos async para usar await y que sea más limpio
+  @ApiOperation({ summary: 'Obtener el grafo de materias del usuario' })
+  @ApiResponse({ status: 200, description: 'Grafo retornado exitosamente.', type: [SubjectNodeDto] })
+  @ApiResponse({ status: 404, description: 'Usuario no encontrado.' })
+  async getGraph(): Promise<SubjectNodeDto[]> {
+    // TODO: A futuro, sacaremos el ID del usuario del JWT (Request)
+    // const userId = req.user.id;
     const userEmail = 'admin@micarrerita.com';
     
-    // Accedemos al prisma del servicio (aunque sea privado, JS lo permite con ['...'])
-    // Nota: Lo ideal sería exponer un método en el servicio, pero por ahora sirve.
-    const user = await this.academicCareerService['prisma'].user.findUnique({
-      where: { email: userEmail }
-    });
+    // Usamos un método público del servicio, NO accedemos a propiedades privadas
+    const user = await this.academicCareerService.findUserByEmail(userEmail);
 
     if (!user) {
-      // ESTA ES LA SOLUCIÓN: Lanzar la excepción en vez de retornar un objeto
-      throw new NotFoundException('Usuario no encontrado. Por favor corre el seed de nuevo.');
+      throw new NotFoundException('Usuario Admin no encontrado. Ejecuta el seed.');
     }
 
     return this.academicCareerService.getCareerGraph(user.id);
