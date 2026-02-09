@@ -50,23 +50,30 @@ async function main() {
     });
   }
 
-  // 3. Crear Correlatividades (Hardcodeadas por ahora según lógica común)
-  // Ejemplo: Para cursar Programación Estructurada (3629) necesito Programación Inicial (3623)
+// 3. Crear Correlatividades (MODIFICADO PARA SQLITE)
   console.log('🔗 Tejiendo correlatividades...');
   
   const progInicial = await prisma.subject.findUnique({ where: { planCode: '3623' } });
   const progEstructurada = await prisma.subject.findUnique({ where: { planCode: '3629' } });
 
   if (progInicial && progEstructurada) {
-    await prisma.correlativity.createMany({
-      data: [
-        {
-          subjectId: progEstructurada.id,      // La que quiero cursar
-          prerequisiteId: progInicial.id,      // La que necesito
-          condition: 'REGULAR_CURSADA',        // Condición (String por SQLite)
+    // Definimos la relación que queremos crear
+    const relation = {
+      subjectId: progEstructurada.id,      // La materia nueva
+      prerequisiteId: progInicial.id,      // La previa necesaria
+      condition: 'REGULAR_CURSADA',        // Condición
+    };
+
+    // Usamos 'upsert' (Insertar o Actualizar) para evitar errores si ya existe
+    await prisma.correlativity.upsert({
+      where: {
+        subjectId_prerequisiteId: { // Clave compuesta única
+          subjectId: relation.subjectId,
+          prerequisiteId: relation.prerequisiteId,
         }
-      ],
-      skipDuplicates: true, // Evita error si corrés el seed 2 veces
+      },
+      update: {}, // Si existe, no hacemos nada
+      create: relation, // Si no existe, la creamos
     });
   }
 

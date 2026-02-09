@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
+import { AcademicCareerModule } from './modules/academic-career/academic-career.module';
 
 @Module({
-  imports: [],
+  imports: [AcademicCareerModule],
   controllers: [],
   providers: [],
 })

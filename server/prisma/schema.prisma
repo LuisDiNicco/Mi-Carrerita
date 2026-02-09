@@ -5,7 +5,8 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite" // <--- CAMBIO CLAVE
+  provider = "sqlite"
+  url      = "file:./dev.db"  // <--- ESTA LÍNEA ES OBLIGATORIA EN PRISMA 5
 }
 
 model User {
