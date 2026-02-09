@@ -80,6 +80,14 @@ export function formatGrade(grade: number | null): string {
 }
 
 /**
+ * Formatear fecha YYYY-MM-DD a formato legible
+ */
+export function formatDate(date: string | null | undefined): string {
+  if (!date) return '—';
+  return new Date(date + 'T00:00:00').toLocaleDateString('es-AR');
+}
+
+/**
  * Delay para simulaciones (útil para testing)
  */
 export const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));

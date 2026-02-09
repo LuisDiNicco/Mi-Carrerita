@@ -18,7 +18,9 @@ import type { SubjectNodeType } from './SubjectNode';
 import { SubjectStatus } from '../types/academic';
 import type { Subject } from '../types/academic';
 import { RetroLoading, RetroError } from './ui/RetroComponents';
-import { calculateProgress, groupBySemester, cn, truncateSubjectName, formatGrade  } from '../lib/utils';
+import { groupBySemester } from '../lib/utils';
+import { SubjectUpdatePanel } from './SubjectUpdatePanel';
+import { useAcademicStore } from '../store/academic-store';
 
 // Tipos de nodo
 const nodeTypes: NodeTypes = {
@@ -30,26 +32,23 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 // Configuración de layout mejorada
 const LAYOUT_CONFIG = {
-  horizontalSpacing: 300,  // Espacio entre semestres
-  verticalSpacing: 160,    // Espacio entre materias
-  offsetX: 50,             // Offset inicial X
-  offsetY: 50,             // Offset inicial Y
+  horizontalSpacing: 320,
+  verticalSpacing: 150,
+  offsetX: 40,
+  offsetY: 40,
 };
 
 export const CareerGraph = () => {
   // Estados de React Flow
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
+  const setSubjects = useAcademicStore((state) => state.setSubjects);
   
   // Estados de UI
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [stats, setStats] = useState({
-    total: 0,
-    approved: 0,
-    inProgress: 0,
-    available: 0,
-  });
+  const [activeSubject, setActiveSubject] = useState<Subject | null>(null);
+  const [isPanelOpen, setIsPanelOpen] = useState(false);
 
   /**
    * Calcula posición mejorada evitando overlapping
@@ -101,9 +100,10 @@ export const CareerGraph = () => {
       const newNodes: SubjectNodeType[] = [];
       
       bySemester.forEach((subjects, semester) => {
-        const totalInSemester = subjects.length;
+        const sorted = [...subjects].sort((a, b) => a.planCode.localeCompare(b.planCode));
+        const totalInSemester = sorted.length;
         
-        subjects.forEach((subject, index) => {
+        sorted.forEach((subject, index) => {
           const position = calculateNodePosition(semester, index, totalInSemester);
           
           newNodes.push({
@@ -145,17 +145,9 @@ export const CareerGraph = () => {
         });
       });
 
-      // Calcular estadísticas
-      const newStats = {
-        total: data.length,
-        approved: data.filter(s => s.status === SubjectStatus.APROBADA).length,
-        inProgress: data.filter(s => s.status === SubjectStatus.EN_CURSO).length,
-        available: data.filter(s => s.status === SubjectStatus.DISPONIBLE).length,
-      };
-
       setNodes(newNodes);
       setEdges(newEdges);
-      setStats(newStats);
+      setSubjects(data);
       setError(null);
 
     } catch (err) {
@@ -167,7 +159,7 @@ export const CareerGraph = () => {
     } finally {
       setLoading(false);
     }
-  }, [setNodes, setEdges]);
+  }, [setNodes, setEdges, setSubjects]);
 
   // Cargar datos al montar
   useEffect(() => {
@@ -177,7 +169,7 @@ export const CareerGraph = () => {
   // Renderizado condicional de Loading
   if (loading) {
     return (
-      <div className="w-full h-screen flex items-center justify-center bg-retro-dark">
+      <div className="w-full h-[70vh] flex items-center justify-center bg-surface">
         <RetroLoading message="CARGANDO CARRERITA..." />
       </div>
     );
@@ -186,7 +178,7 @@ export const CareerGraph = () => {
   // Renderizado condicional de Error
   if (error) {
     return (
-      <div className="w-full h-screen flex items-center justify-center bg-retro-dark">
+      <div className="w-full h-[70vh] flex items-center justify-center bg-surface">
         <RetroError 
           title="¡OH NO!"
           message={error}
@@ -196,11 +188,8 @@ export const CareerGraph = () => {
     );
   }
 
-  // Progreso
-  const progress = calculateProgress(stats.total, stats.approved);
-
   return (
-    <div className="w-full h-screen bg-gradient-to-br from-retro-dark to-[#1a3a1a]">
+    <div className="w-full h-[70vh] bg-app rounded-xl overflow-hidden">
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -220,11 +209,18 @@ export const CareerGraph = () => {
         nodesDraggable={true}
         nodesConnectable={false}
         elementsSelectable={true}
+        onNodeDoubleClick={(_, node) => {
+          const subject = (node.data as { subject?: Subject }).subject;
+          if (subject) {
+            setActiveSubject(subject);
+            setIsPanelOpen(true);
+          }
+        }}
       >
         {/* Fondo estilo retro con puntos */}
         <Background 
-          color="#306230" 
-          gap={24} 
+          color="#7BCB7A" 
+          gap={28} 
           size={2}
           variant={BackgroundVariant.Dots}
           style={{ opacity: 0.3 }}
@@ -232,8 +228,8 @@ export const CareerGraph = () => {
 
         {/* Controles personalizados */}
         <Controls 
-          className="!bg-retro-dark !border-4 !border-unlam-500 !shadow-retro
-                     [&>button]:!bg-unlam-500 [&>button]:!border-2 [&>button]:!border-unlam-800
+          className="!bg-surface !border-2 !border-app !shadow-subtle
+                     [&>button]:!bg-unlam-500 [&>button]:!border-0
                      [&>button]:hover:!bg-unlam-600
                      !font-retro"
           showInteractive={false}
@@ -241,7 +237,7 @@ export const CareerGraph = () => {
 
         {/* MiniMap con colores personalizados */}
         <MiniMap 
-          className="!border-4 !border-unlam-500 !shadow-retro !rounded-lg overflow-hidden"
+          className="!border-2 !border-app !shadow-subtle !rounded-lg overflow-hidden"
           nodeColor={(node) => {
             const isSubjectNode = (n: Node): n is SubjectNodeType => 
               n.type === 'subject' && 'subject' in n.data;
@@ -249,57 +245,29 @@ export const CareerGraph = () => {
             if (isSubjectNode(node)) {
               const status = node.data.subject.status;
               const colorMap = {
-                [SubjectStatus.APROBADA]: '#73D216',
-                [SubjectStatus.REGULARIZADA]: '#8AE234', 
-                [SubjectStatus.EN_CURSO]: '#729FCF',
-                [SubjectStatus.DISPONIBLE]: '#FCE94F',
-                [SubjectStatus.PENDIENTE]: '#6B7280',
+                [SubjectStatus.APROBADA]: '#7BCB7A',
+                [SubjectStatus.REGULARIZADA]: '#B4E6A6', 
+                [SubjectStatus.EN_CURSO]: '#8FB5DD',
+                [SubjectStatus.DISPONIBLE]: '#F7E8A3',
+                [SubjectStatus.PENDIENTE]: '#8A9B8A',
               };
               return colorMap[status] || '#6B7280';
             }
             return '#9CA3AF';
           }}
-          maskColor="rgba(15, 56, 15, 0.8)"
+          maskColor="rgba(10, 20, 12, 0.65)"
         />
 
-        {/* Panel de estadísticas (arriba a la izquierda) */}
         <Panel position="top-left" className="m-4">
-          <div className="bg-retro-dark border-4 border-unlam-500 p-4 rounded-lg shadow-retro
-                          font-retro text-unlam-500 min-w-[280px]">
-            {/* Título */}
-            <h2 className="text-2xl font-bold mb-4 text-center tracking-wider
-                           text-shadow-[2px_2px_0_rgba(48,98,48,1)]">
-              MI CARRERITA 🎮
-            </h2>
-
-            {/* Barra de progreso */}
-            <div className="mb-4">
-              <div className="flex justify-between text-sm mb-1">
-                <span>PROGRESO</span>
-                <span className="font-bold">{progress}%</span>
-              </div>
-              <div className="h-6 border-4 border-unlam-500 bg-black/50 overflow-hidden">
-                <div 
-                  className="h-full bg-unlam-500 transition-all duration-500"
-                  style={{ width: `${progress}%` }}
-                />
-              </div>
-            </div>
-
-            {/* Stats */}
-            <div className="space-y-2 text-sm">
-              <StatRow label="Total" value={stats.total} icon="📊" />
-              <StatRow label="Aprobadas" value={stats.approved} icon="🏆" />
-              <StatRow label="En Curso" value={stats.inProgress} icon="📚" />
-              <StatRow label="Disponibles" value={stats.available} icon="🎯" />
-            </div>
+          <div className="bg-surface border border-app rounded-lg px-3 py-2 text-xs text-muted shadow-subtle">
+            Doble clic en una materia para actualizar el estado.
           </div>
         </Panel>
 
         {/* Leyenda (abajo a la derecha) */}
         <Panel position="bottom-right" className="m-4">
-          <div className="bg-retro-dark border-4 border-unlam-500 p-3 rounded-lg shadow-retro
-                          font-retro text-xs text-unlam-500">
+          <div className="bg-surface border-2 border-app p-3 rounded-lg shadow-subtle
+                          font-retro text-xs text-app">
             <div className="font-bold mb-2 text-center">LEYENDA</div>
             <div className="space-y-1">
               <LegendItem emoji="🔒" label="Bloqueada" />
@@ -311,21 +279,34 @@ export const CareerGraph = () => {
           </div>
         </Panel>
       </ReactFlow>
+
+      <SubjectUpdatePanel
+        subject={activeSubject}
+        isOpen={isPanelOpen}
+        onClose={() => {
+          setIsPanelOpen(false);
+          setActiveSubject(null);
+        }}
+        onSave={async (payload) => {
+          if (!activeSubject) return;
+          const response = await fetch(`${API_URL}/academic-career/subjects/${activeSubject.id}`, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+          });
+          if (!response.ok) {
+            throw new Error('No se pudo actualizar la materia.');
+          }
+          await fetchCareerData();
+        }}
+      />
     </div>
   );
 };
 
 // Componentes auxiliares
-const StatRow = ({ label, value, icon }: { label: string; value: number; icon: string }) => (
-  <div className="flex justify-between items-center border-b-2 border-unlam-500/30 pb-1">
-    <span className="flex items-center gap-2">
-      <span>{icon}</span>
-      <span>{label}</span>
-    </span>
-    <span className="font-bold text-lg">{value}</span>
-  </div>
-);
-
 const LegendItem = ({ emoji, label }: { emoji: string; label: string }) => (
   <div className="flex items-center gap-2">
     <span>{emoji}</span>

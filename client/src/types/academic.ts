@@ -27,5 +27,7 @@ export interface Subject {
   credits: number;
   status: SubjectStatus; 
   grade: number | null;
+  statusDate?: string | null;
+  notes?: string | null;
   requiredSubjectIds: string[];
 }

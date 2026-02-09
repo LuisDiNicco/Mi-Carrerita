@@ -10,7 +10,7 @@ interface RetroButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantStyles = {
-  primary: 'bg-[#729FCF] border-[#3465A4] text-white hover:bg-[#5B8DC7]',
+  primary: 'bg-unlam-500 border-unlam-800 text-[#0B2A14] hover:bg-unlam-600',
   success: 'bg-[#73D216] border-[#4E9A06] text-white hover:bg-[#5FB300]',
   danger: 'bg-[#EF2929] border-[#CC0000] text-white hover:bg-[#D41919]',
   warning: 'bg-[#FCE94F] border-[#C4A000] text-[#2E3436] hover:bg-[#EDD400]',
@@ -36,9 +36,9 @@ export const RetroButton = ({
       className={cn(
         // Base styles
         'font-retro font-bold uppercase tracking-wider',
-        'border-4 transition-all duration-100',
-        'shadow-retro hover:shadow-retro-hover',
-        'active:translate-x-[4px] active:translate-y-[4px] active:shadow-none',
+        'border-2 transition-all duration-100',
+        'shadow-subtle',
+        'active:translate-x-[2px] active:translate-y-[2px] active:shadow-none',
         'disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none',
         
         // Image rendering pixelado

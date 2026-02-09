@@ -1,7 +1,8 @@
-import { Controller, Get, NotFoundException } from '@nestjs/common';
+import { Body, Controller, Get, NotFoundException, Param, Patch } from '@nestjs/common';
 import { AcademicCareerService } from './academic-career.service';
 import { SubjectNodeDto } from './dto/subject-node.dto';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { UpdateSubjectRecordDto } from './dto/update-subject-record.dto';
 
 @Controller('academic-career')
 export class AcademicCareerController {
@@ -24,5 +25,22 @@ export class AcademicCareerController {
     }
 
     return this.academicCareerService.getCareerGraph(user.id);
+  }
+
+  @Patch('subjects/:subjectId')
+  @ApiOperation({ summary: 'Actualizar estado, nota y comentarios de una materia' })
+  @ApiResponse({ status: 200, description: 'Materia actualizada correctamente.' })
+  async updateSubjectRecord(
+    @Param('subjectId') subjectId: string,
+    @Body() payload: UpdateSubjectRecordDto,
+  ) {
+    const userEmail = 'admin@micarrerita.com';
+    const user = await this.academicCareerService.findUserByEmail(userEmail);
+
+    if (!user) {
+      throw new NotFoundException('Usuario Admin no encontrado. Ejecuta el seed.');
+    }
+
+    return this.academicCareerService.updateSubjectRecord(user.id, subjectId, payload);
   }
 }

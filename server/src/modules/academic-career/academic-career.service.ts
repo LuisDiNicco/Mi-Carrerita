@@ -1,8 +1,9 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { SubjectNodeDto } from './dto/subject-node.dto';
 // IMPORTAMOS DESDE NUESTRO ARCHIVO MANUAL
 import { SubjectStatus, CorrelativityCondition } from '../../common/constants/academic-enums';
+import { UpdateSubjectRecordDto } from './dto/update-subject-record.dto';
 
 @Injectable()
 export class AcademicCareerService {
@@ -20,7 +21,15 @@ export class AcademicCareerService {
             },
           },
           records: {
-            where: { userId }, 
+            where: { userId },
+            select: {
+              id: true,
+              userId: true,
+              subjectId: true,
+              status: true,
+              finalGrade: true,
+              updatedAt: true,
+            },
           },
         },
         orderBy: { semester: 'asc' },
@@ -87,6 +96,7 @@ export class AcademicCareerService {
           credits: subject.credits,
           status: status, 
           grade: record?.finalGrade ?? null,
+          statusDate: record?.updatedAt ? record.updatedAt.toISOString().slice(0, 10) : null,
           requiredSubjectIds: requiredIds,
         });
       });
@@ -99,5 +109,42 @@ export class AcademicCareerService {
 
   async findUserByEmail(email: string) {
     return this.prisma.user.findUnique({ where: { email } });
+  }
+
+  async updateSubjectRecord(
+    userId: string,
+    subjectId: string,
+    payload: UpdateSubjectRecordDto,
+  ) {
+    const subject = await this.prisma.subject.findUnique({ where: { id: subjectId } });
+
+    if (!subject) {
+      throw new NotFoundException('Materia no encontrada.');
+    }
+
+    if (payload.status === SubjectStatus.DISPONIBLE) {
+      throw new BadRequestException('El estado DISPONIBLE se calcula automaticamente.');
+    }
+
+    const statusDateValue = payload.statusDate ? new Date(payload.statusDate) : null;
+
+    return this.prisma.academicRecord.upsert({
+      where: {
+        userId_subjectId: {
+          userId,
+          subjectId,
+        },
+      },
+      create: {
+        userId,
+        subjectId,
+        status: payload.status,
+        finalGrade: payload.grade ?? null,
+      },
+      update: {
+        status: payload.status,
+        finalGrade: payload.grade ?? null,
+      },
+    });
   }
 }

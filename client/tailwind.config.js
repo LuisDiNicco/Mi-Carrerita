@@ -17,13 +17,13 @@ export default {
       colors: {
         // Colores UNLAM originales
         unlam: {
-          50: '#E8F5E9',
-          100: '#C8E6C9',
-          300: '#81C784',
-          500: '#006633',
-          600: '#2E7D32',
-          800: '#1B5E20',
-          900: '#0D3311',
+          50: '#F0FAF0',
+          100: '#D8F0D8',
+          300: '#A4DFA4',
+          500: '#7BCB7A',
+          600: '#5BBE63',
+          800: '#2E7D4D',
+          900: '#1B4F31',
         },
 
         // Colores retro/8-bits
@@ -55,11 +55,11 @@ export default {
 
       // Sombras estilo pixel art
       boxShadow: {
-        'retro': '4px 4px 0px 0px rgba(0, 0, 0, 0.8)',
-        'retro-hover': '2px 2px 0px 0px rgba(0, 0, 0, 0.8)',
-        'retro-inset': 'inset 3px 3px 0px 0px rgba(0, 0, 0, 0.3)',
-        'glow': '0 0 20px rgba(155, 188, 15, 0.5)',
-        'glow-strong': '0 0 30px rgba(155, 188, 15, 0.8)',
+        'retro': '4px 4px 0px 0px rgba(0, 0, 0, 0.5)',
+        'retro-hover': '2px 2px 0px 0px rgba(0, 0, 0, 0.5)',
+        'retro-inset': 'inset 3px 3px 0px 0px rgba(0, 0, 0, 0.2)',
+        'glow': '0 0 20px rgba(123, 203, 122, 0.4)',
+        'glow-strong': '0 0 30px rgba(123, 203, 122, 0.6)',
       },
 
       // Animaciones personalizadas
@@ -161,10 +161,10 @@ export default {
           'image-rendering': 'crisp-edges',
         },
         '.text-shadow-retro': {
-          'text-shadow': '2px 2px 0 rgba(0, 0, 0, 0.5)',
+          'text-shadow': 'none',
         },
         '.text-shadow-retro-strong': {
-          'text-shadow': '3px 3px 0 rgba(0, 0, 0, 0.8)',
+          'text-shadow': 'none',
         },
       })
     },

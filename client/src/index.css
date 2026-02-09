@@ -10,15 +10,42 @@
    ======================================== */
 @layer base {
   :root {
-    /* Colores principales */
-    --retro-dark: #0F380F;
-    --retro-light: #9BBC0F;
-    --retro-accent: #8BAC0F;
-    --retro-shadow: #306230;
+    /* Tema base (oscuro) */
+    --app-bg: #0E1510;
+    --app-surface: #121B14;
+    --app-elevated: #17221A;
+    --app-text: #E8F2E8;
+    --app-muted: #A7B8A7;
+    --app-border: #1F2E21;
+
+    /* Acento UNLaM (verde claro) */
+    --app-accent: #7BCB7A;
+    --app-accent-strong: #6AD16F;
+    --app-accent-ink: #0B2A14;
+
+    --scanlines: repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.08),
+      rgba(0, 0, 0, 0.08) 1px,
+      transparent 1px,
+      transparent 3px
+    );
     
     /* Efectos CRT */
     --crt-curve: 0.02;
     --scanline-opacity: 0.1;
+  }
+
+  [data-theme="light"] {
+    --app-bg: #F6F8F5;
+    --app-surface: #FFFFFF;
+    --app-elevated: #F0F5F0;
+    --app-text: #1F2A1F;
+    --app-muted: #4B5A4B;
+    --app-border: #D7E2D7;
+    --app-accent: #7BCB7A;
+    --app-accent-strong: #4FAE59;
+    --app-accent-ink: #0B2A14;
   }
 
   * {
@@ -28,12 +55,14 @@
   }
 
   body {
-    @apply bg-retro-dark text-retro-light font-retro;
+    @apply font-retro;
+    background-color: var(--app-bg);
+    color: var(--app-text);
     
     /* Patrón de grid sutil */
     background-image: 
-      linear-gradient(to right, rgba(155, 188, 15, 0.03) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(155, 188, 15, 0.03) 1px, transparent 1px);
+      linear-gradient(to right, rgba(123, 203, 122, 0.06) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(123, 203, 122, 0.06) 1px, transparent 1px);
     background-size: 40px 40px;
     
     /* Prevenir selección de texto para mejor UX tipo juego */
@@ -45,27 +74,31 @@
 
   /* Hacer que los inputs y textareas tengan estilo retro */
   input, textarea, select {
-    @apply font-retro bg-retro-dark text-retro-light;
-    @apply border-4 border-unlam-500 px-3 py-2;
-    @apply focus:outline-none focus:ring-4 focus:ring-unlam-300;
+    @apply font-retro px-3 py-2;
+    background-color: var(--app-surface);
+    color: var(--app-text);
+    border: 2px solid var(--app-border);
+    @apply focus:outline-none;
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--app-accent) 30%, transparent);
     image-rendering: pixelated;
+    user-select: text;
   }
 
   /* Headings con estilo retro */
   h1, h2, h3, h4, h5, h6 {
     @apply font-retro font-bold tracking-wider;
-    text-shadow: 2px 2px 0 var(--retro-shadow);
+    text-shadow: none;
   }
 
   /* Links con estilo retro */
   a {
-    @apply text-unlam-500 hover:text-unlam-300;
+    color: var(--app-accent-strong);
     @apply transition-colors duration-200;
     text-decoration: none;
   }
 
   a:hover {
-    text-shadow: 0 0 8px currentColor;
+    text-shadow: none;
   }
 }
 
@@ -78,13 +111,13 @@
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-retro-dark;
-  border: 2px solid var(--retro-shadow);
+  background-color: var(--app-bg);
+  border: 1px solid var(--app-border);
 }
 
 ::-webkit-scrollbar-thumb {
   @apply bg-unlam-500;
-  border: 3px solid var(--retro-dark);
+  border: 2px solid var(--app-bg);
   image-rendering: pixelated;
 }
 
@@ -93,13 +126,13 @@
 }
 
 ::-webkit-scrollbar-corner {
-  @apply bg-retro-dark;
+  background-color: var(--app-bg);
 }
 
 /* Para Firefox */
 * {
   scrollbar-width: thin;
-  scrollbar-color: var(--retro-light) var(--retro-dark);
+  scrollbar-color: var(--app-accent) var(--app-bg);
 }
 
 /* ========================================
@@ -108,19 +141,19 @@
 @layer components {
   /* Contenedor tipo pantalla CRT */
   .crt-screen {
-    @apply bg-retro-dark border-8 border-retro-shadow rounded-2xl;
+    background-color: var(--app-surface);
+    border: 2px solid var(--app-border);
+    @apply rounded-2xl;
     box-shadow: 
-      inset 0 0 50px rgba(0, 0, 0, 0.5),
-      0 0 50px rgba(155, 188, 15, 0.2);
+      inset 0 0 40px rgba(0, 0, 0, 0.2),
+      0 0 30px rgba(123, 203, 122, 0.15);
     background-image: var(--scanlines);
   }
 
   /* Texto con efecto de píxeles */
   .pixel-text {
     @apply font-retro tracking-wider;
-    text-shadow: 
-      2px 2px 0 var(--retro-shadow),
-      -1px -1px 0 var(--retro-accent);
+    text-shadow: none;
     image-rendering: pixelated;
   }
 
@@ -136,8 +169,10 @@
 
   /* Panel de juego retro */
   .game-panel {
-    @apply bg-retro-dark border-4 border-unlam-500 p-4 rounded-lg;
-    @apply shadow-retro;
+    background-color: var(--app-surface);
+    border: 2px solid var(--app-border);
+    @apply p-4 rounded-lg;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
     background-image: var(--scanlines);
   }
 
@@ -154,6 +189,41 @@
    UTILIDADES ESPECIALES
    ======================================== */
 @layer utilities {
+  .bg-app {
+    background-color: var(--app-bg);
+  }
+
+  .bg-surface {
+    background-color: var(--app-surface);
+  }
+
+  .bg-elevated {
+    background-color: var(--app-elevated);
+  }
+
+  .text-app {
+    color: var(--app-text);
+  }
+
+  .text-muted {
+    color: var(--app-muted);
+  }
+
+  .border-app {
+    border-color: var(--app-border);
+  }
+
+  .border-accent {
+    border-color: var(--app-accent);
+  }
+
+  .shadow-soft {
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+  }
+
+  .shadow-subtle {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  }
   /* Renderizado pixelado para todos los elementos que lo necesiten */
   .pixelated {
     image-rendering: pixelated;
@@ -185,7 +255,7 @@
 
   /* Efecto de resplandor retro */
   .glow-retro {
-    box-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+    box-shadow: 0 0 10px color-mix(in srgb, var(--app-accent) 40%, transparent);
   }
 
   /* Animación de entrada tipo power-on */
@@ -200,13 +270,16 @@
 
 /* Personalizar controles de React Flow */
 .react-flow__controls {
-  @apply border-4 border-unlam-500 rounded-lg overflow-hidden;
-  @apply bg-retro-dark shadow-retro;
+  @apply rounded-lg overflow-hidden;
+  border: 2px solid var(--app-border);
+  background-color: var(--app-surface);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
 }
 
 .react-flow__controls button {
-  @apply bg-unlam-500 border-b-2 border-unlam-800;
-  @apply hover:bg-unlam-600;
+  background-color: var(--app-accent);
+  border-bottom: 2px solid color-mix(in srgb, var(--app-accent) 60%, #000);
+  color: var(--app-accent-ink);
   @apply transition-colors duration-200;
   image-rendering: pixelated;
 }
@@ -217,9 +290,10 @@
 
 /* Personalizar MiniMap */
 .react-flow__minimap {
-  @apply border-4 border-unlam-500 rounded-lg;
-  @apply shadow-retro;
-  background: rgba(15, 56, 15, 0.9) !important;
+  @apply rounded-lg;
+  border: 2px solid var(--app-border);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.2);
+  background: color-mix(in srgb, var(--app-surface) 85%, transparent) !important;
 }
 
 /* Personalizar handles de conexión */
@@ -296,6 +370,27 @@
   }
 }
 
+@keyframes drift {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(-20px, 12px, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes walk {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
 /* ========================================
    EFECTOS ESPECIALES
    ======================================== */
@@ -332,6 +427,73 @@
 .interactive-retro:active {
   transform: translate(0, 0);
   box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.8);
+}
+
+.app-backdrop {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at 20% 20%, rgba(123, 203, 122, 0.12), transparent 45%),
+              radial-gradient(circle at 80% 30%, rgba(123, 203, 122, 0.08), transparent 40%),
+              radial-gradient(circle at 40% 80%, rgba(123, 203, 122, 0.08), transparent 45%);
+  opacity: 0.8;
+  animation: drift 10s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.pixel-noise {
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 12px 12px;
+  mix-blend-mode: soft-light;
+  opacity: 0.5;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.progress-track {
+  position: relative;
+  height: 16px;
+  background: color-mix(in srgb, var(--app-accent) 20%, transparent);
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid var(--app-border);
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--app-accent), var(--app-accent-strong));
+  transition: width 0.5s ease;
+}
+
+.progress-runner {
+  position: absolute;
+  top: -14px;
+  width: 24px;
+  height: 24px;
+  background: #1f2a1f;
+  border-radius: 4px;
+  border: 2px solid var(--app-accent);
+  animation: walk 0.6s steps(2) infinite;
+}
+
+.progress-runner::after {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  background: var(--app-accent);
+  border-radius: 2px;
+}
+
+.progress-checkpoint {
+  position: absolute;
+  top: -6px;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: var(--app-surface);
+  border: 2px solid var(--app-border);
 }
 
 /* ========================================

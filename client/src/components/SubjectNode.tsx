@@ -3,7 +3,7 @@ import { Handle, Position } from '@xyflow/react';
 import type { Node, NodeProps } from '@xyflow/react';
 import { SubjectStatus } from '../types/academic';
 import type { Subject } from '../types/academic';
-import { cn, truncateSubjectName, formatGrade, getSubjectEmoji } from '../lib/utils';
+import { cn, truncateSubjectName, formatGrade } from '../lib/utils';
 import { useState } from 'react';
 
 // Tipo de nodo específico
@@ -17,34 +17,34 @@ const STATUS_STYLES: Record<SubjectStatus, {
   border: string;
 }> = {
   [SubjectStatus.PENDIENTE]: {
-    container: 'bg-[#4A4A4A] text-gray-400',
-    badge: 'bg-gray-600 border-gray-800',
+    container: 'bg-[#353C35] text-[#C5D2C5]',
+    badge: 'bg-[#3E4A3E] border-[#2A342A] text-[#E8F2E8]',
     emoji: '🔒',
-    border: 'border-gray-600',
+    border: 'border-[#2A342A]',
   },
   [SubjectStatus.DISPONIBLE]: {
-    container: 'bg-[#FCE94F] text-[#2E3436] animate-pulse',
-    badge: 'bg-[#C4A000] border-[#8B7500] text-white',
+    container: 'bg-[#F7E8A3] text-[#2E3436]',
+    badge: 'bg-[#E4C96A] border-[#C4A85B] text-[#2E3436]',
     emoji: '🎯',
-    border: 'border-[#C4A000]',
+    border: 'border-[#C4A85B]',
   },
   [SubjectStatus.EN_CURSO]: {
-    container: 'bg-[#729FCF] text-white',
-    badge: 'bg-[#3465A4] border-[#204A87] text-white',
+    container: 'bg-[#8FB5DD] text-[#1C2B3A]',
+    badge: 'bg-[#5F89BF] border-[#3F6FA2] text-white',
     emoji: '📚',
-    border: 'border-[#3465A4]',
+    border: 'border-[#3F6FA2]',
   },
   [SubjectStatus.REGULARIZADA]: {
-    container: 'bg-[#8AE234] text-[#2E3436]',
-    badge: 'bg-[#4E9A06] border-[#356703] text-white',
+    container: 'bg-[#B4E6A6] text-[#1F2A1F]',
+    badge: 'bg-[#6BBE6E] border-[#4F9C52] text-white',
     emoji: '✅',
-    border: 'border-[#4E9A06]',
+    border: 'border-[#4F9C52]',
   },
   [SubjectStatus.APROBADA]: {
-    container: 'bg-[#73D216] text-white font-bold',
-    badge: 'bg-[#4E9A06] border-[#356703] text-white',
+    container: 'bg-[#7BCB7A] text-[#0B2A14] font-bold',
+    badge: 'bg-[#4FAE59] border-[#2E7D4D] text-[#0B2A14]',
     emoji: '🏆',
-    border: 'border-[#4E9A06]',
+    border: 'border-[#2E7D4D]',
   },
 };
 
@@ -92,8 +92,8 @@ export const SubjectNode = ({ data, selected }: NodeProps<SubjectNodeType>) => {
           'transition-all duration-200',
           
           // Sombra retro
-          'shadow-retro',
-          isHovered && canInteract && 'shadow-retro-hover translate-x-[2px] translate-y-[2px]',
+          'shadow-subtle',
+          isHovered && canInteract && 'shadow-soft translate-x-[2px] translate-y-[2px]',
           
           // Estilos según estado
           statusConfig.container,
@@ -103,10 +103,10 @@ export const SubjectNode = ({ data, selected }: NodeProps<SubjectNodeType>) => {
           subject.status === SubjectStatus.PENDIENTE && 'opacity-60',
           
           // Glow effect para disponibles
-          subject.status === SubjectStatus.DISPONIBLE && 'ring-4 ring-yellow-300/50',
+          subject.status === SubjectStatus.DISPONIBLE && 'ring-2 ring-yellow-300/40',
           
           // Efecto de aprobada
-          subject.status === SubjectStatus.APROBADA && 'ring-4 ring-green-300/50'
+          subject.status === SubjectStatus.APROBADA && 'ring-2 ring-green-300/40'
         )}
       >
         {/* Header: Código de plan + Emoji */}
@@ -128,7 +128,7 @@ export const SubjectNode = ({ data, selected }: NodeProps<SubjectNodeType>) => {
         <h3 className={cn(
           'text-sm leading-tight mb-2 min-h-[40px]',
           'flex items-center justify-center',
-          subject.status === SubjectStatus.APROBADA && 'text-shadow-retro'
+          subject.status === SubjectStatus.APROBADA && 'text-[#0B2A14]'
         )}>
           {truncateSubjectName(subject.name, 40)}
         </h3>
@@ -145,7 +145,7 @@ export const SubjectNode = ({ data, selected }: NodeProps<SubjectNodeType>) => {
           {subject.grade !== null && (
             <div className={cn(
               'px-2 py-1 rounded border-2',
-              'bg-black/20 border-current',
+              'bg-white/30 border-current',
               'font-bold'
             )}>
               {formatGrade(subject.grade)}
@@ -156,14 +156,14 @@ export const SubjectNode = ({ data, selected }: NodeProps<SubjectNodeType>) => {
         {/* Tooltip en hover (solo si puede interactuar) */}
         {isHovered && canInteract && (
           <div className="absolute -top-14 left-1/2 -translate-x-1/2 z-50
-                          bg-black text-white text-xs px-3 py-2 rounded
-                          border-2 border-white
+                          bg-[#1C2B1F] text-white text-xs px-3 py-2 rounded
+                          border border-app
                           whitespace-nowrap
-                          shadow-retro
+                          shadow-subtle
                           animate-[fadeIn_0.2s_ease-in]">
             {getTooltipText(subject)}
             <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 
-                            w-2 h-2 bg-black border-r-2 border-b-2 border-white
+                            w-2 h-2 bg-[#1C2B1F] border-r border-b border-app
                             rotate-45" />
           </div>
         )}
@@ -182,7 +182,7 @@ export const SubjectNode = ({ data, selected }: NodeProps<SubjectNodeType>) => {
           {[...Array(3)].map((_, i) => (
             <div
               key={i}
-              className="absolute w-1 h-1 bg-yellow-300 rounded-full animate-float"
+              className="absolute w-1 h-1 bg-yellow-200 rounded-full animate-float"
               style={{
                 left: `${20 + i * 30}%`,
                 animationDelay: `${i * 0.5}s`,
@@ -205,7 +205,7 @@ export const SubjectNode = ({ data, selected }: NodeProps<SubjectNodeType>) => {
         }
 
         .text-shadow-retro {
-          text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5);
+          text-shadow: none;
         }
       `}</style>
     </div>

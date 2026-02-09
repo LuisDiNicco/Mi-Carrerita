@@ -60,6 +60,8 @@ model AcademicRecord {
   // VOLVEMOS A STRING
   status     String 
   finalGrade Int?
+  statusDate DateTime?
+  notes      String?
   updatedAt  DateTime      @updatedAt
 
   @@unique([userId, subjectId])

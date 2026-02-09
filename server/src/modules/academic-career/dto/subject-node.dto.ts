@@ -33,6 +33,16 @@ export class SubjectNodeDto {
   @IsOptional()
   grade: number | null;
 
+  @ApiProperty({ required: false, nullable: true })
+  @IsOptional()
+  @IsString()
+  statusDate?: string | null;
+
+  @ApiProperty({ required: false, nullable: true })
+  @IsOptional()
+  @IsString()
+  notes?: string | null;
+
   @ApiProperty()
   @IsArray()
   requiredSubjectIds: string[];
