@@ -6,75 +6,74 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = "file:./dev.db"  // <--- ESTA LÍNEA ES OBLIGATORIA EN PRISMA 5
+  url      = "file:./dev.db"
 }
 
+// BORRAMOS LOS ENUMS DE AQUÍ
+
 model User {
-  id            String    @id @default(uuid())
-  email         String    @unique
-  name          String?
-  googleId      String?   @unique
-  avatarUrl     String?
+  id              String           @id @default(uuid())
+  email           String           @unique
+  name            String?
+  googleId        String?          @unique
+  avatarUrl       String?
   academicRecords AcademicRecord[]
   reviews         SubjectReview[]
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
 }
 
 model Subject {
-  id            String   @id @default(uuid())
-  planCode      String   // Ej: "3621"
-  name          String   
-  semester      Int      
-  credits       Int      
-  isOptional    Boolean  @default(false) 
-
+  id            String          @id @default(uuid())
+  planCode      String          @unique 
+  name          String
+  semester      Int
+  credits       Int
+  isOptional    Boolean         @default(false)
+  
   prerequisites Correlativity[] @relation("RequiredForSubject")
   unlocks       Correlativity[] @relation("PrerequisiteSubject")
-
   records       AcademicRecord[]
   reviews       SubjectReview[]
-
-  @@unique([planCode])
 }
 
 model Correlativity {
-  id              String @id @default(uuid())
-  subjectId       String
-  subject         Subject @relation("RequiredForSubject", fields: [subjectId], references: [id])
-  prerequisiteId  String
-  prerequisite    Subject @relation("PrerequisiteSubject", fields: [prerequisiteId], references: [id])
+  id             String                @id @default(uuid())
+  subjectId      String
+  subject        Subject               @relation("RequiredForSubject", fields: [subjectId], references: [id])
+  prerequisiteId String
+  prerequisite   Subject               @relation("PrerequisiteSubject", fields: [prerequisiteId], references: [id])
   
-  // En SQLite usamos String, pero en código validaremos que sea "REGULAR_CURSADA" o "FINAL_APROBADO"
-  condition       String 
+  // VOLVEMOS A STRING
+  condition      String 
 
   @@unique([subjectId, prerequisiteId])
 }
 
 model AcademicRecord {
-  id          String        @id @default(uuid())
-  userId      String
-  user        User          @relation(fields: [userId], references: [id])
-  subjectId   String
-  subject     Subject       @relation(fields: [subjectId], references: [id])
+  id         String        @id @default(uuid())
+  userId     String
+  user       User          @relation(fields: [userId], references: [id])
+  subjectId  String
+  subject    Subject       @relation(fields: [subjectId], references: [id])
   
-  // En SQLite usamos String. Valores: "PENDIENTE", "DISPONIBLE", "EN_CURSO", "REGULARIZADA", "APROBADA"
-  status      String
-  finalGrade  Int?          
-  updatedAt   DateTime      @updatedAt
-  
+  // VOLVEMOS A STRING
+  status     String 
+  finalGrade Int?
+  updatedAt  DateTime      @updatedAt
+
   @@unique([userId, subjectId])
 }
 
 model SubjectReview {
-  id             String   @id @default(uuid())
-  userId         String
-  user           User     @relation(fields: [userId], references: [id])
-  subjectId      String
-  subject        Subject  @relation(fields: [subjectId], references: [id])
-  difficultyScore Int     
-  rating          Int     
-  comment         String? 
-  anonymous       Boolean @default(false)
+  id              String   @id @default(uuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+  subjectId       String
+  subject         Subject  @relation(fields: [subjectId], references: [id])
+  difficultyScore Int
+  rating          Int
+  comment         String?
+  anonymous       Boolean  @default(false)
   createdAt       DateTime @default(now())
 }

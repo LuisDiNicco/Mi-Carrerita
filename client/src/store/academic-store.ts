@@ -1,22 +1,13 @@
 import { create } from 'zustand';
-
-// Esta interfaz es la que usa SubjectNode
-export interface Subject {
-  id: string;
-  planCode: string;
-  name: string;
-  semester: number;
-  credits: number;
-  status: string; // 'PENDIENTE' | 'DISPONIBLE' | ...
-  grade: number | null;
-  requiredSubjectIds: string[];
-}
+// Usar 'import type'
+import type { Subject } from '../types/academic'; 
 
 interface AcademicState {
   subjects: Subject[];
-  // Aquí agregaremos acciones después
+  setSubjects: (subjects: Subject[]) => void;
 }
 
-export const useAcademicStore = create<AcademicState>(() => ({
+export const useAcademicStore = create<AcademicState>((set) => ({
   subjects: [],
+  setSubjects: (subjects) => set({ subjects }),
 }));

@@ -1,37 +1,40 @@
-import { ApiProperty } from '@nestjs/swagger'; // <--- Importar
-import { Expose } from 'class-transformer';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsEnum, IsNumber, IsString, IsOptional, IsArray } from 'class-validator';
+// IMPORTAMOS DESDE NUESTRO ARCHIVO MANUAL
+import { SubjectStatus } from '../../../common/constants/academic-enums'; 
 
 export class SubjectNodeDto {
-  @ApiProperty({ example: 'uuid-1234', description: 'ID único de la materia' })
-  @Expose()
+  @ApiProperty()
+  @IsString()
   id: string;
 
-  @ApiProperty({ example: '3622', description: 'Código del plan de estudios' })
-  @Expose()
+  @ApiProperty()
+  @IsString()
   planCode: string;
 
-  @ApiProperty({ example: 'Análisis Matemático 1', description: 'Nombre oficial' })
-  @Expose()
+  @ApiProperty()
+  @IsString()
   name: string;
 
-  @ApiProperty({ example: 1, description: 'Cuatrimestre sugerido' })
-  @Expose()
+  @ApiProperty()
+  @IsNumber()
   semester: number;
 
-  @ApiProperty({ example: 8, description: 'Créditos u horas semanales' })
-  @Expose()
+  @ApiProperty()
+  @IsNumber()
   credits: number;
 
-  @ApiProperty({ example: 'PENDIENTE', description: 'Estado académico del alumno' })
-  @Expose()
-  status: string;
+  @ApiProperty({ enum: SubjectStatus })
+  @IsEnum(SubjectStatus)
+  status: SubjectStatus;
 
-  @ApiProperty({ example: 9, description: 'Nota final (si aplica)', nullable: true })
-  @Expose()
+  @ApiProperty({ required: false, nullable: true })
+  @IsNumber()
+  @IsOptional()
   grade: number | null;
 
-  @ApiProperty({ example: ['3621'], description: 'IDs de materias correlativas necesarias' })
-  @Expose()
+  @ApiProperty()
+  @IsArray()
   requiredSubjectIds: string[];
 
   constructor(partial: Partial<SubjectNodeDto>) {

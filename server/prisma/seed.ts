@@ -1,44 +1,30 @@
+// server/prisma/seed.ts
 import { PrismaClient } from '@prisma/client';
-import { PLAN_2023 } from '../src/data/plan-2023'; // Asegurate que esta ruta sea correcta
+// IMPORTAMOS DESDE NUESTRO ARCHIVO MANUAL
+import { SubjectStatus, CorrelativityCondition } from '../src/common/constants/academic-enums';
+import { PLAN_2023 } from '../src/data/plan-2023';
 
 const prisma = new PrismaClient();
 
-// Definimos constantes para evitar "Magic Strings" y errores de tipeo
-const CONDITION = {
-  REGULAR: 'REGULAR_CURSADA',
-  FINAL: 'FINAL_APROBADO',
-} as const;
-
 async function main() {
-  console.log('🌱 INICIO DEL SEEDING (Modo Calidad)...');
+  console.log('🌱 Iniciando Seed...');
 
-  // --- 1. GESTIÓN DE USUARIO ADMIN ---
-  // Usamos upsert para que si ya existe, no tire error.
-  const user = await prisma.user.upsert({
-    where: { email: 'admin@micarrerita.com' },
-    update: {}, // Si existe, no cambiamos nada
+  const email = 'admin@micarrerita.com';
+  const admin = await prisma.user.upsert({
+    where: { email },
+    update: {},
     create: {
-      email: 'admin@micarrerita.com',
+      email,
       name: 'Admin User',
-      avatarUrl: 'https://github.com/shadcn.png',
+      googleId: 'admin-google-id',
     },
   });
-  console.log(`👤 Usuario Admin verificado: ${user.email}`);
+  console.log(`👤 Usuario admin: ${admin.id}`);
 
-  // --- 2. CARGA DE MATERIAS (Nodos) ---
-  console.log(`📚 Sincronizando ${PLAN_2023.length} materias del Plan 2023...`);
-  
-  // Usamos un bucle for...of para poder usar await adentro tranquilamente
   for (const subjectData of PLAN_2023) {
     await prisma.subject.upsert({
       where: { planCode: subjectData.planCode },
-      update: {
-        // Actualizamos datos por si corregimos algún nombre o crédito en el archivo
-        name: subjectData.name,
-        semester: subjectData.semester,
-        credits: subjectData.credits,
-        isOptional: subjectData.isOptional,
-      },
+      update: {},
       create: {
         planCode: subjectData.planCode,
         name: subjectData.name,
@@ -48,74 +34,72 @@ async function main() {
       },
     });
   }
-  console.log('✅ Materias sincronizadas.');
 
-  // --- 3. CARGA DE CORRELATIVIDADES (Aristas) ---
-  console.log('🔗 Tejiendo red de correlatividades...');
-
-  // Contador para logs
-  let relationsCreated = 0;
+  const allSubjects = await prisma.subject.findMany();
+  const subjectMap = new Map<string, string>(
+    allSubjects.map((s) => [s.planCode, s.id])
+  );
 
   for (const subjectData of PLAN_2023) {
-    // 1. Buscamos la materia "Hija" (la que tiene los requisitos) en la BD para tener su ID real
-    const subjectInDb = await prisma.subject.findUnique({
-      where: { planCode: subjectData.planCode },
-    });
+    const subjectId = subjectMap.get(subjectData.planCode);
+    if (!subjectId) continue;
 
-    if (!subjectInDb) continue; // No debería pasar, pero por seguridad
-
-    // Función helper para procesar listas de códigos
-    const processRequirements = async (
-      codes: string[], 
-      conditionType: string
-    ) => {
-      for (const reqCode of codes) {
-        // 2. Buscamos la materia "Padre" (el requisito)
-        const requirementInDb = await prisma.subject.findUnique({
-          where: { planCode: reqCode },
-        });
-
-        if (!requirementInDb) {
-          console.warn(`⚠️ ALERTA: La materia ${subjectData.name} pide ${reqCode}, pero esa materia no existe en el plan.`);
-          continue;
-        }
-
-        // 3. Creamos o actualizamos la relación
-        // La clave compuesta es subjectId + prerequisiteId
+    for (const prereqCode of subjectData.correlativesFinal) {
+      const prerequisiteId = subjectMap.get(prereqCode);
+      if (prerequisiteId) {
         await prisma.correlativity.upsert({
-          where: {
-            subjectId_prerequisiteId: {
-              subjectId: subjectInDb.id,
-              prerequisiteId: requirementInDb.id,
+            where: {
+                subjectId_prerequisiteId: { subjectId, prerequisiteId }
             },
-          },
-          update: {
-            condition: conditionType, // Actualizamos la condición si cambió (ej: de Regular a Final)
-          },
-          create: {
-            subjectId: subjectInDb.id,
-            prerequisiteId: requirementInDb.id,
-            condition: conditionType,
-          },
+            create: {
+                subjectId,
+                prerequisiteId,
+                condition: CorrelativityCondition.FINAL_APROBADO // Usamos el Enum TS
+            },
+            update: {}
         });
-        relationsCreated++;
       }
-    };
+    }
 
-    // Procesamos correlativas de FINAL
-    await processRequirements(subjectData.correlativesFinal, CONDITION.FINAL);
-
-    // Procesamos correlativas de REGULAR
-    await processRequirements(subjectData.correlativesRegular, CONDITION.REGULAR);
+    for (const prereqCode of subjectData.correlativesRegular) {
+      const prerequisiteId = subjectMap.get(prereqCode);
+      if (prerequisiteId) {
+        await prisma.correlativity.upsert({
+            where: {
+                subjectId_prerequisiteId: { subjectId, prerequisiteId }
+            },
+            create: {
+                subjectId,
+                prerequisiteId,
+                condition: CorrelativityCondition.REGULAR_CURSADA // Usamos el Enum TS
+            },
+            update: {}
+        });
+      }
+    }
   }
 
-  console.log(`✅ Relaciones procesadas. Total de enlaces: ${relationsCreated}`);
-  console.log('🚀 SEEDING FINALIZADO CON ÉXITO.');
+  // Historial de prueba
+  const discreta = allSubjects.find((s) => s.planCode === '3621');
+  if (discreta) {
+    await prisma.academicRecord.upsert({
+      where: {
+        userId_subjectId: { userId: admin.id, subjectId: discreta.id },
+      },
+      create: {
+        userId: admin.id,
+        subjectId: discreta.id,
+        status: SubjectStatus.APROBADA, // Usamos el Enum TS
+        finalGrade: 9,
+      },
+      update: {},
+    });
+  }
+  console.log('✅ Seed finalizado correctamente.');
 }
 
 main()
   .catch((e) => {
-    console.error('❌ Error fatal durante el seeding:');
     console.error(e);
     process.exit(1);
   })
