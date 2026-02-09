@@ -18,8 +18,8 @@ export const AppHeader = ({ progress, stats, theme, onToggleTheme }: AppHeaderPr
     <header className="flex flex-col gap-4 rounded-2xl border border-app bg-surface p-6 shadow-subtle">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <p className="text-xs uppercase tracking-widest text-muted">Portafolio academico</p>
-          <h1 className="text-3xl font-bold text-app">Mi Carrerita</h1>
+          <p className="text-sm uppercase tracking-widest text-muted">Portafolio academico</p>
+          <h1 className="text-4xl font-bold text-app">Mi Carrerita</h1>
         </div>
         <RetroButton variant="primary" size="sm" onClick={onToggleTheme}>
           {theme === 'light' ? 'Modo oscuro' : 'Modo claro'}

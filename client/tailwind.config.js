@@ -8,8 +8,8 @@ export default {
     extend: {
       // Fuentes retro
       fontFamily: {
-        retro: ['"VT323"', 'monospace'],
-        pixel: ['"Press Start 2P"', 'monospace'],  // Agregar via Google Fonts
+        retro: ['"Pixelify Sans"', '"VT323"', 'monospace'],
+        pixel: ['"Press Start 2P"', 'monospace'],
         sans: ['"Inter"', 'sans-serif'],
       },
 

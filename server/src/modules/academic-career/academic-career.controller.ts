@@ -3,6 +3,7 @@ import { AcademicCareerService } from './academic-career.service';
 import { SubjectNodeDto } from './dto/subject-node.dto';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { UpdateSubjectRecordDto } from './dto/update-subject-record.dto';
+import { DEFAULT_USER_EMAIL } from './academic-career.constants';
 
 @Controller('academic-career')
 export class AcademicCareerController {
@@ -15,7 +16,7 @@ export class AcademicCareerController {
   async getGraph(): Promise<SubjectNodeDto[]> {
     // TODO: A futuro, sacaremos el ID del usuario del JWT (Request)
     // const userId = req.user.id;
-    const userEmail = 'admin@micarrerita.com';
+    const userEmail = DEFAULT_USER_EMAIL;
     
     // Usamos un método público del servicio, NO accedemos a propiedades privadas
     const user = await this.academicCareerService.findUserByEmail(userEmail);
@@ -34,7 +35,7 @@ export class AcademicCareerController {
     @Param('subjectId') subjectId: string,
     @Body() payload: UpdateSubjectRecordDto,
   ) {
-    const userEmail = 'admin@micarrerita.com';
+    const userEmail = DEFAULT_USER_EMAIL;
     const user = await this.academicCareerService.findUserByEmail(userEmail);
 
     if (!user) {

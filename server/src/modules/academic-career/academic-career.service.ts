@@ -28,7 +28,6 @@ export class AcademicCareerService {
               subjectId: true,
               status: true,
               finalGrade: true,
-              updatedAt: true,
             },
           },
         },
@@ -94,9 +93,10 @@ export class AcademicCareerService {
           name: subject.name,
           semester: subject.semester,
           credits: subject.credits,
+          isOptional: subject.isOptional,
           status: status, 
           grade: record?.finalGrade ?? null,
-          statusDate: record?.updatedAt ? record.updatedAt.toISOString().slice(0, 10) : null,
+          statusDate: null,
           requiredSubjectIds: requiredIds,
         });
       });

@@ -1,5 +1,5 @@
 // client/src/components/CareerGraph.tsx (VERSIÓN MEJORADA)
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import { 
   ReactFlow, 
   Background, 
@@ -12,15 +12,17 @@ import {
 } from '@xyflow/react';
 import type { Node, Edge, NodeTypes } from '@xyflow/react';
 import '@xyflow/react/dist/style.css'; 
+import dagre from 'dagre';
 
 import { SubjectNode } from './SubjectNode';
 import type { SubjectNodeType } from './SubjectNode';
 import { SubjectStatus } from '../types/academic';
 import type { Subject } from '../types/academic';
 import { RetroLoading, RetroError } from './ui/RetroComponents';
-import { groupBySemester } from '../lib/utils';
 import { SubjectUpdatePanel } from './SubjectUpdatePanel';
 import { useAcademicStore } from '../store/academic-store';
+import { GRAPH_LAYOUT, buildEdges, getCriticalPath } from '../lib/graph';
+import { RetroButton } from './ui/RetroButton';
 
 // Tipos de nodo
 const nodeTypes: NodeTypes = {
@@ -30,42 +32,92 @@ const nodeTypes: NodeTypes = {
 // Variables de entorno (crear archivo .env)
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
-// Configuración de layout mejorada
-const LAYOUT_CONFIG = {
-  horizontalSpacing: 320,
-  verticalSpacing: 150,
-  offsetX: 40,
-  offsetY: 40,
+const VIEWPORT_CONFIG = {
+  minZoom: 0.1,
+  maxZoom: 1.5,
+  defaultZoom: 0.8,
+  fitPadding: 0.2,
 };
+
+const UI_LABELS = {
+  fullscreenOn: 'Pantalla completa',
+  fullscreenOff: 'Salir de pantalla completa',
+  criticalOn: 'Ocultar camino critico',
+  criticalOff: 'Ver camino critico',
+};
+
+const EDGE_STYLES = {
+  normal: {
+    stroke: '#5BBE63',
+    strokeWidth: 2,
+  },
+  blocked: {
+    stroke: '#8A9B8A',
+    strokeWidth: 2,
+  },
+  critical: {
+    stroke: '#E85D5D',
+    strokeWidth: 3,
+  },
+};
+
+const BACKGROUND_CONFIG = {
+  color: '#7BCB7A',
+  gap: 28,
+  size: 2,
+  opacity: 0.3,
+  miniMapMask: 'rgba(10, 20, 12, 0.65)',
+};
+
+const UPDATE_FLASH_MS = 1400;
 
 export const CareerGraph = () => {
   // Estados de React Flow
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const setSubjects = useAcademicStore((state) => state.setSubjects);
+  const subjects = useAcademicStore((state) => state.subjects);
   
   // Estados de UI
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeSubject, setActiveSubject] = useState<Subject | null>(null);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
+  const [showCriticalPath, setShowCriticalPath] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [recentUpdateId, setRecentUpdateId] = useState<string | null>(null);
 
-  /**
-   * Calcula posición mejorada evitando overlapping
-   */
-  const calculateNodePosition = (
-    semester: number,
-    indexInSemester: number,
-    totalInSemester: number
-  ): { x: number; y: number } => {
-    const x = LAYOUT_CONFIG.offsetX + (semester - 1) * LAYOUT_CONFIG.horizontalSpacing;
-    
-    // Centrar verticalmente las materias de cada semestre
-    const totalHeight = (totalInSemester - 1) * LAYOUT_CONFIG.verticalSpacing;
-    const startY = LAYOUT_CONFIG.offsetY - (totalHeight / 2);
-    const y = startY + indexInSemester * LAYOUT_CONFIG.verticalSpacing;
-    
-    return { x, y };
+  const layoutNodes = (subjects: Subject[], edges: { from: string; to: string }[]) => {
+    const graph = new dagre.graphlib.Graph();
+    graph.setDefaultEdgeLabel(() => ({}));
+    graph.setGraph({
+      rankdir: 'LR',
+      ranksep: GRAPH_LAYOUT.rankSep,
+      nodesep: GRAPH_LAYOUT.nodeSep,
+      marginx: GRAPH_LAYOUT.marginX,
+      marginy: GRAPH_LAYOUT.marginY,
+    });
+
+    subjects.forEach((subject) => {
+      graph.setNode(subject.id, {
+        width: GRAPH_LAYOUT.nodeWidth,
+        height: GRAPH_LAYOUT.nodeHeight,
+      });
+    });
+
+    edges.forEach((edge) => {
+      graph.setEdge(edge.from, edge.to);
+    });
+
+    dagre.layout(graph);
+
+    return subjects.map((subject) => {
+      const node = graph.node(subject.id);
+      return {
+        x: node.x - GRAPH_LAYOUT.nodeWidth / 2,
+        y: node.y - GRAPH_LAYOUT.nodeHeight / 2,
+      };
+    });
   };
 
   /**
@@ -93,57 +145,26 @@ export const CareerGraph = () => {
         throw new Error('No se recibieron materias del servidor');
       }
 
-      // Agrupar por semestre para mejor layout
-      const bySemester = groupBySemester(data);
+      const edgesList = buildEdges(data);
+      const positions = layoutNodes(data, edgesList);
 
-      // Generar nodos con posicionamiento mejorado
-      const newNodes: SubjectNodeType[] = [];
-      
-      bySemester.forEach((subjects, semester) => {
-        const sorted = [...subjects].sort((a, b) => a.planCode.localeCompare(b.planCode));
-        const totalInSemester = sorted.length;
-        
-        sorted.forEach((subject, index) => {
-          const position = calculateNodePosition(semester, index, totalInSemester);
-          
-          newNodes.push({
-            id: subject.id,
-            type: 'subject',
-            position,
-            data: { subject },
-            // Configuraciones adicionales
-            draggable: true,
-            selectable: true,
-          });
-        });
-      });
+      const newNodes: SubjectNodeType[] = data.map((subject, index) => ({
+        id: subject.id,
+        type: 'subject',
+        position: positions[index],
+        data: { subject },
+        draggable: true,
+        selectable: true,
+      }));
 
-      // Generar edges (correlatividades)
-      const newEdges: Edge[] = [];
-      
-      data.forEach((subject) => {
-        subject.requiredSubjectIds.forEach((reqCode) => {
-          const reqSubject = data.find(s => s.planCode === reqCode);
-          
-          if (reqSubject) {
-            // Color basado en estado
-            const isBlocked = subject.status === SubjectStatus.PENDIENTE;
-            const edgeColor = isBlocked ? '#6B7280' : '#10B981';
-            
-            newEdges.push({
-              id: `e-${reqSubject.id}-${subject.id}`,
-              source: reqSubject.id,
-              target: subject.id,
-              animated: !isBlocked,
-              style: { 
-                stroke: edgeColor, 
-                strokeWidth: 3,
-              },
-              type: 'smoothstep',
-            });
-          }
-        });
-      });
+      const newEdges: Edge[] = edgesList.map((edge) => ({
+        id: `e-${edge.from}-${edge.to}`,
+        source: edge.from,
+        target: edge.to,
+        animated: false,
+        style: EDGE_STYLES.normal,
+        type: 'smoothstep',
+      }));
 
       setNodes(newNodes);
       setEdges(newEdges);
@@ -165,6 +186,48 @@ export const CareerGraph = () => {
   useEffect(() => {
     fetchCareerData();
   }, [fetchCareerData]);
+
+  const criticalPath = useMemo(() => {
+    if (!showCriticalPath) {
+      return { nodeIds: new Set<string>(), edgeIds: new Set<string>() };
+    }
+    const coreSubjects = subjects.filter((subject) => !subject.isOptional);
+    const edgesList = buildEdges(coreSubjects);
+    return getCriticalPath(coreSubjects, edgesList);
+  }, [showCriticalPath, subjects]);
+
+  const enrichedNodes = nodes.map((node) => {
+    const subject = (node.data as { subject?: Subject }).subject;
+    return {
+      ...node,
+      data: {
+        subject,
+        isCritical: subject ? criticalPath.nodeIds.has(subject.id) : false,
+        isRecentlyUpdated: subject ? subject.id === recentUpdateId : false,
+      },
+    };
+  });
+
+  const enrichedEdges = edges.map((edge) => {
+    const edgeKey = `${edge.source}-${edge.target}`;
+    const isCritical = criticalPath.edgeIds.has(edgeKey);
+    const targetSubject = subjects.find((subject) => subject.id === edge.target);
+    const isBlocked = targetSubject?.status === SubjectStatus.PENDIENTE;
+
+    return {
+      ...edge,
+      animated: isCritical,
+      style: isCritical
+        ? EDGE_STYLES.critical
+        : isBlocked
+          ? EDGE_STYLES.blocked
+          : EDGE_STYLES.normal,
+    };
+  });
+
+  const containerClass = isFullscreen
+    ? 'fixed inset-0 z-40 bg-app p-6 w-full h-full'
+    : 'w-full h-[70vh] bg-app rounded-xl overflow-hidden';
 
   // Renderizado condicional de Loading
   if (loading) {
@@ -189,22 +252,22 @@ export const CareerGraph = () => {
   }
 
   return (
-    <div className="w-full h-[70vh] bg-app rounded-xl overflow-hidden">
+    <div className={containerClass}>
       <ReactFlow
-        nodes={nodes}
-        edges={edges}
+        nodes={enrichedNodes}
+        edges={enrichedEdges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         nodeTypes={nodeTypes}
         fitView
         fitViewOptions={{
-          padding: 0.2,
-          minZoom: 0.2,
-          maxZoom: 1.2,
+          padding: VIEWPORT_CONFIG.fitPadding,
+          minZoom: VIEWPORT_CONFIG.minZoom,
+          maxZoom: VIEWPORT_CONFIG.maxZoom,
         }}
-        minZoom={0.1}
-        maxZoom={1.5}
-        defaultViewport={{ x: 0, y: 0, zoom: 0.8 }}
+        minZoom={VIEWPORT_CONFIG.minZoom}
+        maxZoom={VIEWPORT_CONFIG.maxZoom}
+        defaultViewport={{ x: 0, y: 0, zoom: VIEWPORT_CONFIG.defaultZoom }}
         // Configuraciones de accesibilidad
         nodesDraggable={true}
         nodesConnectable={false}
@@ -219,11 +282,11 @@ export const CareerGraph = () => {
       >
         {/* Fondo estilo retro con puntos */}
         <Background 
-          color="#7BCB7A" 
-          gap={28} 
-          size={2}
+          color={BACKGROUND_CONFIG.color}
+          gap={BACKGROUND_CONFIG.gap} 
+          size={BACKGROUND_CONFIG.size}
           variant={BackgroundVariant.Dots}
-          style={{ opacity: 0.3 }}
+          style={{ opacity: BACKGROUND_CONFIG.opacity }}
         />
 
         {/* Controles personalizados */}
@@ -255,13 +318,30 @@ export const CareerGraph = () => {
             }
             return '#9CA3AF';
           }}
-          maskColor="rgba(10, 20, 12, 0.65)"
+          maskColor={BACKGROUND_CONFIG.miniMapMask}
         />
 
         <Panel position="top-left" className="m-4">
           <div className="bg-surface border border-app rounded-lg px-3 py-2 text-xs text-muted shadow-subtle">
             Doble clic en una materia para actualizar el estado.
           </div>
+        </Panel>
+
+        <Panel position="top-right" className="m-4 flex flex-col gap-2">
+          <RetroButton
+            size="sm"
+            variant="primary"
+            onClick={() => setIsFullscreen((prev) => !prev)}
+          >
+            {isFullscreen ? UI_LABELS.fullscreenOff : UI_LABELS.fullscreenOn}
+          </RetroButton>
+          <RetroButton
+            size="sm"
+            variant="danger"
+            onClick={() => setShowCriticalPath((prev) => !prev)}
+          >
+            {showCriticalPath ? UI_LABELS.criticalOn : UI_LABELS.criticalOff}
+          </RetroButton>
         </Panel>
 
         {/* Leyenda (abajo a la derecha) */}
@@ -299,6 +379,8 @@ export const CareerGraph = () => {
           if (!response.ok) {
             throw new Error('No se pudo actualizar la materia.');
           }
+          setRecentUpdateId(activeSubject.id);
+          setTimeout(() => setRecentUpdateId(null), UPDATE_FLASH_MS);
           await fetchCareerData();
         }}
       />

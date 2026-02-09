@@ -25,6 +25,7 @@ export interface Subject {
   name: string;
   semester: number;
   credits: number;
+  isOptional?: boolean;
   status: SubjectStatus; 
   grade: number | null;
   statusDate?: string | null;

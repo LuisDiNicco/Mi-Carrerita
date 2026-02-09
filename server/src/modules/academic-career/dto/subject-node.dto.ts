@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsNumber, IsString, IsOptional, IsArray } from 'class-validator';
+import { IsArray, IsBoolean, IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 // IMPORTAMOS DESDE NUESTRO ARCHIVO MANUAL
 import { SubjectStatus } from '../../../common/constants/academic-enums'; 
 
@@ -23,6 +23,10 @@ export class SubjectNodeDto {
   @ApiProperty()
   @IsNumber()
   credits: number;
+
+  @ApiProperty()
+  @IsBoolean()
+  isOptional: boolean;
 
   @ApiProperty({ enum: SubjectStatus })
   @IsEnum(SubjectStatus)

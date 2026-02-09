@@ -6,6 +6,8 @@ import { SideNav } from './components/layout/SideNav';
 import { useAcademicStore } from './store/academic-store';
 import { calculateProgress } from './lib/utils';
 import { SubjectStatus } from './types/academic';
+import { Dashboard } from './components/Dashboard';
+import { HistoryTable } from './components/HistoryTable';
 
 function App() {
   const [activeSection, setActiveSection] = useState('tree');
@@ -63,18 +65,8 @@ function App() {
 
           <main className="rounded-2xl border border-app bg-surface p-4 shadow-subtle">
             {activeSection === 'tree' && <CareerGraph />}
-            {activeSection === 'dashboard' && (
-              <SectionPlaceholder
-                title="Estadisticas"
-                description="Panel de indicadores y comparativas (mock)."
-              />
-            )}
-            {activeSection === 'history' && (
-              <SectionPlaceholder
-                title="Historia academica"
-                description="Linea de tiempo de materias y notas (mock)."
-              />
-            )}
+            {activeSection === 'dashboard' && <Dashboard />}
+            {activeSection === 'history' && <HistoryTable />}
             {activeSection === 'trophies' && (
               <SectionPlaceholder
                 title="Sala de trofeos"

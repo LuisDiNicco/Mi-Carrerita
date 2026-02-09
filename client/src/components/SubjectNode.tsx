@@ -7,7 +7,13 @@ import { cn, truncateSubjectName, formatGrade } from '../lib/utils';
 import { useState } from 'react';
 
 // Tipo de nodo específico
-export type SubjectNodeType = Node<{ subject: Subject }, 'subject'>;
+type SubjectNodeData = {
+  subject: Subject;
+  isCritical?: boolean;
+  isRecentlyUpdated?: boolean;
+};
+
+export type SubjectNodeType = Node<SubjectNodeData, 'subject'>;
 
 // Configuración de estilos por estado (temática retro/8-bits)
 const STATUS_STYLES: Record<SubjectStatus, {
@@ -48,6 +54,8 @@ const STATUS_STYLES: Record<SubjectStatus, {
   },
 };
 
+const NODE_WIDTH_PX = 224;
+
 // Componente de nodo mejorado
 export const SubjectNode = ({ data, selected }: NodeProps<SubjectNodeType>) => {
   const subject = data.subject;
@@ -60,20 +68,21 @@ export const SubjectNode = ({ data, selected }: NodeProps<SubjectNodeType>) => {
   const statusConfig = STATUS_STYLES[subject.status];
   const emoji = statusConfig.emoji;
   const canInteract = subject.status !== SubjectStatus.PENDIENTE;
+  const isCritical = Boolean(data.isCritical);
+  const isRecentlyUpdated = Boolean(data.isRecentlyUpdated);
 
   return (
     <div
       className={cn(
         // Container base
         'relative group transition-all duration-200',
-        'w-56',
         
         // Efecto de selección
         selected && 'scale-105 z-50'
       )}
       onMouseEnter={() => canInteract && setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      style={{ imageRendering: 'pixelated' }}
+      style={{ imageRendering: 'pixelated', width: NODE_WIDTH_PX }}
     >
       {/* Handles de conexión */}
       <Handle 
@@ -98,6 +107,7 @@ export const SubjectNode = ({ data, selected }: NodeProps<SubjectNodeType>) => {
           // Estilos según estado
           statusConfig.container,
           statusConfig.border,
+          isCritical && 'border-red-400',
           
           // Opacidad si está bloqueada
           subject.status === SubjectStatus.PENDIENTE && 'opacity-60',
@@ -106,7 +116,8 @@ export const SubjectNode = ({ data, selected }: NodeProps<SubjectNodeType>) => {
           subject.status === SubjectStatus.DISPONIBLE && 'ring-2 ring-yellow-300/40',
           
           // Efecto de aprobada
-          subject.status === SubjectStatus.APROBADA && 'ring-2 ring-green-300/40'
+          subject.status === SubjectStatus.APROBADA && 'ring-2 ring-green-300/40',
+          isRecentlyUpdated && 'subject-update-flash'
         )}
       >
         {/* Header: Código de plan + Emoji */}
