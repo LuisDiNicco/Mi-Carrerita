@@ -1,0 +1,36 @@
+A. Funcionalidad Core (Gestión Académica)
+Visualización de Grafo Interactivo:
+
+No una lista aburrida. Un árbol de nodos (Graph/Tree view) donde se vean las dependencias.
+
+Nodos con estados visuales claros: Bloqueada (Gris), Disponible (Amarillo/Blanco), En Curso (Azul), Regularizada (Verde claro), Aprobada (Verde oscuro/Dorado).
+
+Lógica de Correlatividades (Plan 2023):
+
+Implementar las reglas del PDF nuevo (cuando me lo pases).
+
+Validación estricta: No puedo marcar "Final Aprobado" en Física II si no tengo el final de Física I (o lo que diga el plan).
+
+Modo Híbrido (Guest vs. User):
+
+Guest: Puede interactuar con el grafo, marcar materias y ver estadísticas en su navegador (LocalStorage).
+
+Sync: Al iniciar sesión (OAuth), el sistema pregunta: "Vemos que tienes un progreso guardado temporalmente, ¿quieres guardarlo en tu cuenta?".
+
+B. Dashboard & Gamification
+Analytics:
+
+Gráficos de "Velocidad de carrera" (créditos por cuatrimestre).
+
+Proyección: "¿A este ritmo, cuándo me recibo?".
+
+Ranking & Feedback:
+
+Sistema de estrellas (1-5) y dificultad (1-10) anónimo.
+
+Sección "Salón de la Fama" (Las materias "filtro" más difíciles según la comunidad). Animaciones con Framer Motion.
+
+C. Seguridad & Arquitectura
+Auth: OAuth 2.0 (Google) + JWT para manejo de sesión.
+
+Calidad: Testing unitario (al menos en el cálculo de promedios y correlatividades). Código modular.
