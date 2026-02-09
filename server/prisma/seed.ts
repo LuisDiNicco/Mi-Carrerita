@@ -1,87 +1,121 @@
-// server/prisma/seed.ts
 import { PrismaClient } from '@prisma/client';
+import { PLAN_2023 } from '../src/data/plan-2023'; // Asegurate que esta ruta sea correcta
 
 const prisma = new PrismaClient();
 
-async function main() {
-  console.log('🌱 Iniciando Seeding...');
+// Definimos constantes para evitar "Magic Strings" y errores de tipeo
+const CONDITION = {
+  REGULAR: 'REGULAR_CURSADA',
+  FINAL: 'FINAL_APROBADO',
+} as const;
 
-  // 1. Crear Usuario Dev (Vos)
+async function main() {
+  console.log('🌱 INICIO DEL SEEDING (Modo Calidad)...');
+
+  // --- 1. GESTIÓN DE USUARIO ADMIN ---
+  // Usamos upsert para que si ya existe, no tire error.
   const user = await prisma.user.upsert({
     where: { email: 'admin@micarrerita.com' },
-    update: {},
+    update: {}, // Si existe, no cambiamos nada
     create: {
       email: 'admin@micarrerita.com',
       name: 'Admin User',
       avatarUrl: 'https://github.com/shadcn.png',
     },
   });
-  console.log(`👤 Usuario creado: ${user.name}`);
+  console.log(`👤 Usuario Admin verificado: ${user.email}`);
 
-  // 2. Definir Materias (Basado en tu CSV "Materias '23")
-  // NOTA: Solo puse las del 1er Cuatri y sus correlativas para probar.
-  // Luego completamos las 63.
-  const subjectsData = [
-    // Primer Cuatrimestre (Sin correlativas)
-    { planCode: '3621', name: 'Matemática Discreta', semester: 1, credits: 4 },
-    { planCode: '3622', name: 'Análisis Matemático 1', semester: 1, credits: 4 },
-    { planCode: '3623', name: 'Programación Inicial', semester: 1, credits: 4 },
-    { planCode: '3624', name: 'Intro. a los Sist. de Información', semester: 1, credits: 4 },
-    { planCode: '3625', name: 'Sistemas de Numeración', semester: 1, credits: 4 },
-    { planCode: '3626', name: 'Principios de Calidad de Sw', semester: 1, credits: 4 },
-    
-    // Segundo Cuatrimestre (Ejemplos con correlativas)
-    { planCode: '3627', name: 'Álgebra y Geometría Analítica 1', semester: 2, credits: 4 },
-    { planCode: '3628', name: 'Física 1', semester: 2, credits: 4 },
-    { planCode: '3629', name: 'Programación Estructurada', semester: 2, credits: 4 },
-  ];
-
-  console.log('📚 Cargando materias...');
-  for (const subject of subjectsData) {
+  // --- 2. CARGA DE MATERIAS (Nodos) ---
+  console.log(`📚 Sincronizando ${PLAN_2023.length} materias del Plan 2023...`);
+  
+  // Usamos un bucle for...of para poder usar await adentro tranquilamente
+  for (const subjectData of PLAN_2023) {
     await prisma.subject.upsert({
-      where: { planCode: subject.planCode },
-      update: {},
+      where: { planCode: subjectData.planCode },
+      update: {
+        // Actualizamos datos por si corregimos algún nombre o crédito en el archivo
+        name: subjectData.name,
+        semester: subjectData.semester,
+        credits: subjectData.credits,
+        isOptional: subjectData.isOptional,
+      },
       create: {
-        planCode: subject.planCode,
-        name: subject.name,
-        semester: subject.semester,
-        credits: subject.credits,
+        planCode: subjectData.planCode,
+        name: subjectData.name,
+        semester: subjectData.semester,
+        credits: subjectData.credits,
+        isOptional: subjectData.isOptional,
       },
     });
   }
+  console.log('✅ Materias sincronizadas.');
 
-// 3. Crear Correlatividades (MODIFICADO PARA SQLITE)
-  console.log('🔗 Tejiendo correlatividades...');
-  
-  const progInicial = await prisma.subject.findUnique({ where: { planCode: '3623' } });
-  const progEstructurada = await prisma.subject.findUnique({ where: { planCode: '3629' } });
+  // --- 3. CARGA DE CORRELATIVIDADES (Aristas) ---
+  console.log('🔗 Tejiendo red de correlatividades...');
 
-  if (progInicial && progEstructurada) {
-    // Definimos la relación que queremos crear
-    const relation = {
-      subjectId: progEstructurada.id,      // La materia nueva
-      prerequisiteId: progInicial.id,      // La previa necesaria
-      condition: 'REGULAR_CURSADA',        // Condición
+  // Contador para logs
+  let relationsCreated = 0;
+
+  for (const subjectData of PLAN_2023) {
+    // 1. Buscamos la materia "Hija" (la que tiene los requisitos) en la BD para tener su ID real
+    const subjectInDb = await prisma.subject.findUnique({
+      where: { planCode: subjectData.planCode },
+    });
+
+    if (!subjectInDb) continue; // No debería pasar, pero por seguridad
+
+    // Función helper para procesar listas de códigos
+    const processRequirements = async (
+      codes: string[], 
+      conditionType: string
+    ) => {
+      for (const reqCode of codes) {
+        // 2. Buscamos la materia "Padre" (el requisito)
+        const requirementInDb = await prisma.subject.findUnique({
+          where: { planCode: reqCode },
+        });
+
+        if (!requirementInDb) {
+          console.warn(`⚠️ ALERTA: La materia ${subjectData.name} pide ${reqCode}, pero esa materia no existe en el plan.`);
+          continue;
+        }
+
+        // 3. Creamos o actualizamos la relación
+        // La clave compuesta es subjectId + prerequisiteId
+        await prisma.correlativity.upsert({
+          where: {
+            subjectId_prerequisiteId: {
+              subjectId: subjectInDb.id,
+              prerequisiteId: requirementInDb.id,
+            },
+          },
+          update: {
+            condition: conditionType, // Actualizamos la condición si cambió (ej: de Regular a Final)
+          },
+          create: {
+            subjectId: subjectInDb.id,
+            prerequisiteId: requirementInDb.id,
+            condition: conditionType,
+          },
+        });
+        relationsCreated++;
+      }
     };
 
-    // Usamos 'upsert' (Insertar o Actualizar) para evitar errores si ya existe
-    await prisma.correlativity.upsert({
-      where: {
-        subjectId_prerequisiteId: { // Clave compuesta única
-          subjectId: relation.subjectId,
-          prerequisiteId: relation.prerequisiteId,
-        }
-      },
-      update: {}, // Si existe, no hacemos nada
-      create: relation, // Si no existe, la creamos
-    });
+    // Procesamos correlativas de FINAL
+    await processRequirements(subjectData.correlativesFinal, CONDITION.FINAL);
+
+    // Procesamos correlativas de REGULAR
+    await processRequirements(subjectData.correlativesRegular, CONDITION.REGULAR);
   }
 
-  console.log('✅ Seeding finalizado correctamente.');
+  console.log(`✅ Relaciones procesadas. Total de enlaces: ${relationsCreated}`);
+  console.log('🚀 SEEDING FINALIZADO CON ÉXITO.');
 }
 
 main()
   .catch((e) => {
+    console.error('❌ Error fatal durante el seeding:');
     console.error(e);
     process.exit(1);
   })
