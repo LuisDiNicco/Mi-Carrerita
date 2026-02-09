@@ -1,25 +1,394 @@
+/* client/src/index.css - VERSIÓN MEJORADA */
+@import url('https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&family=Inter:wght@400;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* ========================================
+   CONFIGURACIÓN BASE RETRO
+   ======================================== */
 @layer base {
+  :root {
+    /* Colores principales */
+    --retro-dark: #0F380F;
+    --retro-light: #9BBC0F;
+    --retro-accent: #8BAC0F;
+    --retro-shadow: #306230;
+    
+    /* Efectos CRT */
+    --crt-curve: 0.02;
+    --scanline-opacity: 0.1;
+  }
+
+  * {
+    /* Mejor rendering de fuentes retro */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
   body {
-    @apply bg-unlam-50 text-retro-dark font-sans;
-    /* Patrón de Grid sutil de fondo */
+    @apply bg-retro-dark text-retro-light font-retro;
+    
+    /* Patrón de grid sutil */
     background-image: 
-      linear-gradient(to right, #0066331a 1px, transparent 1px),
-      linear-gradient(to bottom, #0066331a 1px, transparent 1px);
+      linear-gradient(to right, rgba(155, 188, 15, 0.03) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(155, 188, 15, 0.03) 1px, transparent 1px);
     background-size: 40px 40px;
+    
+    /* Prevenir selección de texto para mejor UX tipo juego */
+    user-select: none;
+    
+    /* Overflow suave */
+    overflow-x: hidden;
+  }
+
+  /* Hacer que los inputs y textareas tengan estilo retro */
+  input, textarea, select {
+    @apply font-retro bg-retro-dark text-retro-light;
+    @apply border-4 border-unlam-500 px-3 py-2;
+    @apply focus:outline-none focus:ring-4 focus:ring-unlam-300;
+    image-rendering: pixelated;
+  }
+
+  /* Headings con estilo retro */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-retro font-bold tracking-wider;
+    text-shadow: 2px 2px 0 var(--retro-shadow);
+  }
+
+  /* Links con estilo retro */
+  a {
+    @apply text-unlam-500 hover:text-unlam-300;
+    @apply transition-colors duration-200;
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-shadow: 0 0 8px currentColor;
   }
 }
 
-/* Scrollbar personalizada */
+/* ========================================
+   SCROLLBAR PERSONALIZADO RETRO
+   ======================================== */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 12px;
+  height: 12px;
 }
+
 ::-webkit-scrollbar-track {
-  @apply bg-unlam-100;
+  @apply bg-retro-dark;
+  border: 2px solid var(--retro-shadow);
 }
+
 ::-webkit-scrollbar-thumb {
-  @apply bg-unlam-500 border-2 border-black;
+  @apply bg-unlam-500;
+  border: 3px solid var(--retro-dark);
+  image-rendering: pixelated;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-unlam-600;
+}
+
+::-webkit-scrollbar-corner {
+  @apply bg-retro-dark;
+}
+
+/* Para Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--retro-light) var(--retro-dark);
+}
+
+/* ========================================
+   COMPONENTES PERSONALIZADOS
+   ======================================== */
+@layer components {
+  /* Contenedor tipo pantalla CRT */
+  .crt-screen {
+    @apply bg-retro-dark border-8 border-retro-shadow rounded-2xl;
+    box-shadow: 
+      inset 0 0 50px rgba(0, 0, 0, 0.5),
+      0 0 50px rgba(155, 188, 15, 0.2);
+    background-image: var(--scanlines);
+  }
+
+  /* Texto con efecto de píxeles */
+  .pixel-text {
+    @apply font-retro tracking-wider;
+    text-shadow: 
+      2px 2px 0 var(--retro-shadow),
+      -1px -1px 0 var(--retro-accent);
+    image-rendering: pixelated;
+  }
+
+  /* Botón estilo retro game */
+  .btn-retro {
+    @apply font-retro font-bold uppercase tracking-wider;
+    @apply px-6 py-3 border-4;
+    @apply shadow-retro hover:shadow-retro-hover;
+    @apply transition-all duration-100;
+    @apply active:translate-x-1 active:translate-y-1 active:shadow-none;
+    image-rendering: pixelated;
+  }
+
+  /* Panel de juego retro */
+  .game-panel {
+    @apply bg-retro-dark border-4 border-unlam-500 p-4 rounded-lg;
+    @apply shadow-retro;
+    background-image: var(--scanlines);
+  }
+
+  /* Badge estilo pixel */
+  .pixel-badge {
+    @apply inline-block px-2 py-1 text-xs font-retro font-bold;
+    @apply border-2 uppercase tracking-wider;
+    @apply shadow-[2px_2px_0px_rgba(0,0,0,0.8)];
+    image-rendering: pixelated;
+  }
+}
+
+/* ========================================
+   UTILIDADES ESPECIALES
+   ======================================== */
+@layer utilities {
+  /* Renderizado pixelado para todos los elementos que lo necesiten */
+  .pixelated {
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+  }
+
+  /* Efecto de parpadeo tipo cursor */
+  .cursor-blink::after {
+    content: '█';
+    animation: blink 1s step-end infinite;
+  }
+
+  /* Efecto scanlines para pantallas CRT */
+  .scanlines::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.15),
+      rgba(0, 0, 0, 0.15) 1px,
+      transparent 1px,
+      transparent 2px
+    );
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  /* Efecto de resplandor retro */
+  .glow-retro {
+    box-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+  }
+
+  /* Animación de entrada tipo power-on */
+  .power-on {
+    animation: powerOn 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+}
+
+/* ========================================
+   ESTILOS ESPECÍFICOS DE REACT FLOW
+   ======================================== */
+
+/* Personalizar controles de React Flow */
+.react-flow__controls {
+  @apply border-4 border-unlam-500 rounded-lg overflow-hidden;
+  @apply bg-retro-dark shadow-retro;
+}
+
+.react-flow__controls button {
+  @apply bg-unlam-500 border-b-2 border-unlam-800;
+  @apply hover:bg-unlam-600;
+  @apply transition-colors duration-200;
+  image-rendering: pixelated;
+}
+
+.react-flow__controls button svg {
+  @apply text-white;
+}
+
+/* Personalizar MiniMap */
+.react-flow__minimap {
+  @apply border-4 border-unlam-500 rounded-lg;
+  @apply shadow-retro;
+  background: rgba(15, 56, 15, 0.9) !important;
+}
+
+/* Personalizar handles de conexión */
+.react-flow__handle {
+  image-rendering: pixelated;
+  transition: all 0.2s;
+}
+
+.react-flow__handle:hover {
+  transform: scale(1.3);
+}
+
+/* Personalizar edges */
+.react-flow__edge-path {
+  image-rendering: pixelated;
+}
+
+/* ========================================
+   ANIMACIONES ADICIONALES
+   ======================================== */
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-20px);
+    opacity: 0.5;
+  }
+}
+
+@keyframes powerOn {
+  0% {
+    opacity: 0;
+    transform: scaleY(0.01);
+  }
+  50% {
+    opacity: 1;
+    transform: scaleY(0.01);
+  }
+  100% {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes glitch {
+  0%, 90%, 100% {
+    transform: translate(0);
+  }
+  92% {
+    transform: translate(-2px, 2px);
+    filter: hue-rotate(90deg);
+  }
+  94% {
+    transform: translate(2px, -2px);
+    filter: hue-rotate(180deg);
+  }
+  96% {
+    transform: translate(-2px, -2px);
+    filter: hue-rotate(270deg);
+  }
+}
+
+/* Animación de scan (línea que recorre la pantalla) */
+@keyframes scan {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(100vh);
+    opacity: 0;
+  }
+}
+
+/* ========================================
+   EFECTOS ESPECIALES
+   ======================================== */
+
+/* Efecto de pantalla encendida */
+.screen-on-effect {
+  animation: powerOn 0.8s ease-out;
+}
+
+/* Efecto de texto tecleando */
+@keyframes typing {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+.typing-effect {
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 3px solid var(--retro-light);
+  animation: typing 2s steps(30, end), blink 0.75s step-end infinite;
+}
+
+/* Hover effect para elementos interactivos */
+.interactive-retro {
+  transition: all 0.1s ease;
+  cursor: pointer;
+}
+
+.interactive-retro:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.8);
+}
+
+.interactive-retro:active {
+  transform: translate(0, 0);
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.8);
+}
+
+/* ========================================
+   MODO OSCURO / CLARO (Opcional)
+   ======================================== */
+
+/* Si querés agregar toggle de tema en el futuro */
+[data-theme="light"] {
+  --retro-dark: #F5F5F5;
+  --retro-light: #2E3436;
+  --retro-accent: #006633;
+  --retro-shadow: #C8E6C9;
+}
+
+/* ========================================
+   RESPONSIVE ADJUSTMENTS
+   ======================================== */
+
+@media (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+
+  .btn-retro {
+    @apply px-4 py-2 text-sm;
+  }
+
+  h1 { font-size: 1.75rem; }
+  h2 { font-size: 1.5rem; }
+  h3 { font-size: 1.25rem; }
+}
+
+/* ========================================
+   ACCESIBILIDAD
+   ======================================== */
+
+/* Mejorar contraste para accesibilidad */
+@media (prefers-contrast: high) {
+  :root {
+    --retro-light: #FFFFFF;
+    --retro-dark: #000000;
+  }
+}
+
+/* Reducir movimiento si el usuario lo prefiere */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Focus visible para navegación por teclado */
+*:focus-visible {
+  outline: 3px solid var(--retro-accent);
+  outline-offset: 4px;
 }
