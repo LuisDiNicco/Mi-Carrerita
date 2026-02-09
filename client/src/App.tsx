@@ -1,19 +1,12 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { CareerGraph } from './components/CareerGraph';
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-      
-      </div>
-       
-    </>
-  )
+    // w-full y h-screen son obligatorios para que React Flow se vea
+    <div className="w-full h-screen bg-gray-50"> 
+      <CareerGraph />
+    </div>
+  );
 }
 
-export default App
+export default App;
