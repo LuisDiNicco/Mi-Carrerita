@@ -58,7 +58,7 @@
     @apply font-retro;
     background-color: var(--app-bg);
     color: var(--app-text);
-    font-size: 18px;
+    font-size: 20px;
     line-height: 1.6;
     
     /* Patrón de grid sutil */
@@ -384,6 +384,15 @@
   }
 }
 
+@keyframes gridDrift {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 80px 60px;
+  }
+}
+
 @keyframes walk {
   0%, 100% {
     transform: translateY(0);
@@ -455,6 +464,19 @@
   z-index: 1;
 }
 
+.grid-drift {
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(123, 203, 122, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(123, 203, 122, 0.08) 1px, transparent 1px);
+  background-size: 48px 48px;
+  opacity: 0.3;
+  animation: gridDrift 18s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
 .progress-track {
   position: relative;
   height: 18px;
@@ -467,11 +489,11 @@
 .progress-fill {
   height: 100%;
   background: linear-gradient(90deg, var(--app-accent), var(--app-accent-strong));
-  transition: width 0.5s ease;
+  transition: width 1.2s ease;
 }
 
 .progress-fill-animate {
-  animation: progressPulse 0.8s ease;
+  animation: progressPulse 1.4s ease;
 }
 
 .progress-runner {
@@ -504,7 +526,21 @@
 }
 
 .subject-update-flash {
-  animation: subjectFlash 1s ease;
+  animation: subjectFlash 1.2s ease;
+}
+
+.subject-update-fill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, rgba(123, 203, 122, 0.25), transparent);
+  opacity: 0;
+  animation: subjectFill 1.2s ease;
+  pointer-events: none;
+}
+
+.critical-glow {
+  box-shadow: 0 0 16px rgba(232, 93, 93, 0.55);
 }
 
 /* ========================================
@@ -575,5 +611,19 @@
   }
   100% {
     box-shadow: 0 0 0 rgba(123, 203, 122, 0.2);
+  }
+}
+
+@keyframes subjectFill {
+  0% {
+    opacity: 0;
+    transform: scaleX(0.6);
+  }
+  60% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+  100% {
+    opacity: 0;
   }
 }

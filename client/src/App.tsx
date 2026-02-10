@@ -2,15 +2,16 @@ import { useEffect, useMemo, useState } from 'react';
 import { CareerGraph } from './components/CareerGraph';
 import { BackgroundFX } from './components/BackgroundFX';
 import { AppHeader } from './components/layout/AppHeader';
-import { SideNav } from './components/layout/SideNav';
 import { useAcademicStore } from './store/academic-store';
 import { calculateProgress } from './lib/utils';
 import { SubjectStatus } from './types/academic';
 import { Dashboard } from './components/Dashboard';
 import { HistoryTable } from './components/HistoryTable';
+import { Landing } from './components/Landing';
+import { TrophiesPanel } from './components/TrophiesPanel';
 
 function App() {
-  const [activeSection, setActiveSection] = useState('tree');
+  const [activeSection, setActiveSection] = useState('home');
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
   const subjects = useAcademicStore((state) => state.subjects);
 
@@ -55,38 +56,22 @@ function App() {
           stats={stats}
           theme={theme}
           onToggleTheme={handleToggleTheme}
+          activeSection={activeSection}
+          onNavigate={setActiveSection}
         />
 
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[260px_1fr]">
-          <aside className="rounded-2xl border border-app bg-surface p-4 shadow-subtle">
-            <p className="text-xs uppercase tracking-widest text-muted mb-3">Menu</p>
-            <SideNav active={activeSection} onChange={setActiveSection} />
-          </aside>
-
-          <main className="rounded-2xl border border-app bg-surface p-4 shadow-subtle">
-            {activeSection === 'tree' && <CareerGraph />}
-            {activeSection === 'dashboard' && <Dashboard />}
-            {activeSection === 'history' && <HistoryTable />}
-            {activeSection === 'trophies' && (
-              <SectionPlaceholder
-                title="Sala de trofeos"
-                description="Logros y hitos desbloqueados (mock)."
-              />
-            )}
-          </main>
-        </div>
+        <main className="rounded-2xl border border-app bg-surface p-4 shadow-subtle">
+          {activeSection === 'home' && (
+            <Landing onStart={() => setActiveSection('tree')} />
+          )}
+          {activeSection === 'tree' && <CareerGraph />}
+          {activeSection === 'dashboard' && <Dashboard />}
+          {activeSection === 'history' && <HistoryTable />}
+          {activeSection === 'trophies' && <TrophiesPanel />}
+        </main>
       </div>
     </div>
   );
 }
 
 export default App;
-
-const SectionPlaceholder = ({ title, description }: { title: string; description: string }) => {
-  return (
-    <div className="flex h-[60vh] flex-col items-center justify-center gap-3 text-center">
-      <h2 className="text-2xl font-bold text-app">{title}</h2>
-      <p className="text-muted max-w-md">{description}</p>
-    </div>
-  );
-};

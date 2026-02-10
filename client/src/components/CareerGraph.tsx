@@ -1,5 +1,5 @@
 // client/src/components/CareerGraph.tsx (VERSIÓN MEJORADA)
-import { useEffect, useMemo, useState, useCallback } from 'react';
+import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { 
   ReactFlow, 
   Background, 
@@ -8,9 +8,10 @@ import {
   useNodesState, 
   useEdgesState,
   BackgroundVariant,
-  Panel
+  Panel,
+  MarkerType
 } from '@xyflow/react';
-import type { Node, Edge, NodeTypes } from '@xyflow/react';
+import type { Node, Edge, NodeTypes, ReactFlowInstance } from '@xyflow/react';
 import '@xyflow/react/dist/style.css'; 
 import dagre from 'dagre';
 
@@ -21,7 +22,7 @@ import type { Subject } from '../types/academic';
 import { RetroLoading, RetroError } from './ui/RetroComponents';
 import { SubjectUpdatePanel } from './SubjectUpdatePanel';
 import { useAcademicStore } from '../store/academic-store';
-import { GRAPH_LAYOUT, buildEdges, getCriticalPath } from '../lib/graph';
+import { GRAPH_LAYOUT, SEARCH_RESULTS_LIMIT, buildEdges, getCriticalPath } from '../lib/graph';
 import { RetroButton } from './ui/RetroButton';
 
 // Tipos de nodo
@@ -57,8 +58,13 @@ const EDGE_STYLES = {
   },
   critical: {
     stroke: '#E85D5D',
-    strokeWidth: 3,
+    strokeWidth: 4,
   },
+};
+
+const EDGE_MARKER = {
+  width: 18,
+  height: 18,
 };
 
 const BACKGROUND_CONFIG = {
@@ -70,6 +76,11 @@ const BACKGROUND_CONFIG = {
 };
 
 const UPDATE_FLASH_MS = 1400;
+const SEARCH_MIN_CHARS = 1;
+const SEARCH_ZOOM = 1.2;
+const FOCUS_TIMEOUT_MS = 2000;
+const SEARCH_PANEL_WIDTH_PX = 320;
+const SEARCH_LIST_MAX_HEIGHT_PX = 220;
 
 export const CareerGraph = () => {
   // Estados de React Flow
@@ -77,6 +88,9 @@ export const CareerGraph = () => {
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const setSubjects = useAcademicStore((state) => state.setSubjects);
   const subjects = useAcademicStore((state) => state.subjects);
+  const updateSubject = useAcademicStore((state) => state.updateSubject);
+  const nodesRef = useRef<Node[]>([]);
+  const [flowInstance, setFlowInstance] = useState<ReactFlowInstance | null>(null);
   
   // Estados de UI
   const [loading, setLoading] = useState(true);
@@ -86,6 +100,9 @@ export const CareerGraph = () => {
   const [showCriticalPath, setShowCriticalPath] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [recentUpdateId, setRecentUpdateId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [focusedId, setFocusedId] = useState<string | null>(null);
 
   const layoutNodes = (subjects: Subject[], edges: { from: string; to: string }[]) => {
     const graph = new dagre.graphlib.Graph();
@@ -120,12 +137,18 @@ export const CareerGraph = () => {
     });
   };
 
+  useEffect(() => {
+    nodesRef.current = nodes;
+  }, [nodes]);
+
   /**
    * Fetch de datos del backend
    */
-  const fetchCareerData = useCallback(async () => {
+  const fetchCareerData = useCallback(async (options?: { preserveLayout?: boolean; silent?: boolean }) => {
     try {
-      setLoading(true);
+      if (!options?.silent) {
+        setLoading(true);
+      }
       setError(null);
 
       const response = await fetch(`${API_URL}/academic-career/graph`, {
@@ -146,7 +169,12 @@ export const CareerGraph = () => {
       }
 
       const edgesList = buildEdges(data);
-      const positions = layoutNodes(data, edgesList);
+      const positionMap = new Map(nodesRef.current.map((node) => [node.id, node.position]));
+      const canReusePositions =
+        Boolean(options?.preserveLayout) && data.every((subject) => positionMap.has(subject.id));
+      const positions = canReusePositions
+        ? data.map((subject) => positionMap.get(subject.id)!)
+        : layoutNodes(data, edgesList);
 
       const newNodes: SubjectNodeType[] = data.map((subject, index) => ({
         id: subject.id,
@@ -164,6 +192,12 @@ export const CareerGraph = () => {
         animated: false,
         style: EDGE_STYLES.normal,
         type: 'smoothstep',
+        markerEnd: {
+          type: MarkerType.ArrowClosed,
+          width: EDGE_MARKER.width,
+          height: EDGE_MARKER.height,
+          color: EDGE_STYLES.normal.stroke,
+        },
       }));
 
       setNodes(newNodes);
@@ -178,7 +212,9 @@ export const CareerGraph = () => {
         : 'Error desconocido al cargar los datos';
       setError(errorMessage);
     } finally {
-      setLoading(false);
+      if (!options?.silent) {
+        setLoading(false);
+      }
     }
   }, [setNodes, setEdges, setSubjects]);
 
@@ -196,6 +232,17 @@ export const CareerGraph = () => {
     return getCriticalPath(coreSubjects, edgesList);
   }, [showCriticalPath, subjects]);
 
+  const searchResults = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    if (query.length < SEARCH_MIN_CHARS) return [];
+    return subjects
+      .filter((subject) =>
+        subject.name.toLowerCase().includes(query) ||
+        subject.planCode.toLowerCase().includes(query)
+      )
+      .slice(0, SEARCH_RESULTS_LIMIT);
+  }, [searchQuery, subjects]);
+
   const enrichedNodes = nodes.map((node) => {
     const subject = (node.data as { subject?: Subject }).subject;
     return {
@@ -204,6 +251,7 @@ export const CareerGraph = () => {
         subject,
         isCritical: subject ? criticalPath.nodeIds.has(subject.id) : false,
         isRecentlyUpdated: subject ? subject.id === recentUpdateId : false,
+        isFocused: subject ? subject.id === focusedId : false,
       },
     };
   });
@@ -213,6 +261,11 @@ export const CareerGraph = () => {
     const isCritical = criticalPath.edgeIds.has(edgeKey);
     const targetSubject = subjects.find((subject) => subject.id === edge.target);
     const isBlocked = targetSubject?.status === SubjectStatus.PENDIENTE;
+    const edgeColor = isCritical
+      ? EDGE_STYLES.critical.stroke
+      : isBlocked
+        ? EDGE_STYLES.blocked.stroke
+        : EDGE_STYLES.normal.stroke;
 
     return {
       ...edge,
@@ -222,12 +275,32 @@ export const CareerGraph = () => {
         : isBlocked
           ? EDGE_STYLES.blocked
           : EDGE_STYLES.normal,
+      markerEnd: {
+        type: MarkerType.ArrowClosed,
+        width: EDGE_MARKER.width,
+        height: EDGE_MARKER.height,
+        color: edgeColor,
+      },
     };
   });
 
   const containerClass = isFullscreen
     ? 'fixed inset-0 z-40 bg-app p-6 w-full h-full'
     : 'w-full h-[70vh] bg-app rounded-xl overflow-hidden';
+
+  const handleSelectSubject = (subject: Subject) => {
+    const node = nodesRef.current.find((item) => item.id === subject.id);
+    if (!node) return;
+    const centerX = node.position.x + GRAPH_LAYOUT.nodeWidth / 2;
+    const centerY = node.position.y + GRAPH_LAYOUT.nodeHeight / 2;
+    if (flowInstance) {
+      flowInstance.setCenter(centerX, centerY, { zoom: SEARCH_ZOOM, duration: 300 });
+    }
+    setFocusedId(subject.id);
+    setSearchQuery('');
+    setSearchOpen(false);
+    setTimeout(() => setFocusedId(null), FOCUS_TIMEOUT_MS);
+  };
 
   // Renderizado condicional de Loading
   if (loading) {
@@ -259,6 +332,7 @@ export const CareerGraph = () => {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         nodeTypes={nodeTypes}
+        onInit={setFlowInstance}
         fitView
         fitViewOptions={{
           padding: VIEWPORT_CONFIG.fitPadding,
@@ -322,8 +396,45 @@ export const CareerGraph = () => {
         />
 
         <Panel position="top-left" className="m-4">
-          <div className="bg-surface border border-app rounded-lg px-3 py-2 text-xs text-muted shadow-subtle">
-            Doble clic en una materia para actualizar el estado.
+          <div
+            className="bg-surface border border-app rounded-lg p-3 shadow-subtle"
+            style={{ width: SEARCH_PANEL_WIDTH_PX }}
+          >
+            <label className="text-xs uppercase tracking-widest text-muted">
+              Buscar materia
+            </label>
+            <input
+              className="mt-2 w-full bg-surface border border-app rounded-lg px-3 py-2 text-app"
+              placeholder="Nombre o codigo"
+              value={searchQuery}
+              onFocus={() => setSearchOpen(true)}
+              onBlur={() => setTimeout(() => setSearchOpen(false), 150)}
+              onChange={(event) => {
+                setSearchQuery(event.target.value);
+                setSearchOpen(true);
+              }}
+            />
+            {searchOpen && searchResults.length > 0 && (
+              <div
+                className="mt-2 overflow-auto rounded-lg border border-app bg-elevated"
+                style={{ maxHeight: SEARCH_LIST_MAX_HEIGHT_PX }}
+              >
+                {searchResults.map((subject) => (
+                  <button
+                    key={subject.id}
+                    className="w-full text-left px-3 py-2 text-sm text-app hover:bg-surface"
+                    onMouseDown={(event) => event.preventDefault()}
+                    onClick={() => handleSelectSubject(subject)}
+                  >
+                    <div className="text-xs text-muted">{subject.planCode}</div>
+                    <div className="font-semibold">{subject.name}</div>
+                  </button>
+                ))}
+              </div>
+            )}
+            <p className="mt-3 text-xs text-muted">
+              Doble clic en una materia para actualizar el estado.
+            </p>
           </div>
         </Panel>
 
@@ -379,9 +490,38 @@ export const CareerGraph = () => {
           if (!response.ok) {
             throw new Error('No se pudo actualizar la materia.');
           }
+          updateSubject(activeSubject.id, {
+            status: payload.status,
+            grade: payload.grade,
+            statusDate: payload.statusDate,
+            notes: payload.notes,
+          });
+          setNodes((current) =>
+            current.map((node) => {
+              if (node.id !== activeSubject.id) return node;
+              const subject = (node.data as { subject?: Subject }).subject;
+              return {
+                ...node,
+                data: {
+                  ...node.data,
+                  subject: subject
+                    ? {
+                        ...subject,
+                        status: payload.status,
+                        grade: payload.grade,
+                        statusDate: payload.statusDate,
+                        notes: payload.notes,
+                      }
+                    : subject,
+                },
+              };
+            })
+          );
           setRecentUpdateId(activeSubject.id);
           setTimeout(() => setRecentUpdateId(null), UPDATE_FLASH_MS);
-          await fetchCareerData();
+          setTimeout(() => {
+            fetchCareerData({ preserveLayout: true, silent: true });
+          }, UPDATE_FLASH_MS);
         }}
       />
     </div>

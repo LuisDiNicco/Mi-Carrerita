@@ -2,15 +2,17 @@ import type { Subject } from '../types/academic';
 import { SubjectStatus } from '../types/academic';
 
 export const GRAPH_LAYOUT = {
-  nodeWidth: 224,
-  nodeHeight: 160,
-  rankSep: 120,
-  nodeSep: 80,
-  marginX: 40,
-  marginY: 40,
+  nodeWidth: 280,
+  nodeHeight: 200,
+  rankSep: 160,
+  nodeSep: 120,
+  marginX: 60,
+  marginY: 60,
 };
 
 export const PROGRESS_CHECKPOINTS = [25, 50, 75, 100];
+
+export const SEARCH_RESULTS_LIMIT = 6;
 
 export type GraphEdge = {
   from: string;

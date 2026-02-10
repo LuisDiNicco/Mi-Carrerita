@@ -11,6 +11,7 @@ type SubjectNodeData = {
   subject: Subject;
   isCritical?: boolean;
   isRecentlyUpdated?: boolean;
+  isFocused?: boolean;
 };
 
 export type SubjectNodeType = Node<SubjectNodeData, 'subject'>;
@@ -54,7 +55,11 @@ const STATUS_STYLES: Record<SubjectStatus, {
   },
 };
 
-const NODE_WIDTH_PX = 224;
+const NODE_WIDTH_PX = 280;
+const SUBJECT_NAME_MAX = 48;
+const TITLE_CLASS = 'text-lg leading-tight';
+const META_CLASS = 'text-base';
+const BADGE_CLASS = 'text-sm';
 
 // Componente de nodo mejorado
 export const SubjectNode = ({ data, selected }: NodeProps<SubjectNodeType>) => {
@@ -70,6 +75,7 @@ export const SubjectNode = ({ data, selected }: NodeProps<SubjectNodeType>) => {
   const canInteract = subject.status !== SubjectStatus.PENDIENTE;
   const isCritical = Boolean(data.isCritical);
   const isRecentlyUpdated = Boolean(data.isRecentlyUpdated);
+  const isFocused = Boolean(data.isFocused);
 
   return (
     <div
@@ -96,7 +102,7 @@ export const SubjectNode = ({ data, selected }: NodeProps<SubjectNodeType>) => {
       <div
         className={cn(
           // Estilos base
-          'p-4 rounded-lg border-4',
+          'relative p-5 rounded-lg border-4',
           'font-retro text-center',
           'transition-all duration-200',
           
@@ -107,7 +113,8 @@ export const SubjectNode = ({ data, selected }: NodeProps<SubjectNodeType>) => {
           // Estilos según estado
           statusConfig.container,
           statusConfig.border,
-          isCritical && 'border-red-400',
+          isCritical && 'border-red-400 critical-glow',
+          isFocused && 'ring-4 ring-red-400/60',
           
           // Opacidad si está bloqueada
           subject.status === SubjectStatus.PENDIENTE && 'opacity-60',
@@ -117,35 +124,37 @@ export const SubjectNode = ({ data, selected }: NodeProps<SubjectNodeType>) => {
           
           // Efecto de aprobada
           subject.status === SubjectStatus.APROBADA && 'ring-2 ring-green-300/40',
-          isRecentlyUpdated && 'subject-update-flash'
+          isRecentlyUpdated && 'subject-update-flash subject-update-fill'
         )}
       >
         {/* Header: Código de plan + Emoji */}
         <div className="flex items-center justify-between mb-2">
           <span className={cn(
-            'text-xs font-bold uppercase tracking-wider px-2 py-1 rounded',
+            BADGE_CLASS,
+            'font-bold uppercase tracking-wider px-2 py-1 rounded',
             'border-2',
             statusConfig.badge
           )}>
             {subject.planCode}
           </span>
           
-          <span className="text-2xl" role="img" aria-label={subject.status}>
+          <span className="text-3xl" role="img" aria-label={subject.status}>
             {emoji}
           </span>
         </div>
 
         {/* Nombre de la materia */}
         <h3 className={cn(
-          'text-sm leading-tight mb-2 min-h-[40px]',
+          TITLE_CLASS,
+          'mb-3 min-h-[56px]',
           'flex items-center justify-center',
           subject.status === SubjectStatus.APROBADA && 'text-[#0B2A14]'
         )}>
-          {truncateSubjectName(subject.name, 40)}
+          {truncateSubjectName(subject.name, SUBJECT_NAME_MAX)}
         </h3>
 
         {/* Info adicional: Créditos y Nota */}
-        <div className="flex items-center justify-between text-xs mt-3 pt-2 border-t-2 border-current/30">
+        <div className={cn('flex items-center justify-between mt-3 pt-2 border-t-2 border-current/30', META_CLASS)}>
           {/* Créditos */}
           <div className="flex items-center gap-1">
             <span>⭐</span>
