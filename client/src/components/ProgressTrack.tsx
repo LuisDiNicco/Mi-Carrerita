@@ -5,54 +5,104 @@ interface ProgressTrackProps {
   progress: number;
 }
 
-const RUNNER_OFFSET_PX = 13;
-const CHECKPOINT_OFFSET_PX = 6;
+const CHARACTER_WIDTH = 48;
+const CHARACTER_OFFSET = CHARACTER_WIDTH / 2;
+const CHECKPOINT_OFFSET_VISUAL = 6; 
 const MIN_PROGRESS = 0;
 const MAX_PROGRESS = 100;
 
+// TODO: Reemplaza esto con tu gif real.
+const CHARACTER_GIF = "./animated-man-running.gif"; 
+
 export const ProgressTrack = ({ progress }: ProgressTrackProps) => {
-  const clamped = Math.max(MIN_PROGRESS, Math.min(MAX_PROGRESS, progress));
-  const [animationKey, setAnimationKey] = useState(0);
+  // Estado local para controlar la animación visual
+  const [displayedProgress, setDisplayedProgress] = useState(0);
 
-  const runnerLeft =
-    clamped <= MIN_PROGRESS
-      ? '0%'
-      : clamped >= MAX_PROGRESS
-        ? `calc(100% - ${RUNNER_OFFSET_PX}px)`
-        : `calc(${clamped}% - ${RUNNER_OFFSET_PX}px)`;
-
+  // Efecto: Cuando cambia el progreso real (o al montar), esperamos un instante
+  // y luego actualizamos el estado visual. Esto dispara la transición CSS.
   useEffect(() => {
-    setAnimationKey((prev) => prev + 1);
-  }, [clamped]);
+    // Pequeño delay para asegurar que el navegador registre el estado inicial (0)
+    const timer = setTimeout(() => {
+      setDisplayedProgress(Math.max(MIN_PROGRESS, Math.min(MAX_PROGRESS, progress)));
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [progress]);
+
+  const clamped = displayedProgress;
+
+  // Calculamos la posición izquierda del contenedor del personaje
+  const runnerLeftCalc = `calc(${clamped}% - ${CHARACTER_OFFSET}px)`;
+
+  // Clase común para la transición larga (3 segundos)
+  const transitionClass = "transition-all duration-[3000ms] ease-in-out";
 
   return (
-    <div className="w-full">
-      <div className="flex items-center justify-between text-sm text-muted mb-2">
-        <span>Progreso de carrera</span>
-        <span className="font-bold text-app">{clamped}%</span>
+    <div className="w-full font-retro mb-8 relative">
+       {/* Encabezado */}
+      <div className="flex items-center justify-between text-sm text-muted mb-6">
+        <span className="uppercase tracking-widest text-xs">Progreso de carrera</span>
+        <div className="flex items-center gap-2">
+            <span className="animate-pulse text-app-accent">Lv.{Math.floor(clamped / 10) + 1}</span>
+            <span className="font-bold text-app text-lg border-2 border-app-border bg-app-surface px-2 rounded-sm shadow-retro transition-all">
+                {clamped.toFixed(0)}%
+            </span>
+        </div>
       </div>
-      <div className="progress-track">
+
+      {/* === CONTENEDOR PRINCIPAL DE LA BARRA === */}
+      <div className="relative h-7 w-full">
+
+        {/* 1. EL TRACK Y EL RELLENO */}
+        <div className="absolute inset-0 bg-black/50 rounded-full border-2 border-app-border overflow-hidden z-0">
+             {/* Barra de Relleno */}
+            <div
+                className={`h-full bg-gradient-to-r from-unlam-900 via-unlam-500 to-retro-light relative flex items-center ${transitionClass}`}
+                style={{ width: `${clamped}%` }}
+            >
+                {/* EFECTO DE CHISPAS */}
+                {clamped > 0 && (
+                    <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 spark-edge z-10 pointer-events-none" />
+                )}
+            </div>
+        </div>
+
+        {/* 2. CHECKPOINTS */}
+        <div className="absolute inset-0 pointer-events-none z-10">
+            {PROGRESS_CHECKPOINTS.map((checkpoint) => {
+                const isPassed = clamped >= checkpoint;
+                return (
+                <div
+                    key={checkpoint}
+                    className={`absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full border-2 transition-colors duration-500
+                        ${isPassed 
+                            ? 'bg-retro-light border-white shadow-[0_0_10px_var(--app-accent)]' 
+                            : 'bg-app-bg border-app-border opacity-50'
+                        }`}
+                    style={{ left: `calc(${checkpoint}% - ${CHECKPOINT_OFFSET_VISUAL}px)` }}
+                >
+                   <div className={`w-0.5 h-0.5 rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 ${isPassed ? 'bg-app-accent' : 'bg-transparent'}`}></div>
+                </div>
+                );
+            })}
+        </div>
+
+        {/* 3. PERSONAJE */}
         <div
-          key={animationKey}
-          className="progress-fill progress-fill-animate"
-          style={{ width: `${clamped}%` }}
-        />
-        <div
-          className="progress-runner"
-          style={{ left: runnerLeft }}
-          aria-hidden="true"
-        />
-        {PROGRESS_CHECKPOINTS.map((checkpoint) => (
-          <div
-            key={checkpoint}
-            className="progress-checkpoint"
-            style={{ left: `calc(${checkpoint}% - ${CHECKPOINT_OFFSET_PX}px)` }}
-          />
-        ))}
+          className={`absolute top-1/2 -translate-y-1/2 z-30 pointer-events-none ${transitionClass}`}
+          style={{ left: runnerLeftCalc }}
+        >
+            <img 
+                src={CHARACTER_GIF} 
+                alt="Runner" 
+                className="w-14 h-14 max-w-none object-contain image-rendering-pixelated drop-shadow-[0_8px_6px_rgba(0,0,0,0.6)]"
+            />
+        </div>
       </div>
-      <div className="flex justify-between text-xs text-muted mt-2">
-        <span>Inicio</span>
-        <span>Meta</span>
+
+      <div className="flex justify-between text-[10px] text-muted mt-4 uppercase tracking-wider font-bold px-1">
+        <span>Start</span>
+        <span>Master</span>
       </div>
     </div>
   );
