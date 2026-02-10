@@ -1,11 +1,13 @@
 // server/src/main.ts
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'; // <--- Importar
+import { GlobalExceptionFilter } from './common/filters/http-exception.filter';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule)
+  const logger = new Logger('Bootstrap');
 
   app.enableCors({
     origin: 'http://localhost:5173',
@@ -20,6 +22,8 @@ async function bootstrap() {
     }),
   );
 
+  app.useGlobalFilters(new GlobalExceptionFilter());
+
   // --- CONFIGURACIÓN DE SWAGGER (DOCUMENTACIÓN) ---
   const config = new DocumentBuilder()
     .setTitle('Mi Carrerita API')
@@ -33,5 +37,6 @@ async function bootstrap() {
   // ------------------------------------------------
 
   await app.listen(3000);
+  logger.log('Application is running on: ' + (await app.getUrl()));
 }
 bootstrap();

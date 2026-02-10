@@ -13,3 +13,7 @@ export enum CorrelativityCondition {
   FINAL_APROBADO = 'FINAL_APROBADO',
   REGULAR_CURSADA = 'REGULAR_CURSADA',
 }
+
+export function isSubjectStatus(value: string): value is SubjectStatus {
+  return Object.values(SubjectStatus).includes(value as SubjectStatus);
+}
