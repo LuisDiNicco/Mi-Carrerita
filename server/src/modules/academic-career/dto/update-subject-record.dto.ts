@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
-  IsDateString,
+  IsDate,
   IsEnum,
   IsInt,
   IsOptional,
@@ -35,8 +36,9 @@ export class UpdateSubjectRecordDto {
     description: 'ISO date string (YYYY-MM-DD)',
   })
   @IsOptional()
-  @IsDateString()
-  statusDate?: string | null;
+  @Type(() => Date)
+  @IsDate()
+  statusDate?: Date | null;
 
   @ApiProperty({ required: false, nullable: true })
   @IsOptional()

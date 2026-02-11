@@ -2,15 +2,19 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Logger, ValidationPipe } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import cookieParser from 'cookie-parser';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'; // <--- Importar
 import { GlobalExceptionFilter } from './common/filters/http-exception.filter';
+import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const logger = new Logger('Bootstrap');
+  const configService = app.get(ConfigService);
 
-  const clientUrl = process.env.CLIENT_URL ?? 'http://localhost:5173';
+  const clientUrl = configService.getOrThrow<string>('CLIENT_URL');
+  app.use(helmet());
   app.enableCors({
     origin: clientUrl,
     credentials: true,

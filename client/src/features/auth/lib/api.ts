@@ -3,6 +3,7 @@ import { useAuthStore } from "../store/auth-store";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 const REFRESH_ENDPOINT = `${API_URL}/auth/refresh`;
+let refreshPromise: Promise<string | null> | null = null;
 
 async function refreshAccessToken(): Promise<string | null> {
   try {
@@ -23,6 +24,16 @@ async function refreshAccessToken(): Promise<string | null> {
   } catch {
     return null;
   }
+}
+
+async function getRefreshedToken(): Promise<string | null> {
+  if (!refreshPromise) {
+    refreshPromise = refreshAccessToken().finally(() => {
+      refreshPromise = null;
+    });
+  }
+
+  return refreshPromise;
 }
 
 export async function authFetch(
@@ -46,7 +57,7 @@ export async function authFetch(
     return response;
   }
 
-  const refreshed = await refreshAccessToken();
+  const refreshed = await getRefreshedToken();
   if (!refreshed) {
     clearAccessToken();
     useAuthStore.getState().logout();

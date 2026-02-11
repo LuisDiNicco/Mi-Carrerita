@@ -1,19 +1,45 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { JwtService, type JwtSignOptions } from '@nestjs/jwt';
 import { compare, hash } from 'bcryptjs';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { JwtPayload } from '../types/jwt-payload';
 
-const ACCESS_TOKEN_TTL = '15m';
-const REFRESH_TOKEN_TTL = '7d';
-const HASH_SALT = 10;
-
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
   ) {}
+
+  private get accessTokenTtl(): JwtSignOptions['expiresIn'] {
+    return this.configService.get<string>(
+      'ACCESS_TOKEN_TTL',
+      '15m',
+    ) as JwtSignOptions['expiresIn'];
+  }
+
+  private get refreshTokenTtl(): JwtSignOptions['expiresIn'] {
+    return this.configService.get<string>(
+      'REFRESH_TOKEN_TTL',
+      '7d',
+    ) as JwtSignOptions['expiresIn'];
+  }
+
+  private get hashSalt() {
+    return this.configService.get<number>('HASH_SALT', 10);
+  }
+
+  private get jwtSecret() {
+    return this.configService.getOrThrow<string>('JWT_SECRET');
+  }
+
+  private get jwtRefreshSecret() {
+    return this.configService.getOrThrow<string>('JWT_REFRESH_SECRET');
+  }
 
   async validateGoogleUser(profile: {
     googleId: string;
@@ -51,16 +77,16 @@ export class AuthService {
     };
 
     const accessToken = this.jwtService.sign(payload, {
-      secret: process.env.JWT_SECRET,
-      expiresIn: ACCESS_TOKEN_TTL,
+      secret: this.jwtSecret,
+      expiresIn: this.accessTokenTtl,
     });
 
     const refreshToken = this.jwtService.sign(payload, {
-      secret: process.env.JWT_REFRESH_SECRET,
-      expiresIn: REFRESH_TOKEN_TTL,
+      secret: this.jwtRefreshSecret,
+      expiresIn: this.refreshTokenTtl,
     });
 
-    const refreshTokenHash = await hash(refreshToken, HASH_SALT);
+    const refreshTokenHash = await hash(refreshToken, this.hashSalt);
     await this.prisma.user.update({
       where: { id: user.id },
       data: { refreshTokenHash },
@@ -77,7 +103,7 @@ export class AuthService {
     let payload: JwtPayload;
     try {
       payload = this.jwtService.verify(refreshToken, {
-        secret: process.env.JWT_REFRESH_SECRET,
+        secret: this.jwtRefreshSecret,
       });
     } catch {
       throw new UnauthorizedException('Refresh token invalido.');
@@ -102,7 +128,7 @@ export class AuthService {
         name: user.name ?? undefined,
         avatarUrl: user.avatarUrl ?? undefined,
       },
-      { secret: process.env.JWT_SECRET, expiresIn: ACCESS_TOKEN_TTL },
+      { secret: this.jwtSecret, expiresIn: this.accessTokenTtl },
     );
 
     return accessToken;
@@ -113,13 +139,15 @@ export class AuthService {
 
     try {
       const payload = this.jwtService.verify(refreshToken, {
-        secret: process.env.JWT_REFRESH_SECRET,
+        secret: this.jwtRefreshSecret,
       }) as JwtPayload;
       await this.prisma.user.update({
         where: { id: payload.sub },
         data: { refreshTokenHash: null },
       });
-    } catch {
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      this.logger.warn(`Fallo al revocar refresh token: ${message}`);
       return;
     }
   }
