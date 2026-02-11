@@ -1,31 +1,69 @@
 version: '3.8'
 
-services:
-  # Base de Datos PostgreSQL
-  db:
-    image: postgres:16-alpine
-    container_name: uni_tracker_db
-    restart: always
-    ports:
-      - '5432:5432'
-    environment:
-      POSTGRES_USER: ${DB_USER}      # <--- Lee del .env
-      POSTGRES_PASSWORD: ${DB_PASSWORD} # <--- Lee del .env
-      POSTGRES_DB: ${DB_NAME}        # <--- Lee del .env
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+# CONFIGURACIÓN DE DESARROLLO
+# ===========================
+# Para desarrollo local, Se utiliza SQLite (file:./dev.db)
+# 
+# Para producción o si prefieres usar PostgreSQL:
+# 1. Descomenta los servicios de abajo
+# 2. Actualiza server/.env: DATABASE_URL="postgresql://admin:adminpassword@localhost:5432/uni_tracker?schema=public"
+# 3. Ejecuta: docker-compose up -d
+#
+# NOTA: Asegúrate que las variables en .env coincidan con las del servicio
 
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: uni_tracker_pgadmin
-    restart: always
-    ports:
-      - "5050:80"
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${DB_USER}@admin.com 
-      PGADMIN_DEFAULT_PASSWORD: ${DB_PASSWORD}
-    depends_on:
-      - db
+services:
+  # ⚠️ DESCOMENTA ESTO PARA USAR PostgreSQL EN LUGAR DE SQLite
+  # db:
+  #   image: postgres:16-alpine
+  #   container_name: uni_tracker_db
+  #   restart: always
+  #   ports:
+  #     - '5432:5432'
+  #   environment:
+  #     POSTGRES_USER: ${DB_USER:-admin}
+  #     POSTGRES_PASSWORD: ${DB_PASSWORD:-adminpassword_segura_123}
+  #     POSTGRES_DB: ${DB_NAME:-uni_tracker}
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U admin"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+  #
+  # pgadmin:
+  #   image: dpage/pgadmin4:latest
+  #   container_name: uni_tracker_pgadmin
+  #   restart: always
+  #   ports:
+  #     - "5050:80"
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: ${DB_USER:-admin}@admin.com
+  #     PGADMIN_DEFAULT_PASSWORD: ${DB_PASSWORD:-adminpassword_segura_123}
+  #   depends_on:
+  #     - db
+  #   volumes:
+  #     - pgadmin_data:/var/lib/pgadmin
+  #
+  # # Servidor Backend NestJS (opcional, puedes correr npm run start:dev)
+  # backend:
+  #   build:
+  #     context: ./server
+  #     dockerfile: Dockerfile
+  #   container_name: uni_tracker_backend
+  #   restart: always
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     DATABASE_URL: "postgresql://${DB_USER:-admin}:${DB_PASSWORD:-adminpassword_segura_123}@db:5432/${DB_NAME:-uni_tracker}?schema=public"
+  #     NODE_ENV: development
+  #   depends_on:
+  #     db:
+  #       condition: service_healthy
+  #   volumes:
+  #     - ./server/src:/app/src
 
 volumes:
-  postgres_data:
+  # postgres_data:
+  # pgadmin_data:
+#   postgres_data:

@@ -2,17 +2,21 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Logger, ValidationPipe } from '@nestjs/common';
+import cookieParser from 'cookie-parser';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'; // <--- Importar
 import { GlobalExceptionFilter } from './common/filters/http-exception.filter';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule)
+  const app = await NestFactory.create(AppModule);
   const logger = new Logger('Bootstrap');
 
+  const clientUrl = process.env.CLIENT_URL ?? 'http://localhost:5173';
   app.enableCors({
-    origin: 'http://localhost:5173',
+    origin: clientUrl,
     credentials: true,
   });
+
+  app.use(cookieParser());
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -27,11 +31,13 @@ async function bootstrap() {
   // --- CONFIGURACIÓN DE SWAGGER (DOCUMENTACIÓN) ---
   const config = new DocumentBuilder()
     .setTitle('Mi Carrerita API')
-    .setDescription('API para gestión de correlatividades y seguimiento académico')
+    .setDescription(
+      'API para gestión de correlatividades y seguimiento académico',
+    )
     .setVersion('1.0')
     .addTag('Academic Career')
     .build();
-  
+
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document); // La docs estarán en /api/docs
   // ------------------------------------------------

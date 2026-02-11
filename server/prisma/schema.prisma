@@ -17,6 +17,7 @@ model User {
   name            String?
   googleId        String?          @unique
   avatarUrl       String?
+  refreshTokenHash String?
   academicRecords AcademicRecord[]
   reviews         SubjectReview[]
   createdAt       DateTime         @default(now())
@@ -60,6 +61,7 @@ model AcademicRecord {
   // VOLVEMOS A STRING
   status     String 
   finalGrade Int?
+  difficulty Int?
   statusDate DateTime?
   notes      String?
   updatedAt  DateTime      @updatedAt
