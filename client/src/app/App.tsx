@@ -98,10 +98,8 @@ function App() {
   return (
     <div className="relative min-h-screen bg-app text-app">
       <BackgroundFX />
-      <div className="relative z-10 flex min-h-screen flex-col gap-6 p-6">
+      <div className="relative z-10 flex min-h-screen flex-col">
         <AppHeader
-          progress={progress}
-          stats={stats}
           theme={theme}
           onToggleTheme={handleToggleTheme}
           activeSection={activeSection}
@@ -111,11 +109,15 @@ function App() {
           onLogout={handleLogout}
         />
 
-        <main className="rounded-2xl border border-app bg-surface p-4 shadow-subtle">
+        <main className="flex-1 p-6">
           {activeSection === 'home' && (
             <Landing onStart={() => setActiveSection('tree')} />
           )}
-          {activeSection === 'tree' && <CareerGraph />}
+          {activeSection === 'tree' && (
+            <div className="space-y-6">
+              <CareerGraph progress={progress} stats={stats} />
+            </div>
+          )}
           {activeSection === 'dashboard' && <Dashboard />}
           {activeSection === 'recommendations' && <RecommendationsPage />}
           {activeSection === 'history' && <HistoryTable />}

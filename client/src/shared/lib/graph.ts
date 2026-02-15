@@ -28,7 +28,7 @@ export function buildEdges(subjects: Subject[]): GraphEdge[] {
   );
 
   subjects.forEach((subject) => {
-    subject.requiredSubjectIds.forEach((requiredCode) => {
+    subject.correlativeIds.forEach((requiredCode: string) => {
       const requiredId = byPlanCode.get(requiredCode);
       if (requiredId) {
         edges.push({ from: requiredId, to: subject.id });
@@ -151,9 +151,7 @@ export function getRecommendations(
     };
   });
 
-  scored.sort(
-    (a, b) => b.score - a.score || a.subject.semester - b.subject.semester,
-  );
+  scored.sort((a, b) => b.score - a.score || a.subject.year - b.subject.year);
 
   return scored.slice(0, desiredCount).map((entry) => entry.subject);
 }

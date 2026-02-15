@@ -3,270 +3,534 @@
 export type SubjectData = {
   planCode: string;
   name: string;
-  semester: number;
-  credits: number; 
+  year: number;
+  hours: number;
   isOptional: boolean;
-  correlativesFinal: string[];   // REQUISITO: Tener el FINAL aprobado de estas
-  correlativesRegular: string[]; // REQUISITO: Tener la CURSADA (Regular) de estas
+  correlatives: string[]; // Materias que deben estar REGULAR (cursada) para poder cursar esta
 };
 
 export const PLAN_2023: SubjectData[] = [
   // =======================================================
-  // PRIMER AÑO
+  // AÑO 1
   // =======================================================
-  
-  // --- 1ER CUATRIMESTRE (Sin correlativas) ---
-  { planCode: '3621', name: 'Matemática Discreta', semester: 1, credits: 4, isOptional: false, correlativesFinal: [], correlativesRegular: [] },
-  { planCode: '3622', name: 'Análisis Matemático 1', semester: 1, credits: 8, isOptional: false, correlativesFinal: [], correlativesRegular: [] },
-  { planCode: '3623', name: 'Programación Inicial', semester: 1, credits: 8, isOptional: false, correlativesFinal: [], correlativesRegular: [] },
-  { planCode: '3624', name: 'Intro. a los Sist. de Información', semester: 1, credits: 4, isOptional: false, correlativesFinal: [], correlativesRegular: [] },
-  { planCode: '3625', name: 'Sistemas de Numeración', semester: 1, credits: 4, isOptional: false, correlativesFinal: [], correlativesRegular: [] },
-  { planCode: '3626', name: 'Principios de Calidad de Sw', semester: 1, credits: 4, isOptional: false, correlativesFinal: [], correlativesRegular: [] },
-  { planCode: '911', name: 'Computación Transversal I', semester: 1, credits: 2, isOptional: false, correlativesFinal: [], correlativesRegular: [] },
-  { planCode: '901', name: 'Inglés Transversal I', semester: 1, credits: 2, isOptional: false, correlativesFinal: [], correlativesRegular: [] },
-
-  // --- 2DO CUATRIMESTRE ---
-  { 
-    planCode: '3627', name: 'Álgebra y Geometría Analítica 1', semester: 2, credits: 8, isOptional: false, 
-    correlativesFinal: [], correlativesRegular: [] 
+  {
+    planCode: '3621',
+    name: 'Matemática Discreta',
+    year: 1,
+    hours: 4,
+    isOptional: false,
+    correlatives: [],
   },
-  { 
-    planCode: '3628', name: 'Física 1', semester: 2, credits: 8, isOptional: false, 
-    correlativesFinal: [], correlativesRegular: ['3622'] // Pide Análisis 1 (R)
+  {
+    planCode: '3622',
+    name: 'Análisis Matemático I',
+    year: 1,
+    hours: 4,
+    isOptional: false,
+    correlatives: [],
   },
-  { 
-    planCode: '3629', name: 'Programación Estructurada Básica', semester: 2, credits: 8, isOptional: false, 
-    correlativesFinal: [], correlativesRegular: ['3623', '3625'] // Pide Prog Inicial (R) + Sist Num (R)
+  {
+    planCode: '3623',
+    name: 'Programación Inicial',
+    year: 1,
+    hours: 4,
+    isOptional: false,
+    correlatives: [],
   },
-  { 
-    planCode: '3630', name: 'Intro. a la Gestión de Requisitos', semester: 2, credits: 4, isOptional: false, 
-    correlativesFinal: [], correlativesRegular: ['3624'] 
+  {
+    planCode: '3624',
+    name: 'Introducción a los Sistemas de Información',
+    year: 1,
+    hours: 4,
+    isOptional: false,
+    correlatives: [],
   },
-  { 
-    planCode: '3631', name: 'Fundamentos de Sist. Embebidos', semester: 2, credits: 4, isOptional: false, 
-    correlativesFinal: [], correlativesRegular: ['3625'] 
+  {
+    planCode: '3625',
+    name: 'Sistemas de Numeración',
+    year: 1,
+    hours: 4,
+    isOptional: false,
+    correlatives: [],
   },
-  { 
-    planCode: '3632', name: 'Intro. a los Proyectos Informáticos', semester: 2, credits: 4, isOptional: false, 
-    correlativesFinal: [], correlativesRegular: ['3624', '3626'] 
+  {
+    planCode: '3626',
+    name: 'Principios de Calidad de Software',
+    year: 1,
+    hours: 4,
+    isOptional: false,
+    correlatives: [],
   },
-  { 
-    planCode: '912', name: 'Computación Transversal II', semester: 2, credits: 2, isOptional: false, 
-    correlativesFinal: ['911'], correlativesRegular: [] // Final de Comp I
+  {
+    planCode: '3627',
+    name: 'Álgebra y Geometría Analítica I',
+    year: 1,
+    hours: 4,
+    isOptional: false,
+    correlatives: [],
   },
-  { 
-    planCode: '902', name: 'Inglés Transversal II', semester: 2, credits: 2, isOptional: false, 
-    correlativesFinal: ['901'], correlativesRegular: [] // Final de Inglés I
+  {
+    planCode: '3628',
+    name: 'Física I',
+    year: 1,
+    hours: 4,
+    isOptional: false,
+    correlatives: ['3622'],
   },
-
-  // =======================================================
-  // SEGUNDO AÑO
-  // =======================================================
-
-  // --- 3ER CUATRIMESTRE ---
-  { 
-    planCode: '3633', name: 'Análisis Matemático 2', semester: 3, credits: 8, isOptional: false, 
-    correlativesFinal: ['3622'], correlativesRegular: ['3627'] // Final AM1 + Reg Algebra1
+  {
+    planCode: '3629',
+    name: 'Programación Estructurada Básica',
+    year: 1,
+    hours: 4,
+    isOptional: false,
+    correlatives: ['3623'],
   },
-  { 
-    planCode: '3634', name: 'Física 2', semester: 3, credits: 8, isOptional: false, 
-    correlativesFinal: [], correlativesRegular: ['3622', '3628'] // Reg AM1 + Reg Fisica1
+  {
+    planCode: '3630',
+    name: 'Introducción a la Gestión de Requisitos',
+    year: 1,
+    hours: 4,
+    isOptional: false,
+    correlatives: ['3624'],
   },
-  { 
-    planCode: '3635', name: 'Tópicos de Programación', semester: 3, credits: 4, isOptional: false, 
-    correlativesFinal: ['3623'], correlativesRegular: ['3629'] // Final Prog Inicial + Reg Estructurada
+  {
+    planCode: '3631',
+    name: 'Fundamentos de Sistemas Embebidos',
+    year: 1,
+    hours: 4,
+    isOptional: false,
+    correlatives: ['3625'],
   },
-  { 
-    planCode: '3636', name: 'Bases de Datos', semester: 3, credits: 6, isOptional: false, 
-    correlativesFinal: ['3621', '3623'], correlativesRegular: [] // Final Discreta + Final Prog Inicial
+  {
+    planCode: '3632',
+    name: 'Introducción a Proyectos Informáticos',
+    year: 1,
+    hours: 4,
+    isOptional: false,
+    correlatives: [],
   },
-  { 
-    planCode: '3637', name: 'Análisis de Sistemas', semester: 3, credits: 6, isOptional: false, 
-    correlativesFinal: ['3624'], correlativesRegular: ['3630', '3629'] 
+  {
+    planCode: '911',
+    name: 'Computación Transversal I',
+    year: 1,
+    hours: 4,
+    isOptional: false,
+    correlatives: [],
   },
-  { 
-    planCode: '3638', name: 'Arquitectura de Computadoras', semester: 3, credits: 6, isOptional: false, 
-    correlativesFinal: ['3625'], correlativesRegular: ['3631'] 
+  {
+    planCode: '901',
+    name: 'Inglés Transversal I',
+    year: 1,
+    hours: 4,
+    isOptional: false,
+    correlatives: [],
   },
-  { 
-    planCode: '903', name: 'Inglés Transversal III', semester: 3, credits: 2, isOptional: false, 
-    correlativesFinal: ['902'], correlativesRegular: [] 
+  {
+    planCode: '912',
+    name: 'Computación Transversal II',
+    year: 1,
+    hours: 4,
+    isOptional: false,
+    correlatives: ['911'],
   },
-
-  // --- 4TO CUATRIMESTRE ---
-  { 
-    planCode: '3639', name: 'Análisis Matemático 3', semester: 4, credits: 4, isOptional: false, 
-    correlativesFinal: ['3622', '3627'], correlativesRegular: ['3633'] // Final AM1, Alg1 + Reg AM2
-  },
-  { 
-    planCode: '3640', name: 'Algoritmos y Estructuras de Datos', semester: 4, credits: 8, isOptional: false, 
-    correlativesFinal: ['3623', '3621'], correlativesRegular: ['3629', '3635'] 
-  },
-  { 
-    planCode: '3641', name: 'Bases de Datos Aplicada', semester: 4, credits: 6, isOptional: false, 
-    correlativesFinal: ['3636'], correlativesRegular: [] // Final BD
-  },
-  { 
-    planCode: '3642', name: 'Principios de Diseño de Sistemas', semester: 4, credits: 4, isOptional: false, 
-    correlativesFinal: ['3624'], correlativesRegular: ['3637', '3636'] // Reg Analisis sist + BD
-  },
-  { 
-    planCode: '3643', name: 'Redes de Computadoras', semester: 4, credits: 6, isOptional: false, 
-    correlativesFinal: [], correlativesRegular: ['3638'] // Reg Arqui
-  },
-  { 
-    planCode: '3644', name: 'Gestión de las Organizaciones', semester: 4, credits: 4, isOptional: false, 
-    correlativesFinal: [], correlativesRegular: ['3632'] 
-  },
-  { 
-    planCode: '904', name: 'Inglés Transversal IV', semester: 4, credits: 2, isOptional: false, 
-    correlativesFinal: ['903'], correlativesRegular: [] 
-  },
-
-  // =======================================================
-  // TERCER AÑO
-  // =======================================================
-
-  // --- 5TO CUATRIMESTRE ---
-  { 
-    planCode: '3645', name: 'Álgebra y Geometría Analítica 2', semester: 5, credits: 4, isOptional: false, 
-    correlativesFinal: ['3627'], correlativesRegular: [] 
-  },
-  { 
-    planCode: '3646', name: 'Paradigmas de Programación', semester: 5, credits: 8, isOptional: false, 
-    correlativesFinal: ['3629'], correlativesRegular: ['3640'] 
-  },
-  { 
-    planCode: '3647', name: 'Requisitos Avanzados', semester: 5, credits: 4, isOptional: false, 
-    correlativesFinal: ['3630', '3637'], correlativesRegular: [] 
-  },
-  { 
-    planCode: '3648', name: 'Diseño de Software', semester: 5, credits: 6, isOptional: false, 
-    correlativesFinal: ['3637'], correlativesRegular: ['3642', '3646'] 
-  },
-  { 
-    planCode: '3649', name: 'Sistemas Operativos', semester: 5, credits: 6, isOptional: false, 
-    correlativesFinal: ['3629', '3638'], correlativesRegular: [] 
-  },
-  { 
-    planCode: '3650', name: 'Seguridad de la Información', semester: 5, credits: 4, isOptional: false, 
-    correlativesFinal: ['3638', '3643'], correlativesRegular: [] 
-  },
-
-  // --- 6TO CUATRIMESTRE ---
-  { 
-    planCode: '3651', name: 'Probabilidad y Estadística', semester: 6, credits: 6, isOptional: false, 
-    correlativesFinal: ['3622', '3627'], correlativesRegular: [] 
-  },
-  { 
-    planCode: '3652', name: 'Programación Avanzada', semester: 6, credits: 8, isOptional: false, 
-    correlativesFinal: ['3629', '3640'], correlativesRegular: ['3646'] 
-  },
-  { 
-    planCode: '3653', name: 'Arquitectura de Sistemas Software', semester: 6, credits: 4, isOptional: false, 
-    correlativesFinal: ['3642'], correlativesRegular: ['3648', '3643'] 
-  },
-  { 
-    planCode: '3654', name: 'Virtualización de Hardware', semester: 6, credits: 4, isOptional: false, 
-    correlativesFinal: ['3638'], correlativesRegular: ['3649', '3643'] 
-  },
-  { 
-    planCode: '3655', name: 'Auditoría y Legislación', semester: 6, credits: 4, isOptional: false, 
-    correlativesFinal: ['3650', '3644'], correlativesRegular: [] 
+  {
+    planCode: '902',
+    name: 'Inglés Transversal II',
+    year: 1,
+    hours: 4,
+    isOptional: false,
+    correlatives: ['901'],
   },
 
   // =======================================================
-  // CUARTO AÑO (MAYORES CAMBIOS SEGÚN PDF)
+  // AÑO 2
   // =======================================================
-
-  // --- 7MO CUATRIMESTRE ---
-  { 
-    planCode: '3656', name: 'Estadística Aplicada', semester: 7, credits: 4, isOptional: false, 
-    correlativesFinal: ['3651'], correlativesRegular: [] 
+  {
+    planCode: '3633',
+    name: 'Análisis Matemático II',
+    year: 2,
+    hours: 4,
+    isOptional: false,
+    correlatives: ['3622'],
   },
-  { 
-    planCode: '3657', name: 'Autómatas y Gramática', semester: 7, credits: 4, isOptional: false, 
-    correlativesFinal: ['3621', '3629'], correlativesRegular: [] // REF PDF: Pide Discreta y Estructurada
+  {
+    planCode: '3634',
+    name: 'Física II',
+    year: 2,
+    hours: 4,
+    isOptional: false,
+    correlatives: ['3628'],
   },
-  { 
-    planCode: '3658', name: 'Programación Concurrente', semester: 7, credits: 4, isOptional: false, 
-    correlativesFinal: ['3646', '3649'], correlativesRegular: [] 
+  {
+    planCode: '3635',
+    name: 'Tópicos de Programación',
+    year: 2,
+    hours: 4,
+    isOptional: false,
+    correlatives: ['3629', '3621'],
   },
-  { 
-    planCode: '3659', name: 'Gestión Aplicada al Desarrollo Sw 1', semester: 7, credits: 4, isOptional: false, 
-    correlativesFinal: ['3648'], correlativesRegular: ['3661'] 
+  {
+    planCode: '3636',
+    name: 'Bases de Datos',
+    year: 2,
+    hours: 4,
+    isOptional: false,
+    correlatives: ['3629', '3621'],
   },
-  { 
-    planCode: '3660', name: 'Sistemas Operativos Avanzados', semester: 7, credits: 4, isOptional: false, 
-    correlativesFinal: ['3649', '3643'], correlativesRegular: [] 
+  {
+    planCode: '3637',
+    name: 'Análisis de Sistemas',
+    year: 2,
+    hours: 4,
+    isOptional: false,
+    correlatives: ['3630'],
   },
-  { 
-    planCode: '3661', name: 'Gestión de Proyectos', semester: 7, credits: 6, isOptional: false, 
-    correlativesFinal: ['3632', '3644'], correlativesRegular: [] 
+  {
+    planCode: '3638',
+    name: 'Arquitectura de Computadoras',
+    year: 2,
+    hours: 4,
+    isOptional: false,
+    correlatives: ['3631'],
   },
-
-  // --- 8VO CUATRIMESTRE ---
-  { 
-    planCode: '3662', name: 'Matemática Aplicada', semester: 8, credits: 4, isOptional: false, 
-    correlativesFinal: ['3651', '3633', '3645'], correlativesRegular: [] // REF PDF: Proba + AM2 + Alg2
+  {
+    planCode: '3639',
+    name: 'Análisis Matemático III',
+    year: 2,
+    hours: 4,
+    isOptional: false,
+    correlatives: ['3633'],
   },
-  { 
-    planCode: '3663', name: 'Lenguajes y Compiladores', semester: 8, credits: 6, isOptional: false, 
-    correlativesFinal: ['3646', '3657'], correlativesRegular: [] // REF PDF: Paradigmas + Automatas
+  {
+    planCode: '3640',
+    name: 'Algoritmos y Estructuras de Datos',
+    year: 2,
+    hours: 4,
+    isOptional: false,
+    correlatives: ['3635'],
   },
-  { 
-    planCode: '3664', name: 'Inteligencia Artificial', semester: 8, credits: 6, isOptional: false, 
-    correlativesFinal: ['3651', '3621'], correlativesRegular: [] // REF PDF: Proba + Discreta
+  {
+    planCode: '3641',
+    name: 'Bases de Datos Aplicada',
+    year: 2,
+    hours: 4,
+    isOptional: false,
+    correlatives: ['3636', '3635'],
   },
-  { 
-    planCode: '3665', name: 'Gestión Aplicada al Desarrollo Sw 2', semester: 8, credits: 4, isOptional: false, 
-    correlativesFinal: ['3648'], correlativesRegular: ['3659'] 
+  {
+    planCode: '3642',
+    name: 'Principios de Diseño de Sistemas',
+    year: 2,
+    hours: 4,
+    isOptional: false,
+    correlatives: ['3637', '3626'],
   },
-  { 
-    planCode: '3666', name: 'Seguridad Aplicada y Forensia', semester: 8, credits: 4, isOptional: false, 
-    correlativesFinal: ['3650', '3649'], correlativesRegular: [] // REF PDF: Seguridad Info + Sist Operativos
+  {
+    planCode: '3643',
+    name: 'Redes de Computadoras',
+    year: 2,
+    hours: 4,
+    isOptional: false,
+    correlatives: ['3638'],
   },
-  { 
-    planCode: '3667', name: 'Gestión de Calidad en Procesos', semester: 8, credits: 4, isOptional: false, 
-    correlativesFinal: ['3626', '3648'], correlativesRegular: [] 
+  {
+    planCode: '3644',
+    name: 'Gestión de las Organizaciones',
+    year: 2,
+    hours: 4,
+    isOptional: false,
+    correlatives: ['3632'],
+  },
+  {
+    planCode: '3676',
+    name: 'Responsabilidad Social Universitaria',
+    year: 2,
+    hours: 4,
+    isOptional: false,
+    correlatives: ['3626'],
+  },
+  {
+    planCode: '3680',
+    name: 'Taller de Integración',
+    year: 2,
+    hours: 4,
+    isOptional: false,
+    correlatives: ['3626', '3630', '3632', '3638', '3635', '3636'],
+  },
+  {
+    planCode: '903',
+    name: 'Inglés Transversal III',
+    year: 2,
+    hours: 4,
+    isOptional: false,
+    correlatives: ['902'],
+  },
+  {
+    planCode: '904',
+    name: 'Inglés Transversal IV',
+    year: 2,
+    hours: 4,
+    isOptional: false,
+    correlatives: ['903'],
   },
 
   // =======================================================
-  // QUINTO AÑO
+  // AÑO 3
   // =======================================================
+  {
+    planCode: '3645',
+    name: 'Álgebra y Geometría Analítica II',
+    year: 3,
+    hours: 4,
+    isOptional: false,
+    correlatives: ['3627'],
+  },
+  {
+    planCode: '3646',
+    name: 'Paradigmas de Programación',
+    year: 3,
+    hours: 4,
+    isOptional: false,
+    correlatives: ['3640', '3633'],
+  },
+  {
+    planCode: '3647',
+    name: 'Requisitos Avanzados',
+    year: 3,
+    hours: 4,
+    isOptional: false,
+    correlatives: ['3642'],
+  },
+  {
+    planCode: '3648',
+    name: 'Diseño de Software',
+    year: 3,
+    hours: 4,
+    isOptional: false,
+    correlatives: ['3642', '3636', '3635'],
+  },
+  {
+    planCode: '3649',
+    name: 'Sistemas Operativos',
+    year: 3,
+    hours: 4,
+    isOptional: false,
+    correlatives: ['3638', '3629'],
+  },
+  {
+    planCode: '3650',
+    name: 'Seguridad de la Información',
+    year: 3,
+    hours: 4,
+    isOptional: false,
+    correlatives: ['3643', '3638', '3635'],
+  },
+  {
+    planCode: '3651',
+    name: 'Probabilidad y Estadística',
+    year: 3,
+    hours: 4,
+    isOptional: false,
+    correlatives: ['3645', '3639', '3621'],
+  },
+  {
+    planCode: '3652',
+    name: 'Programación Avanzada',
+    year: 3,
+    hours: 4,
+    isOptional: false,
+    correlatives: ['3641', '3646'],
+  },
+  {
+    planCode: '3653',
+    name: 'Arquitecturas de Sistemas Software',
+    year: 3,
+    hours: 4,
+    isOptional: false,
+    correlatives: ['3648'],
+  },
+  {
+    planCode: '3654',
+    name: 'Virtualización de Hardware',
+    year: 3,
+    hours: 4,
+    isOptional: false,
+    correlatives: ['3649', '3643'],
+  },
+  {
+    planCode: '3655',
+    name: 'Auditoría y Legislación',
+    year: 3,
+    hours: 4,
+    isOptional: false,
+    correlatives: ['3650'],
+  },
+  {
+    planCode: '3675',
+    name: 'Práctica Profesional Supervisada',
+    year: 3,
+    hours: 4,
+    isOptional: false,
+    correlatives: ['3642', '3636', '3640'],
+  },
 
-  // --- 9NO CUATRIMESTRE ---
-  { 
-    planCode: '3668', name: 'Inteligencia Artificial Aplicada', semester: 9, credits: 4, isOptional: false, 
-    correlativesFinal: ['3664'], correlativesRegular: [] 
+  // =======================================================
+  // AÑO 4
+  // =======================================================
+  {
+    planCode: '3656',
+    name: 'Estadística Aplicada',
+    year: 4,
+    hours: 4,
+    isOptional: false,
+    correlatives: ['3651'],
   },
-  { 
-    planCode: '3669', name: 'Ciencia de Datos', semester: 9, credits: 4, isOptional: false, 
-    correlativesFinal: ['3636', '3651'], correlativesRegular: [] 
+  {
+    planCode: '3657',
+    name: 'Autómatas y Gramática',
+    year: 4,
+    hours: 4,
+    isOptional: false,
+    correlatives: ['3646'],
   },
-  { 
-    planCode: '3670', name: 'Innovación y Emprendedorismo', semester: 9, credits: 4, isOptional: false, 
-    correlativesFinal: ['3661'], correlativesRegular: [] // REF PDF: Pide Gestión de Proyectos
+  {
+    planCode: '3658',
+    name: 'Programación Concurrente',
+    year: 4,
+    hours: 4,
+    isOptional: false,
+    correlatives: ['3649', '3646'],
   },
-  { 
-    planCode: '3676', name: 'Responsabilidad Social Universitaria', semester: 9, credits: 0, isOptional: false, 
-    correlativesFinal: [], correlativesRegular: [] 
+  {
+    planCode: '3659',
+    name: 'Gestión Aplicada al Desarrollo de Software I',
+    year: 4,
+    hours: 4,
+    isOptional: false,
+    correlatives: ['3648', '3647', '3644'],
   },
-  
-  // --- ELECTIVAS Y FINAL ---
-  { planCode: '3672', name: 'Electiva 1', semester: 9, credits: 4, isOptional: true, correlativesFinal: [], correlativesRegular: [] },
-  { planCode: '3673', name: 'Electiva 2', semester: 9, credits: 4, isOptional: true, correlativesFinal: [], correlativesRegular: [] },
-  { planCode: '3674', name: 'Electiva 3', semester: 9, credits: 4, isOptional: true, correlativesFinal: [], correlativesRegular: [] },
-  { 
-    planCode: '3675', name: 'Práctica Profesional Supervisada', semester: 9, credits: 0, isOptional: false, 
-    correlativesFinal: [], correlativesRegular: [] 
+  {
+    planCode: '3660',
+    name: 'Sistemas Operativos Avanzados',
+    year: 4,
+    hours: 4,
+    isOptional: false,
+    correlatives: ['3654', '3634'],
   },
-  { 
-    planCode: '3680', name: 'Taller de Integración', semester: 10, credits: 0, isOptional: true, 
-    correlativesFinal: [], correlativesRegular: [] 
+  {
+    planCode: '3661',
+    name: 'Gestión de Proyectos',
+    year: 4,
+    hours: 4,
+    isOptional: false,
+    correlatives: ['3651', '3650', '3644'],
   },
-  { 
-    planCode: '3671', name: 'Proyecto Final de Carrera', semester: 10, credits: 10, isOptional: false, 
-    correlativesFinal: ['3659', '3661', '3648'], correlativesRegular: [] 
-  }
+  {
+    planCode: '3662',
+    name: 'Matemática Aplicada',
+    year: 4,
+    hours: 4,
+    isOptional: false,
+    correlatives: ['3651'],
+  },
+  {
+    planCode: '3663',
+    name: 'Lenguajes y Compiladores',
+    year: 4,
+    hours: 4,
+    isOptional: false,
+    correlatives: ['3657'],
+  },
+  {
+    planCode: '3664',
+    name: 'Inteligencia Artificial',
+    year: 4,
+    hours: 4,
+    isOptional: false,
+    correlatives: ['3651', '3646'],
+  },
+  {
+    planCode: '3665',
+    name: 'Gestión Aplicada al Desarrollo de Software II',
+    year: 4,
+    hours: 4,
+    isOptional: false,
+    correlatives: ['3659', '3653'],
+  },
+  {
+    planCode: '3666',
+    name: 'Seguridad Aplicada y Forensia',
+    year: 4,
+    hours: 4,
+    isOptional: false,
+    correlatives: ['3655', '3652', '3649'],
+  },
+  {
+    planCode: '3667',
+    name: 'Gestión de la Calidad en Procesos de Sistemas',
+    year: 4,
+    hours: 4,
+    isOptional: false,
+    correlatives: ['3661', '3642'],
+  },
+
+  // =======================================================
+  // AÑO 5
+  // =======================================================
+  {
+    planCode: '3668',
+    name: 'Inteligencia Artificial Aplicada',
+    year: 5,
+    hours: 4,
+    isOptional: false,
+    correlatives: ['3664', '3656'],
+  },
+  {
+    planCode: '3669',
+    name: 'Innovación y Emprendedorismo',
+    year: 5,
+    hours: 4,
+    isOptional: false,
+    correlatives: ['3661'],
+  },
+  {
+    planCode: '3670',
+    name: 'Ciencia de Datos',
+    year: 5,
+    hours: 4,
+    isOptional: false,
+    correlatives: ['3664', '3656'],
+  },
+  {
+    planCode: '3671',
+    name: 'Proyecto Final de Carrera',
+    year: 5,
+    hours: 4,
+    isOptional: false,
+    correlatives: ['3659', '3660', '3667', '3656'],
+  },
+  {
+    planCode: '3672',
+    name: 'Electiva I',
+    year: 5,
+    hours: 4,
+    isOptional: true,
+    correlatives: ['3652', '3653', '3661'],
+  },
+  {
+    planCode: '3673',
+    name: 'Electiva II',
+    year: 5,
+    hours: 4,
+    isOptional: true,
+    correlatives: ['3652', '3653', '3661'],
+  },
+  {
+    planCode: '3674',
+    name: 'Electiva III',
+    year: 5,
+    hours: 4,
+    isOptional: true,
+    correlatives: ['3652', '3653', '3661'],
+  },
 ];

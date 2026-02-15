@@ -28,8 +28,8 @@ model Subject {
   id            String          @id @default(uuid())
   planCode      String          @unique 
   name          String
-  semester      Int
-  credits       Int
+  year          Int
+  hours         Int
   isOptional    Boolean         @default(false)
   
   prerequisites Correlativity[] @relation("RequiredForSubject")
