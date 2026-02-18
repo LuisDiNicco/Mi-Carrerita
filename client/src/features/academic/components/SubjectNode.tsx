@@ -186,21 +186,6 @@ export const SubjectNode = ({ data, selected }: NodeProps<SubjectNodeType>) => {
         </div>
       )}
 
-      <style>{`
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(4px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes float {
-          0%, 100% { transform: translateY(0); opacity: 1; }
-          50% { transform: translateY(-20px); opacity: 0; }
-        }
-
-        .text-shadow-retro {
-          text-shadow: none;
-        }
-      `}</style>
     </div>
   );
 };

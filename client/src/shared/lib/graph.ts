@@ -1,15 +1,6 @@
 import type { Subject } from "../types/academic";
 import { SubjectStatus } from "../types/academic";
 
-export const GRAPH_LAYOUT = {
-  nodeWidth: 280,
-  nodeHeight: 200,
-  rankSep: 160,
-  nodeSep: 120,
-  marginX: 60,
-  marginY: 60,
-};
-
 export const PROGRESS_CHECKPOINTS = [25, 50, 75, 100];
 
 export const SEARCH_RESULTS_LIMIT = 6;
@@ -20,6 +11,10 @@ export type GraphEdge = {
 };
 
 const RECOMMENDATION_BONUS = 2;
+
+function buildSubjectByPlanCode(subjects: Subject[]): Map<string, Subject> {
+  return new Map(subjects.map((subject) => [subject.planCode, subject]));
+}
 
 export function buildEdges(subjects: Subject[]): GraphEdge[] {
   const edges: GraphEdge[] = [];
@@ -86,45 +81,42 @@ export function getCriticalPath(
   }
 
   const distance = new Map<string, number>();
-  const parent = new Map<string, string | null>();
-  nodeIds.forEach((id) => {
-    distance.set(id, 0);
-    parent.set(id, null);
-  });
+  nodeIds.forEach((id) => distance.set(id, 0));
 
-  topo.forEach((node) => {
-    const currentDistance = distance.get(node) ?? 0;
-    adjacency.get(node)?.forEach((next) => {
-      const nextDistance = currentDistance + 1;
-      if (nextDistance > (distance.get(next) ?? 0)) {
-        distance.set(next, nextDistance);
-        parent.set(next, node);
-      }
-    });
-  });
-
-  let maxNode: string | null = null;
-  let maxDistance = -1;
-  distance.forEach((value, key) => {
-    if (value > maxDistance) {
-      maxDistance = value;
-      maxNode = key;
+  for (let i = topo.length - 1; i >= 0; i -= 1) {
+    const node = topo[i];
+    const nextNodes = adjacency.get(node) ?? [];
+    if (nextNodes.length === 0) {
+      distance.set(node, 0);
+      continue;
     }
-  });
-
-  const criticalNodeIds = new Set<string>();
-  const criticalEdgeIds = new Set<string>();
-  let cursor: string | null = maxNode;
-  while (cursor) {
-    criticalNodeIds.add(cursor);
-    const prev: string | null = parent.get(cursor) ?? null;
-    if (prev) {
-      criticalEdgeIds.add(`${prev}-${cursor}`);
-    }
-    cursor = prev;
+    const maxNext = Math.max(
+      ...nextNodes.map((next) => distance.get(next) ?? 0),
+    );
+    distance.set(node, maxNext + 1);
   }
 
-  return { nodeIds: criticalNodeIds, edgeIds: criticalEdgeIds };
+  const criticalLength = Math.max(...distance.values());
+
+  const criticalNodeIds = new Set<string>();
+  distance.forEach((dist, id) => {
+    if (dist === criticalLength) criticalNodeIds.add(id);
+  });
+
+  const criticalEdgeIds = new Set<string>();
+  edges.forEach((edge) => {
+    const fromDist = distance.get(edge.from) ?? 0;
+    const toDist = distance.get(edge.to) ?? 0;
+    if (fromDist === toDist + 1 && criticalNodeIds.has(edge.from)) {
+      criticalEdgeIds.add(`${edge.from}-${edge.to}`);
+      criticalNodeIds.add(edge.to);
+    }
+  });
+
+  return {
+    nodeIds: criticalNodeIds,
+    edgeIds: criticalEdgeIds,
+  };
 }
 
 export function getRecommendations(
@@ -132,9 +124,14 @@ export function getRecommendations(
   edges: GraphEdge[],
   desiredCount: number,
 ): Subject[] {
+  const subjectByPlanCode = buildSubjectByPlanCode(subjects);
   const available = subjects.filter(
     (subject) =>
-      subject.status === SubjectStatus.DISPONIBLE && !subject.isOptional,
+      subject.status === SubjectStatus.PENDIENTE &&
+      subject.correlativeIds.every((reqCode: string) => {
+        const required = subjectByPlanCode.get(reqCode);
+        return !required || required.status === SubjectStatus.APROBADA;
+      }),
   );
 
   if (available.length === 0) return [];
@@ -208,4 +205,118 @@ function getLongestDistanceToSink(
   }
 
   return distance;
+}
+
+// ==================== NEW RECOMMENDATION SYSTEM ====================
+
+export interface RecommendationWithReason {
+  subject: Subject;
+  reasons: string[];
+  score: number;
+}
+
+const PROYECTO_FINAL_NAME = "Proyecto Final";
+
+/**
+ * Encuentra las materias que desbloquean el Proyecto Final
+ */
+export function getSubjectsThatUnlockThesis(
+  subjects: Subject[],
+  edges: GraphEdge[],
+): Set<string> {
+  const thesisSubjects = subjects.filter(
+    (s) => s.name === PROYECTO_FINAL_NAME
+  );
+  
+  if (thesisSubjects.length === 0) return new Set();
+  
+  const thesisIds = new Set(thesisSubjects.map((s) => s.id));
+  const unlocksThesis = new Set<string>();
+  
+  // Encontrar todas las materias que son correlativas directas del Proyecto Final
+  edges.forEach((edge) => {
+    if (thesisIds.has(edge.to)) {
+      unlocksThesis.add(edge.from);
+    }
+  });
+  
+  return unlocksThesis;
+}
+
+/**
+ * Genera recomendaciones con razones explicativas y scoring basado en prioridades
+ */
+export function getRecommendationsWithReasons(
+  subjects: Subject[],
+  edges: GraphEdge[],
+  desiredCount: number,
+  excludeIds: string[] = []
+): RecommendationWithReason[] {
+  const excludeSet = new Set(excludeIds);
+  const subjectByPlanCode = buildSubjectByPlanCode(subjects);
+  
+  const available = subjects.filter(
+    (subject) =>
+      subject.status === SubjectStatus.PENDIENTE &&
+      !excludeSet.has(subject.id) &&
+      subject.correlativeIds.every((reqCode: string) => {
+        const required = subjectByPlanCode.get(reqCode);
+        return !required || required.status === SubjectStatus.APROBADA;
+      })
+  );
+
+  if (available.length === 0) return [];
+
+  const { nodeIds: criticalNodes } = getCriticalPath(subjects, edges);
+  const distanceToSink = getLongestDistanceToSink(subjects, edges);
+  const unlocksThesis = getSubjectsThatUnlockThesis(subjects, edges);
+  const unlockMap = buildUnlockMap(edges);
+
+  const scored = available.map((subject) => {
+    const reasons: string[] = [];
+    let score = 0;
+
+    // Prioridad 1: Título Intermedio (+100)
+    if (subject.isIntermediateDegree) {
+      reasons.push("📌 Título Intermedio");
+      score += 100;
+    }
+
+    // Prioridad 2: Desbloquea Proyecto Final (+80)
+    if (unlocksThesis.has(subject.id)) {
+      reasons.push("🎯 Desbloquea Proyecto Final");
+      score += 80;
+    }
+
+    // Prioridad 3: Camino Crítico (+50)
+    if (criticalNodes.has(subject.id)) {
+      reasons.push("🔥 Camino Crítico");
+      score += 50;
+    }
+
+    // Prioridad 4: Desbloquea otras materias (+10 por cada una)
+    const unlocksCount = unlockMap.get(subject.id) ?? 0;
+    if (unlocksCount > 0) {
+      reasons.push(`🔓 Desbloquea ${unlocksCount} ${unlocksCount === 1 ? 'materia' : 'materias'}`);
+      score += unlocksCount * 10;
+    }
+
+    // Desempate: distancia al sink
+    const distance = distanceToSink.get(subject.id) ?? 0;
+    score += distance * 0.1;
+
+    return {
+      subject,
+      reasons,
+      score,
+    };
+  });
+
+  // Ordenar por score (descendente), luego por año (ascendente)
+  scored.sort((a, b) => {
+    if (b.score !== a.score) return b.score - a.score;
+    return a.subject.year - b.subject.year;
+  });
+
+  return scored.slice(0, desiredCount);
 }

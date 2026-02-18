@@ -142,6 +142,11 @@ export const useCareerGraph = () => {
     return getCriticalPath(coreSubjects, edgesList);
   }, [showCriticalPath, subjects]);
 
+  const subjectById = useMemo(
+    () => new Map(subjects.map((subject) => [subject.id, subject])),
+    [subjects],
+  );
+
   const searchResults = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
     if (query.length < SEARCH_MIN_CHARS) return [];
@@ -176,9 +181,7 @@ export const useCareerGraph = () => {
       edges.map((edge) => {
         const edgeKey = `${edge.source}-${edge.target}`;
         const isCritical = criticalPath.edgeIds.has(edgeKey);
-        const targetSubject = subjects.find(
-          (subject) => subject.id === edge.target,
-        );
+        const targetSubject = subjectById.get(edge.target);
         const isBlocked = targetSubject?.status === SubjectStatus.PENDIENTE;
         const edgeColor = isCritical
           ? EDGE_STYLES.critical.stroke
@@ -202,7 +205,7 @@ export const useCareerGraph = () => {
           },
         };
       }),
-    [criticalPath.edgeIds, edges, subjects],
+    [criticalPath.edgeIds, edges, subjectById],
   );
 
   const yearSeparatorNodes = useMemo(
