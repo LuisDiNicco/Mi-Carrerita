@@ -12,7 +12,7 @@ export const YearSeparatorNode = ({ data }: NodeProps<YearSeparatorNodeType>) =>
     <div className="relative flex items-center justify-center pointer-events-none" style={{ width: data.width }}>
       <div className="absolute left-0 right-0 top-1/2 border-t-2 border-dashed border-unlam-500/60" />
       <span className="relative rounded-full border-2 border-unlam-500/40 bg-app-elevated px-4 py-2 text-xs font-bold uppercase tracking-widest text-unlam-500 shadow-retro">
-        AÑO {data.label}
+        {data.label}
       </span>
     </div>
   );

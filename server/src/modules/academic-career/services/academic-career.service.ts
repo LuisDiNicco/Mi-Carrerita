@@ -100,10 +100,6 @@ export class AcademicCareerService {
     });
   }
 
-  async findUserByEmail(email: string) {
-    return this.prisma.user.findUnique({ where: { email } });
-  }
-
   async updateSubjectRecord(
     userEmail: string,
     subjectId: string,

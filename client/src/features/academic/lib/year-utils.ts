@@ -17,6 +17,6 @@ export function groupSubjectsByYear(
 }
 
 export function getYearLabel(year: number): string {
-  if (year === 0) return "Transversal";
-  return `Año ${year}`;
+  if (year === 0) return "TRANSVERSAL";
+  return `AÑO ${year}`;
 }

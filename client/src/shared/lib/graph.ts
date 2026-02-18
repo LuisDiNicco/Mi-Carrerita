@@ -16,144 +16,7 @@ function buildSubjectByPlanCode(subjects: Subject[]): Map<string, Subject> {
   return new Map(subjects.map((subject) => [subject.planCode, subject]));
 }
 
-export function buildEdges(subjects: Subject[]): GraphEdge[] {
-  const edges: GraphEdge[] = [];
-  const byPlanCode = new Map(
-    subjects.map((subject) => [subject.planCode, subject.id]),
-  );
-
-  subjects.forEach((subject) => {
-    subject.correlativeIds.forEach((requiredCode: string) => {
-      const requiredId = byPlanCode.get(requiredCode);
-      if (requiredId) {
-        edges.push({ from: requiredId, to: subject.id });
-      }
-    });
-  });
-
-  return edges;
-}
-
-export function buildUnlockMap(edges: GraphEdge[]): Map<string, number> {
-  const unlocks = new Map<string, number>();
-  edges.forEach((edge) => {
-    unlocks.set(edge.from, (unlocks.get(edge.from) ?? 0) + 1);
-  });
-  return unlocks;
-}
-
-export function getCriticalPath(
-  subjects: Subject[],
-  edges: GraphEdge[],
-): {
-  nodeIds: Set<string>;
-  edgeIds: Set<string>;
-} {
-  const nodeIds = new Set(subjects.map((subject) => subject.id));
-  const adjacency = new Map<string, string[]>();
-  const indegree = new Map<string, number>();
-
-  nodeIds.forEach((id) => {
-    adjacency.set(id, []);
-    indegree.set(id, 0);
-  });
-
-  edges.forEach((edge) => {
-    if (!nodeIds.has(edge.from) || !nodeIds.has(edge.to)) return;
-    adjacency.get(edge.from)?.push(edge.to);
-    indegree.set(edge.to, (indegree.get(edge.to) ?? 0) + 1);
-  });
-
-  const queue: string[] = [];
-  indegree.forEach((count, id) => {
-    if (count === 0) queue.push(id);
-  });
-
-  const topo: string[] = [];
-  while (queue.length > 0) {
-    const current = queue.shift();
-    if (!current) break;
-    topo.push(current);
-    adjacency.get(current)?.forEach((next) => {
-      indegree.set(next, (indegree.get(next) ?? 0) - 1);
-      if ((indegree.get(next) ?? 0) === 0) queue.push(next);
-    });
-  }
-
-  const distance = new Map<string, number>();
-  nodeIds.forEach((id) => distance.set(id, 0));
-
-  for (let i = topo.length - 1; i >= 0; i -= 1) {
-    const node = topo[i];
-    const nextNodes = adjacency.get(node) ?? [];
-    if (nextNodes.length === 0) {
-      distance.set(node, 0);
-      continue;
-    }
-    const maxNext = Math.max(
-      ...nextNodes.map((next) => distance.get(next) ?? 0),
-    );
-    distance.set(node, maxNext + 1);
-  }
-
-  const criticalLength = Math.max(...distance.values());
-
-  const criticalNodeIds = new Set<string>();
-  distance.forEach((dist, id) => {
-    if (dist === criticalLength) criticalNodeIds.add(id);
-  });
-
-  const criticalEdgeIds = new Set<string>();
-  edges.forEach((edge) => {
-    const fromDist = distance.get(edge.from) ?? 0;
-    const toDist = distance.get(edge.to) ?? 0;
-    if (fromDist === toDist + 1 && criticalNodeIds.has(edge.from)) {
-      criticalEdgeIds.add(`${edge.from}-${edge.to}`);
-      criticalNodeIds.add(edge.to);
-    }
-  });
-
-  return {
-    nodeIds: criticalNodeIds,
-    edgeIds: criticalEdgeIds,
-  };
-}
-
-export function getRecommendations(
-  subjects: Subject[],
-  edges: GraphEdge[],
-  desiredCount: number,
-): Subject[] {
-  const subjectByPlanCode = buildSubjectByPlanCode(subjects);
-  const available = subjects.filter(
-    (subject) =>
-      subject.status === SubjectStatus.DISPONIBLE &&
-      subject.correlativeIds.every((reqCode: string) => {
-        const required = subjectByPlanCode.get(reqCode);
-        return !required || required.status === SubjectStatus.APROBADA;
-      }),
-  );
-
-  if (available.length === 0) return [];
-
-  const { nodeIds: criticalNodes } = getCriticalPath(subjects, edges);
-  const distanceToSink = getLongestDistanceToSink(subjects, edges);
-
-  const scored = available.map((subject) => {
-    const base = distanceToSink.get(subject.id) ?? 0;
-    const bonus = criticalNodes.has(subject.id) ? RECOMMENDATION_BONUS : 0;
-    return {
-      subject,
-      score: base + bonus,
-    };
-  });
-
-  scored.sort((a, b) => b.score - a.score || a.subject.year - b.subject.year);
-
-  return scored.slice(0, desiredCount).map((entry) => entry.subject);
-}
-
-function getLongestDistanceToSink(
+function computeDistanceToSink(
   subjects: Subject[],
   edges: GraphEdge[],
 ): Map<string, number> {
@@ -205,6 +68,116 @@ function getLongestDistanceToSink(
   }
 
   return distance;
+}
+
+function buildCriticalPathFromDistance(
+  subjects: Subject[],
+  edges: GraphEdge[],
+  distance: Map<string, number>,
+): { nodeIds: Set<string>; edgeIds: Set<string> } {
+  const criticalLength = Math.max(...distance.values());
+
+  const criticalNodeIds = new Set<string>();
+  distance.forEach((dist, id) => {
+    if (dist === criticalLength) criticalNodeIds.add(id);
+  });
+
+  const criticalEdgeIds = new Set<string>();
+  edges.forEach((edge) => {
+    const fromDist = distance.get(edge.from) ?? 0;
+    const toDist = distance.get(edge.to) ?? 0;
+    if (fromDist === toDist + 1 && criticalNodeIds.has(edge.from)) {
+      criticalEdgeIds.add(`${edge.from}-${edge.to}`);
+      criticalNodeIds.add(edge.to);
+    }
+  });
+
+  return {
+    nodeIds: criticalNodeIds,
+    edgeIds: criticalEdgeIds,
+  };
+}
+
+export function buildEdges(subjects: Subject[]): GraphEdge[] {
+  const edges: GraphEdge[] = [];
+  const byPlanCode = new Map(
+    subjects.map((subject) => [subject.planCode, subject.id]),
+  );
+
+  subjects.forEach((subject) => {
+    subject.correlativeIds.forEach((requiredCode: string) => {
+      const requiredId = byPlanCode.get(requiredCode);
+      if (requiredId) {
+        edges.push({ from: requiredId, to: subject.id });
+      }
+    });
+  });
+
+  return edges;
+}
+
+export function buildUnlockMap(edges: GraphEdge[]): Map<string, number> {
+  const unlocks = new Map<string, number>();
+  edges.forEach((edge) => {
+    unlocks.set(edge.from, (unlocks.get(edge.from) ?? 0) + 1);
+  });
+  return unlocks;
+}
+
+export function getCriticalPath(
+  subjects: Subject[],
+  edges: GraphEdge[],
+): {
+  nodeIds: Set<string>;
+  edgeIds: Set<string>;
+} {
+  const distance = computeDistanceToSink(subjects, edges);
+  return buildCriticalPathFromDistance(subjects, edges, distance);
+}
+
+export function getRecommendations(
+  subjects: Subject[],
+  edges: GraphEdge[],
+  desiredCount: number,
+): Subject[] {
+  const subjectByPlanCode = buildSubjectByPlanCode(subjects);
+  const available = subjects.filter(
+    (subject) =>
+      subject.status === SubjectStatus.DISPONIBLE &&
+      subject.correlativeIds.every((reqCode: string) => {
+        const required = subjectByPlanCode.get(reqCode);
+        return !required || required.status === SubjectStatus.APROBADA;
+      }),
+  );
+
+  if (available.length === 0) return [];
+
+  const distanceToSink = computeDistanceToSink(subjects, edges);
+  const { nodeIds: criticalNodes } = buildCriticalPathFromDistance(
+    subjects,
+    edges,
+    distanceToSink,
+  );
+
+  const scored = available.map((subject) => {
+    const base = distanceToSink.get(subject.id) ?? 0;
+    const bonus = criticalNodes.has(subject.id) ? RECOMMENDATION_BONUS : 0;
+    return {
+      subject,
+      score: base + bonus,
+    };
+  });
+
+  scored.sort((a, b) => b.score - a.score || a.subject.year - b.subject.year);
+
+  return scored.slice(0, desiredCount).map((entry) => entry.subject);
+}
+
+function getLongestDistanceToSink(
+  subjects: Subject[],
+  edges: GraphEdge[],
+): Map<string, number> {
+  return computeDistanceToSink(subjects, edges);
 }
 
 // ==================== NEW RECOMMENDATION SYSTEM ====================
@@ -265,8 +238,12 @@ export function getRecommendationsWithReasons(
 
   if (available.length === 0) return [];
 
-  const { nodeIds: criticalNodes } = getCriticalPath(subjects, edges);
-  const distanceToSink = getLongestDistanceToSink(subjects, edges);
+  const distanceToSink = computeDistanceToSink(subjects, edges);
+  const { nodeIds: criticalNodes } = buildCriticalPathFromDistance(
+    subjects,
+    edges,
+    distanceToSink,
+  );
   const unlocksThesis = getSubjectsThatUnlockThesis(subjects, edges);
   const unlockMap = buildUnlockMap(edges);
 

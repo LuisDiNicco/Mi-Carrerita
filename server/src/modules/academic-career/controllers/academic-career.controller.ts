@@ -3,11 +3,11 @@ import { AcademicCareerService } from '../services/academic-career.service';
 import { SubjectNodeDto } from '../dto/subject-node.dto';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { UpdateSubjectRecordDto } from '../dto/update-subject-record.dto';
-import { DevAuthGuard } from '../../../common/guards/dev-auth.guard';
+import { EnvironmentAuthGuard } from '../../../common/guards/environment-auth.guard';
 import { CurrentUser } from '../../../common/decorators/current-user.decorator';
 
 @Controller('academic-career')
-@UseGuards(DevAuthGuard)
+@UseGuards(EnvironmentAuthGuard)
 export class AcademicCareerController {
   constructor(private readonly academicCareerService: AcademicCareerService) {}
 

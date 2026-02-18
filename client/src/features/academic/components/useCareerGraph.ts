@@ -46,10 +46,19 @@ export const useCareerGraph = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
   const [focusedId, setFocusedId] = useState<string | null>(null);
+  const focusTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     nodesRef.current = nodes;
   }, [nodes]);
+
+  useEffect(() => {
+    return () => {
+      if (focusTimeoutRef.current) {
+        clearTimeout(focusTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const fetchCareerData = useCallback(
     async (options?: { preserveLayout?: boolean; silent?: boolean }) => {
@@ -223,7 +232,13 @@ export const useCareerGraph = () => {
       setFocusedId(subject.id);
       setSearchQuery("");
       setSearchOpen(false);
-      setTimeout(() => setFocusedId(null), FOCUS_TIMEOUT_MS);
+      if (focusTimeoutRef.current) {
+        clearTimeout(focusTimeoutRef.current);
+      }
+      focusTimeoutRef.current = setTimeout(
+        () => setFocusedId(null),
+        FOCUS_TIMEOUT_MS,
+      );
     },
     [flowInstance],
   );
