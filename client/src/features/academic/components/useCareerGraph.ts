@@ -5,6 +5,7 @@ import type { Edge, Node, ReactFlowInstance } from "@xyflow/react";
 import type { Subject } from "../../../shared/types/academic";
 import { SubjectStatus } from "../../../shared/types/academic";
 import { useAcademicStore } from "../store/academic-store";
+import { fetchAcademicGraph } from "../lib/academic-api";
 import { authFetch } from "../../auth/lib/api";
 import {
   buildEdges,
@@ -58,17 +59,7 @@ export const useCareerGraph = () => {
         }
         setError(null);
 
-        const response = await authFetch(`${API_URL}/academic-career/graph`, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error(`Error ${response.status}: ${response.statusText}`);
-        }
-
-        const data: Subject[] = await response.json();
+        const data: Subject[] = await fetchAcademicGraph();
 
         if (!Array.isArray(data) || data.length === 0) {
           throw new Error("No se recibieron materias del servidor");

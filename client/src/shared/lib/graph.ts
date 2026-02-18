@@ -127,7 +127,7 @@ export function getRecommendations(
   const subjectByPlanCode = buildSubjectByPlanCode(subjects);
   const available = subjects.filter(
     (subject) =>
-      subject.status === SubjectStatus.PENDIENTE &&
+      subject.status === SubjectStatus.DISPONIBLE &&
       subject.correlativeIds.every((reqCode: string) => {
         const required = subjectByPlanCode.get(reqCode);
         return !required || required.status === SubjectStatus.APROBADA;
@@ -224,22 +224,20 @@ export function getSubjectsThatUnlockThesis(
   subjects: Subject[],
   edges: GraphEdge[],
 ): Set<string> {
-  const thesisSubjects = subjects.filter(
-    (s) => s.name === PROYECTO_FINAL_NAME
-  );
-  
+  const thesisSubjects = subjects.filter((s) => s.name === PROYECTO_FINAL_NAME);
+
   if (thesisSubjects.length === 0) return new Set();
-  
+
   const thesisIds = new Set(thesisSubjects.map((s) => s.id));
   const unlocksThesis = new Set<string>();
-  
+
   // Encontrar todas las materias que son correlativas directas del Proyecto Final
   edges.forEach((edge) => {
     if (thesisIds.has(edge.to)) {
       unlocksThesis.add(edge.from);
     }
   });
-  
+
   return unlocksThesis;
 }
 
@@ -250,19 +248,19 @@ export function getRecommendationsWithReasons(
   subjects: Subject[],
   edges: GraphEdge[],
   desiredCount: number,
-  excludeIds: string[] = []
+  excludeIds: string[] = [],
 ): RecommendationWithReason[] {
   const excludeSet = new Set(excludeIds);
   const subjectByPlanCode = buildSubjectByPlanCode(subjects);
-  
+
   const available = subjects.filter(
     (subject) =>
-      subject.status === SubjectStatus.PENDIENTE &&
+      subject.status === SubjectStatus.DISPONIBLE &&
       !excludeSet.has(subject.id) &&
       subject.correlativeIds.every((reqCode: string) => {
         const required = subjectByPlanCode.get(reqCode);
         return !required || required.status === SubjectStatus.APROBADA;
-      })
+      }),
   );
 
   if (available.length === 0) return [];
@@ -297,7 +295,9 @@ export function getRecommendationsWithReasons(
     // Prioridad 4: Desbloquea otras materias (+10 por cada una)
     const unlocksCount = unlockMap.get(subject.id) ?? 0;
     if (unlocksCount > 0) {
-      reasons.push(`🔓 Desbloquea ${unlocksCount} ${unlocksCount === 1 ? 'materia' : 'materias'}`);
+      reasons.push(
+        `🔓 Desbloquea ${unlocksCount} ${unlocksCount === 1 ? "materia" : "materias"}`,
+      );
       score += unlocksCount * 10;
     }
 

@@ -1,27 +1,57 @@
-import { useState, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useAcademicStore } from '../academic/store/academic-store';
-import { buildEdges, getRecommendationsWithReasons, type RecommendationWithReason } from '../../shared/lib/graph';
+import { buildEdges, getRecommendationsWithReasons } from '../../shared/lib/graph';
+import { fetchAcademicGraph } from '../academic/lib/academic-api';
 import { Lock, Unlock, RotateCcw } from 'lucide-react';
 
 const DEFAULT_COUNT = 4;
 
 export const RecommendationsPage = () => {
   const subjects = useAcademicStore((state) => state.subjects);
+  const setSubjects = useAcademicStore((state) => state.setSubjects);
 
   const [desiredCount, setDesiredCount] = useState(DEFAULT_COUNT);
   const [inputValue, setInputValue] = useState(String(DEFAULT_COUNT));
   const [lockedIds, setLockedIds] = useState<Set<string>>(new Set());
   const [excludedIds, setExcludedIds] = useState<Set<string>>(new Set());
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
-  const { recommendations, edges } = useMemo(() => {
+  useEffect(() => {
+    let active = true;
+
+    if (subjects.length > 0) return undefined;
+
+    setIsLoading(true);
+    setLoadError(null);
+
+    fetchAcademicGraph()
+      .then((data) => {
+        if (!active) return;
+        setSubjects(data);
+      })
+      .catch((err) => {
+        if (!active) return;
+        const message = err instanceof Error ? err.message : 'Error al cargar materias.';
+        setLoadError(message);
+      })
+      .finally(() => {
+        if (active) setIsLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [setSubjects, subjects.length]);
+
+  const recommendations = useMemo(() => {
     const edges = buildEdges(subjects);
-    const recommendations = getRecommendationsWithReasons(
+    return getRecommendationsWithReasons(
       subjects,
       edges,
       desiredCount,
       Array.from(excludedIds)
     );
-    return { recommendations, edges };
   }, [subjects, desiredCount, excludedIds]);
 
   const handleGeneratePlan = () => {
@@ -102,7 +132,15 @@ export const RecommendationsPage = () => {
       </div>
 
       {/* Recommendations */}
-      {recommendations.length === 0 ? (
+      {isLoading && subjects.length === 0 ? (
+        <div className="rounded-2xl border-2 border-app-border bg-elevated p-8 text-center">
+          <p className="text-muted text-lg">Cargando materias...</p>
+        </div>
+      ) : loadError ? (
+        <div className="rounded-2xl border-2 border-red-500/40 bg-elevated p-8 text-center">
+          <p className="text-red-500 text-lg">{loadError}</p>
+        </div>
+      ) : recommendations.length === 0 ? (
         <div className="rounded-2xl border-2 border-app-border bg-elevated p-8 text-center">
           <p className="text-muted text-lg">
             No hay materias disponibles para recomendar en este momento.
