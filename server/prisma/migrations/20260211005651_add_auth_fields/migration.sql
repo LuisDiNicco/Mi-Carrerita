@@ -15,8 +15,8 @@ CREATE TABLE "Subject" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "planCode" TEXT NOT NULL,
     "name" TEXT NOT NULL,
-    "semester" INTEGER NOT NULL,
-    "credits" INTEGER NOT NULL,
+    "year" INTEGER NOT NULL,
+    "hours" INTEGER NOT NULL,
     "isOptional" BOOLEAN NOT NULL DEFAULT false
 );
 

@@ -5,6 +5,10 @@ import * as Joi from 'joi';
 import { PrismaModule } from './prisma/prisma.module'; // <--- Importar archivo
 import { AcademicCareerModule } from './modules/academic-career/academic-career.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
+import { ScheduleModule } from './modules/schedule/schedule.module';
+import { AcademicHistoryModule } from './modules/academic-history/academic-history.module';
+import { TrophyModule } from './modules/trophy/trophy.module';
 
 @Module({
   imports: [
@@ -26,6 +30,10 @@ import { AuthModule } from './modules/auth/auth.module';
     PrismaModule, // <--- Agregar al array de imports
     AcademicCareerModule,
     AuthModule,
+    DashboardModule,
+    ScheduleModule,
+    AcademicHistoryModule,
+    TrophyModule,
   ],
 })
 export class AppModule {}
