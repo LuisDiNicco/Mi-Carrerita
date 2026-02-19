@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useAcademicStore } from '../store/academic-store';
 import { formatDate, formatGrade } from '../../../shared/lib/utils';
 import { authFetch } from '../../auth/lib/api';
+import { fetchAcademicGraph } from '../lib/academic-api';
 import { SubjectStatus } from '../../../shared/types/academic';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
@@ -83,13 +84,8 @@ export const HistoryTable = () => {
         notes: notesValue,
       });
 
-      const graphResponse = await authFetch(`${API_URL}/academic-career/graph`);
-      if (graphResponse.ok) {
-        const graphData = await graphResponse.json();
-        if (Array.isArray(graphData)) {
-          setSubjects(graphData);
-        }
-      }
+      const graphData = await fetchAcademicGraph();
+      setSubjects(graphData);
 
       setGrade('');
       setDifficulty('');

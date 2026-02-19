@@ -4,7 +4,7 @@ import { Logger } from '@nestjs/common';
 export interface LogContext {
   context: string;
   method?: string;
-  data?: any;
+  data?: unknown;
 }
 
 export class AppLogger {
@@ -17,7 +17,7 @@ export class AppLogger {
   /**
    * Log información general
    */
-  info(message: string, data?: any) {
+  info(message: string, data?: unknown) {
     if (data) {
       this.logger.log(`${message} - ${JSON.stringify(data)}`);
     } else {
@@ -28,7 +28,7 @@ export class AppLogger {
   /**
    * Log de warning
    */
-  warn(message: string, data?: any) {
+  warn(message: string, data?: unknown) {
     if (data) {
       this.logger.warn(`${message} - ${JSON.stringify(data)}`);
     } else {
@@ -39,7 +39,7 @@ export class AppLogger {
   /**
    * Log de error
    */
-  error(message: string, error?: Error | any) {
+  error(message: string, error?: Error | unknown) {
     if (error instanceof Error) {
       this.logger.error(`${message} - ${error.message}`, error.stack);
     } else {
@@ -50,7 +50,7 @@ export class AppLogger {
   /**
    * Log de debug
    */
-  debug(message: string, data?: any) {
+  debug(message: string, data?: unknown) {
     if (data) {
       this.logger.debug(`${message} - ${JSON.stringify(data)}`);
     } else {

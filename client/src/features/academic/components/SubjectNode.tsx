@@ -134,7 +134,7 @@ export const SubjectNode = ({ data, selected }: NodeProps<SubjectNodeType>) => {
         <div className={cn('flex items-center justify-between mt-3 pt-2 border-t-2 border-current/30', META_CLASS)}>
           <div className="flex items-center gap-1">
             <span>⭐</span>
-            <span>{subject.credits || 0}</span>
+            <span>{subject.hours || 0}</span>
           </div>
 
           {subject.grade !== null && (
@@ -186,21 +186,6 @@ export const SubjectNode = ({ data, selected }: NodeProps<SubjectNodeType>) => {
         </div>
       )}
 
-      <style>{`
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(4px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes float {
-          0%, 100% { transform: translateY(0); opacity: 1; }
-          50% { transform: translateY(-20px); opacity: 0; }
-        }
-
-        .text-shadow-retro {
-          text-shadow: none;
-        }
-      `}</style>
     </div>
   );
 };

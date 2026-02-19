@@ -25,11 +25,11 @@ export class SubjectNodeDto {
 
   @ApiProperty()
   @IsNumber()
-  semester: number;
+  year: number;
 
   @ApiProperty()
   @IsNumber()
-  credits: number;
+  hours: number;
 
   @ApiProperty()
   @IsBoolean()
@@ -61,7 +61,11 @@ export class SubjectNodeDto {
 
   @ApiProperty()
   @IsArray()
-  requiredSubjectIds: string[];
+  correlativeIds: string[];
+
+  @ApiProperty()
+  @IsBoolean()
+  isIntermediateDegree: boolean;
 
   constructor(partial: Partial<SubjectNodeDto>) {
     Object.assign(this, partial);

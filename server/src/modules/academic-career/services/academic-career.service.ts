@@ -4,15 +4,13 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { SubjectNodeDto } from '../dto/subject-node.dto';
-import {
-  SubjectStatus,
-  CorrelativityCondition,
-  isSubjectStatus,
-} from '../../../common/constants/academic-enums';
+import { SubjectStatus } from '../../../common/constants/academic-enums';
+import { getYearInfo } from '../../../common/constants/subject-years';
 import { UpdateSubjectRecordDto } from '../dto/update-subject-record.dto';
+import type { SubjectWithRecords } from '../types/subject-with-records.type';
+import { buildApprovalSets, resolveSubjectStatus } from '../helpers';
 
 @Injectable()
 export class AcademicCareerService {
@@ -20,66 +18,6 @@ export class AcademicCareerService {
     private readonly prisma: PrismaService,
     private readonly logger: Logger,
   ) {}
-
-  private buildApprovedSets(subjects: SubjectWithRecords[]) {
-    const finalApprovedIds = new Set<string>();
-    const regularApprovedIds = new Set<string>();
-
-    subjects.forEach((subject) => {
-      const record = subject.records[0];
-      if (!record || !isSubjectStatus(record.status)) return;
-
-      if (record.status === SubjectStatus.APROBADA) {
-        finalApprovedIds.add(subject.id);
-        regularApprovedIds.add(subject.id);
-        return;
-      }
-
-      if (record.status === SubjectStatus.REGULARIZADA) {
-        regularApprovedIds.add(subject.id);
-      }
-    });
-
-    return { finalApprovedIds, regularApprovedIds };
-  }
-
-  private resolveSubjectStatus(
-    subject: SubjectWithRecords,
-    finalApprovedIds: Set<string>,
-    regularApprovedIds: Set<string>,
-  ) {
-    const record = subject.records[0];
-
-    let status: SubjectStatus = SubjectStatus.PENDIENTE;
-
-    if (record && isSubjectStatus(record.status)) {
-      status = record.status;
-    }
-
-    if (status !== SubjectStatus.PENDIENTE) {
-      return status;
-    }
-
-    let meetsAllPrerequisites = true;
-
-    for (const req of subject.prerequisites) {
-      const prereqId = req.prerequisiteId;
-
-      if (req.condition === CorrelativityCondition.FINAL_APROBADO) {
-        if (!finalApprovedIds.has(prereqId)) {
-          meetsAllPrerequisites = false;
-          break;
-        }
-      } else if (req.condition === CorrelativityCondition.REGULAR_CURSADA) {
-        if (!regularApprovedIds.has(prereqId)) {
-          meetsAllPrerequisites = false;
-          break;
-        }
-      }
-    }
-
-    return meetsAllPrerequisites ? SubjectStatus.DISPONIBLE : status;
-  }
 
   async getCareerGraph(userEmail: string): Promise<SubjectNodeDto[]> {
     const user = await this.prisma.user.findUnique({
@@ -98,8 +36,8 @@ export class AcademicCareerService {
         id: true,
         planCode: true,
         name: true,
-        semester: true,
-        credits: true,
+        year: true,
+        hours: true,
         isOptional: true,
         prerequisites: {
           select: {
@@ -121,16 +59,16 @@ export class AcademicCareerService {
           },
         },
       },
-      orderBy: { semester: 'asc' },
+      orderBy: { year: 'asc' },
     });
 
     const typedSubjects = subjects as SubjectWithRecords[];
     const { finalApprovedIds, regularApprovedIds } =
-      this.buildApprovedSets(typedSubjects);
+      buildApprovalSets(typedSubjects);
 
     return typedSubjects.map((subject) => {
       const record = subject.records[0];
-      const status = this.resolveSubjectStatus(
+      const status = resolveSubjectStatus(
         subject,
         finalApprovedIds,
         regularApprovedIds,
@@ -140,12 +78,14 @@ export class AcademicCareerService {
         (p) => p.prerequisite.planCode,
       );
 
+      const yearInfo = getYearInfo(subject.planCode);
+
       return new SubjectNodeDto({
         id: subject.id,
         planCode: subject.planCode,
         name: subject.name,
-        semester: subject.semester,
-        credits: subject.credits,
+        year: subject.year,
+        hours: subject.hours,
         isOptional: subject.isOptional,
         status: status,
         grade: record?.finalGrade ?? null,
@@ -154,13 +94,10 @@ export class AcademicCareerService {
           ? record.statusDate.toISOString().slice(0, 10)
           : null,
         notes: record?.notes ?? null,
-        requiredSubjectIds: requiredIds,
+        correlativeIds: requiredIds,
+        isIntermediateDegree: yearInfo.isIntermediateDegree,
       });
     });
-  }
-
-  async findUserByEmail(email: string) {
-    return this.prisma.user.findUnique({ where: { email } });
   }
 
   async updateSubjectRecord(
@@ -230,32 +167,3 @@ export class AcademicCareerService {
     });
   }
 }
-
-type SubjectWithRecords = Prisma.SubjectGetPayload<{
-  select: {
-    id: true;
-    planCode: true;
-    name: true;
-    semester: true;
-    credits: true;
-    isOptional: true;
-    prerequisites: {
-      select: {
-        condition: true;
-        prerequisiteId: true;
-        prerequisite: {
-          select: { planCode: true };
-        };
-      };
-    };
-    records: {
-      select: {
-        status: true;
-        finalGrade: true;
-        difficulty: true;
-        statusDate: true;
-        notes: true;
-      };
-    };
-  };
-}>;

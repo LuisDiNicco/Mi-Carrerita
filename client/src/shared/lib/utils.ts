@@ -115,15 +115,3 @@ export function debounce<T extends (...args: unknown[]) => unknown>(
 /**
  * Validar estructura de Subject
  */
-export function isValidSubject(subject: unknown): boolean {
-  if (!subject || typeof subject !== "object") return false;
-
-  const s = subject as Record<string, unknown>;
-  return (
-    typeof s.id === "string" &&
-    typeof s.planCode === "string" &&
-    typeof s.name === "string" &&
-    typeof s.semester === "number" &&
-    typeof s.status === "string"
-  );
-}

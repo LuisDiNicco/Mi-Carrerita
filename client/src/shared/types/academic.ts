@@ -20,13 +20,14 @@ export interface Subject {
   id: string;
   planCode: string;
   name: string;
-  semester: number;
-  credits: number;
+  year: number;
+  hours: number;
   isOptional?: boolean;
   status: SubjectStatus;
   grade: number | null;
   difficulty?: number | null;
   statusDate?: string | null;
   notes?: string | null;
-  requiredSubjectIds: string[];
+  correlativeIds: string[];
+  isIntermediateDegree: boolean;
 }

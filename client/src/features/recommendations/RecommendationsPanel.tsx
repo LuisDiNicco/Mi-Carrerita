@@ -55,7 +55,7 @@ export const RecommendationsPanel = () => {
             >
               <p className="text-xs text-muted">Codigo {subject.planCode}</p>
               <p className="text-base font-semibold text-app">{subject.name}</p>
-              <p className="text-xs text-muted">Cuatrimestre {subject.semester}</p>
+              <p className="text-xs text-muted">Año {subject.year}</p>
             </div>
           ))}
         </div>

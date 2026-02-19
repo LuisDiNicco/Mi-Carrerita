@@ -8,8 +8,9 @@ export default {
     extend: {
       // Fuentes retro
       fontFamily: {
-        retro: ['"Pixelify Sans"', '"VT323"', 'monospace'],
-        pixel: ['"Press Start 2P"', 'monospace'],
+        retro: ['"IBM Plex Mono"', '"Space Mono"', 'monospace'],
+        pixel: ['"JetBrains Mono"', 'monospace'],
+        mono: ['"IBM Plex Mono"', '"Space Mono"', 'monospace'],
         sans: ['"Inter"', 'sans-serif'],
       },
 
