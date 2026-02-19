@@ -8,7 +8,6 @@ interface ProgressTrackProps {
 
 const CHARACTER_WIDTH = 48;
 const CHARACTER_OFFSET = CHARACTER_WIDTH / 2;
-const CHECKPOINT_OFFSET_VISUAL = 6;
 const MIN_PROGRESS = 0;
 const MAX_PROGRESS = 100;
 

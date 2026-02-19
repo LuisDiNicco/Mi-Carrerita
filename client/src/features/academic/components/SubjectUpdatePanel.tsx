@@ -47,7 +47,7 @@ export const SubjectUpdatePanel = ({ subject, isOpen, onClose, onSave }: Subject
     setStatus(cleanStatus);
     setGrade(subject.grade !== null ? String(subject.grade) : '');
     setDifficulty(subject.difficulty !== null && subject.difficulty !== undefined ? String(subject.difficulty) : '');
-    setStatusDate(subject.statusDate ?? '');
+    setStatusDate(subject.statusDate ? subject.statusDate.split('T')[0] : '');
     setNotes(subject.notes ?? '');
     setConfirmOpen(false); // Reset confirmation on subject change
     setError(null);
@@ -255,7 +255,7 @@ export const SubjectUpdatePanel = ({ subject, isOpen, onClose, onSave }: Subject
                 <input
                   type="date"
                   max="2099-12-31"
-                  className="w-full bg-elevated border-2 border-app-border rounded-lg px-3 py-2.5 text-app focus:border-unlam-500 focus:ring-2 focus:ring-unlam-500/20 outline-none transition-all"
+                  className="w-full bg-elevated border-2 border-app-border rounded-lg px-3 py-2.5 text-app focus:border-unlam-500 focus:ring-2 focus:ring-unlam-500/20 outline-none transition-all [color-scheme:dark]"
                   value={statusDate}
                   onChange={(event) => setStatusDate(event.target.value)}
                 />

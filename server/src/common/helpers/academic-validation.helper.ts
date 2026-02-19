@@ -60,9 +60,14 @@ export function validateAcademicRecord(payload: AcademicRecordValidationPayload)
     );
   }
 
-  if (payload.status !== SubjectStatus.APROBADA && payload.grade !== null && payload.grade !== undefined) {
+  if (
+    payload.status !== SubjectStatus.APROBADA &&
+    payload.status !== SubjectStatus.RECURSADA &&
+    payload.grade !== null &&
+    payload.grade !== undefined
+  ) {
     throw new BadRequestException(
-      'Solo una materia aprobada puede tener nota final.',
+      'Solo una materia aprobada o recursada puede tener nota final.',
     );
   }
 }

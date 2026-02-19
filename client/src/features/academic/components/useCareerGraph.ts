@@ -162,30 +162,59 @@ export const useCareerGraph = () => {
       .slice(0, SEARCH_RESULTS_LIMIT);
   }, [searchQuery, subjects]);
 
-  const enrichedNodes = useMemo(
-    () =>
-      nodes.map((node) => {
-        const subject = (node.data as { subject?: Subject }).subject;
+  // Update node metadata in-place to prevent React Flow infinite remeasure loops
+  useEffect(() => {
+    setNodes((nds) => {
+      let changed = false;
+      const nextNodes = nds.map((node) => {
+        const subject = (node.data as any).subject as Subject | undefined;
+        if (!subject) return node;
+
+        const isCritical = criticalPath.nodeIds.has(subject.id);
+        const isRecentlyUpdated = subject.id === recentUpdateId;
+        const isFocused = subject.id === focusedId;
+
+        if (
+          node.data.isCritical === isCritical &&
+          node.data.isRecentlyUpdated === isRecentlyUpdated &&
+          node.data.isFocused === isFocused
+        ) {
+          return node;
+        }
+
+        changed = true;
         return {
           ...node,
           data: {
-            subject,
-            isCritical: subject ? criticalPath.nodeIds.has(subject.id) : false,
-            isRecentlyUpdated: subject ? subject.id === recentUpdateId : false,
-            isFocused: subject ? subject.id === focusedId : false,
+            ...node.data,
+            isCritical,
+            isRecentlyUpdated,
+            isFocused,
           },
         };
-      }),
-    [criticalPath.nodeIds, focusedId, nodes, recentUpdateId],
-  );
+      });
+      return changed ? nextNodes : nds;
+    });
+  }, [criticalPath.nodeIds, focusedId, recentUpdateId, setNodes]);
 
-  const enrichedEdges = useMemo(
-    () =>
-      edges.map((edge) => {
+  // Update edge metadata in-place
+  useEffect(() => {
+    setEdges((eds) => {
+      let changed = false;
+      const nextEdges = eds.map((edge) => {
         const edgeKey = `${edge.source}-${edge.target}`;
         const isCritical = criticalPath.edgeIds.has(edgeKey);
         const targetSubject = subjectById.get(edge.target);
         const isBlocked = targetSubject?.status === SubjectStatus.PENDIENTE;
+
+        if (
+          (edge.data as any)?.isCritical === isCritical &&
+          (edge.data as any)?.isBlocked === isBlocked
+        ) {
+          return edge;
+        }
+
+        changed = true;
         const edgeColor = isCritical
           ? EDGE_STYLES.critical.stroke
           : isBlocked
@@ -206,10 +235,16 @@ export const useCareerGraph = () => {
             height: EDGE_MARKER.height,
             color: edgeColor,
           },
+          data: {
+            ...edge.data,
+            isCritical,
+            isBlocked,
+          },
         };
-      }),
-    [criticalPath.edgeIds, edges, subjectById],
-  );
+      });
+      return changed ? nextEdges : eds;
+    });
+  }, [criticalPath.edgeIds, subjectById, setEdges]);
 
   const yearSeparatorNodes = useMemo(
     () => buildYearSeparatorNodes(subjects, nodes),
@@ -290,8 +325,8 @@ export const useCareerGraph = () => {
   return {
     loading,
     error,
-    nodes: enrichedNodes,
-    edges: enrichedEdges,
+    nodes,
+    edges,
     onNodesChange,
     onEdgesChange,
     setFlowInstance,
