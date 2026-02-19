@@ -268,7 +268,15 @@ export const useCareerGraph = () => {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
-        throw new Error(errorData?.message || "No se pudo guardar la materia. Intentá revisar los campos nuevamente.");
+        let msg = "No se pudo guardar la materia. Revisá los datos e intentá de nuevo.";
+        if (errorData?.message) {
+          if (Array.isArray(errorData.message)) {
+            msg = errorData.message.join(" - ");
+          } else if (typeof errorData.message === "string") {
+            msg = errorData.message;
+          }
+        }
+        throw new Error(msg);
       }
 
       updateSubject(activeSubject.id, payload);

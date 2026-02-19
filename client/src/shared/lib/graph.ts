@@ -74,27 +74,49 @@ function buildCriticalPathFromDistance(
   edges: GraphEdge[],
   distance: Map<string, number>,
 ): { nodeIds: Set<string>; edgeIds: Set<string> } {
-  const criticalLength = Math.max(...distance.values());
+  const distances = Array.from(distance.values());
+  const criticalLength = distances.length > 0 ? Math.max(...distances) : 0;
 
   const criticalNodeIds = new Set<string>();
-  distance.forEach((dist, id) => {
-    if (dist === criticalLength) criticalNodeIds.add(id);
-  });
-
   const criticalEdgeIds = new Set<string>();
-  edges.forEach((edge) => {
-    const fromDist = distance.get(edge.from) ?? 0;
-    const toDist = distance.get(edge.to) ?? 0;
-    if (fromDist === toDist + 1 && criticalNodeIds.has(edge.from)) {
-      criticalEdgeIds.add(`${edge.from}-${edge.to}`);
-      criticalNodeIds.add(edge.to);
-    }
-  });
 
-  return {
-    nodeIds: criticalNodeIds,
-    edgeIds: criticalEdgeIds,
-  };
+  if (criticalLength <= 0 || distance.size === 0) return { nodeIds: criticalNodeIds, edgeIds: criticalEdgeIds };
+
+  const candidates = Array.from(distance.entries())
+    .filter(([, dist]) => dist === criticalLength)
+    .map(([id]) => id);
+
+  const unlocks = buildUnlockMap(edges);
+  candidates.sort((a, b) => (unlocks.get(b) ?? 0) - (unlocks.get(a) ?? 0));
+
+  if (candidates.length > 0) {
+    let current = candidates[0];
+    criticalNodeIds.add(current);
+
+    let currentDist = criticalLength;
+    while (currentDist > 0) {
+      const outEdges = edges.filter(e => e.from === current);
+      const nextSteps = outEdges
+        .filter(e => distance.get(e.to) === currentDist - 1)
+        .sort((a, b) => {
+          const unlocksA = unlocks.get(a.to) ?? 0;
+          const unlocksB = unlocks.get(b.to) ?? 0;
+          return unlocksB - unlocksA;
+        });
+
+      if (nextSteps.length > 0) {
+        const nextEdge = nextSteps[0];
+        criticalEdgeIds.add(`${nextEdge.from}-${nextEdge.to}`);
+        criticalNodeIds.add(nextEdge.to);
+        current = nextEdge.to;
+        currentDist--;
+      } else {
+        break;
+      }
+    }
+  }
+
+  return { nodeIds: criticalNodeIds, edgeIds: criticalEdgeIds };
 }
 
 export function buildEdges(subjects: Subject[]): GraphEdge[] {

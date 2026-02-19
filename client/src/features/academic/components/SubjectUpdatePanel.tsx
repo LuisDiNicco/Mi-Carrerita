@@ -67,11 +67,36 @@ export const SubjectUpdatePanel = ({ subject, isOpen, onClose, onSave }: Subject
     setIsSaving(true);
     setError(null);
     try {
+      if (status === SubjectStatus.APROBADA) {
+        if (grade.trim() === '') {
+          setError("La nota es obligatoria para materias Aprobadas.");
+          setIsSaving(false);
+          return;
+        }
+      }
+
+      if (grade.trim() !== '') {
+        const gradeValue = Number(grade);
+        if (Number.isNaN(gradeValue) || gradeValue < 1 || gradeValue > 10) {
+          setError("La nota debe ser un número entre 1 y 10.");
+          setIsSaving(false);
+          return;
+        }
+      }
+
+      if (difficulty.trim() !== '') {
+        const diffValue = Number(difficulty);
+        if (Number.isNaN(diffValue) || diffValue < 1 || diffValue > 100) {
+          setError("La dificultad debe ser un número entre 1 y 100.");
+          setIsSaving(false);
+          return;
+        }
+      }
+
       const gradeValue = grade.trim() === '' ? null : Number(grade);
       const normalizedGrade = gradeValue !== null && Number.isNaN(gradeValue) ? null : gradeValue;
       const difficultyValue = difficulty.trim() === '' ? null : Number(difficulty);
-      const normalizedDifficulty =
-        difficultyValue !== null && Number.isNaN(difficultyValue) ? null : difficultyValue;
+      const normalizedDifficulty = difficultyValue !== null && Number.isNaN(difficultyValue) ? null : difficultyValue;
       const statusDateValue = statusDate.trim() === '' ? null : statusDate;
       const notesValue = notes.trim() === '' ? null : notes.trim();
 
@@ -85,7 +110,7 @@ export const SubjectUpdatePanel = ({ subject, isOpen, onClose, onSave }: Subject
       onClose();
     } catch (err) {
       console.error("Error saving subject:", err);
-      const message = err instanceof Error ? err.message : 'No se pudo guardar.';
+      const message = err instanceof Error ? err.message : 'No se pudo guardar la materia. Por favor, revisa los datos e intenta nuevamente.';
       setError(message);
     } finally {
       setIsSaving(false);
@@ -185,7 +210,14 @@ export const SubjectUpdatePanel = ({ subject, isOpen, onClose, onSave }: Subject
             <div className="space-y-5 flex-1 flex flex-col">
               <div className="grid grid-cols-2 gap-5">
                 <label className="flex flex-col gap-2 text-sm text-muted">
-                  <span className="font-bold flex justify-between">Nota <span className="font-normal text-[10px] bg-surface px-1.5 py-0.5 rounded border border-app-border">Opcional</span></span>
+                  <span className="font-bold flex justify-between">
+                    Nota
+                    {status === SubjectStatus.APROBADA ? (
+                      <span className="font-bold text-[10px] text-red-500 bg-red-500/10 px-1.5 py-0.5 rounded border border-red-500/20">* Obligatorio</span>
+                    ) : (
+                      <span className="font-normal text-[10px] bg-surface px-1.5 py-0.5 rounded border border-app-border">Opcional</span>
+                    )}
+                  </span>
                   <input
                     type="text"
                     className="w-full bg-elevated border-2 border-app-border rounded-lg px-3 py-2.5 text-app focus:border-unlam-500 focus:ring-2 focus:ring-unlam-500/20 outline-none transition-all placeholder:text-muted/50"
@@ -222,7 +254,8 @@ export const SubjectUpdatePanel = ({ subject, isOpen, onClose, onSave }: Subject
                 <span className="font-bold">Fecha de Aprobación/Regularidad</span>
                 <input
                   type="date"
-                  className="w-full bg-elevated border-2 border-app-border rounded-lg px-3 py-2.5 text-app focus:border-unlam-500 focus:ring-2 focus:ring-unlam-500/20 outline-none transition-all retro-calendar"
+                  max="2099-12-31"
+                  className="w-full bg-elevated border-2 border-app-border rounded-lg px-3 py-2.5 text-app focus:border-unlam-500 focus:ring-2 focus:ring-unlam-500/20 outline-none transition-all"
                   value={statusDate}
                   onChange={(event) => setStatusDate(event.target.value)}
                 />

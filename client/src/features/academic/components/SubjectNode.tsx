@@ -1,5 +1,5 @@
 import { useState, memo } from 'react';
-import { Handle, Position, useViewport } from '@xyflow/react';
+import { Handle, Position } from '@xyflow/react';
 import type { Node, NodeProps } from '@xyflow/react';
 import { SubjectStatus } from '../../../shared/types/academic';
 import type { Subject } from '../../../shared/types/academic';
@@ -67,7 +67,6 @@ const BADGE_CLASS = 'text-base';
 const SubjectNodeComponent = ({ data, selected }: NodeProps<SubjectNodeType>) => {
   const subject = data.subject;
   const [isHovered, setIsHovered] = useState(false);
-  const { zoom } = useViewport();
 
   if (!subject) {
     return <div className="p-4 bg-red-500 text-white">ERROR: Materia no encontrada</div>;
@@ -79,8 +78,7 @@ const SubjectNodeComponent = ({ data, selected }: NodeProps<SubjectNodeType>) =>
   const isRecentlyUpdated = Boolean(data.isRecentlyUpdated);
   const isFocused = Boolean(data.isFocused);
 
-  // Base scale calculation so tooltip is readable when zoomed out
-  const tooltipScale = Math.max(0.75, Math.min(2.5, 1 / zoom));
+  // The tooltip scale scales naturally with the node.
 
   return (
     <div
@@ -164,7 +162,7 @@ const SubjectNodeComponent = ({ data, selected }: NodeProps<SubjectNodeType>) =>
                           whitespace-nowrap font-bold
                           shadow-lg tracking-wide
                           animate-[fadeIn_0.2s_ease-out]"
-            style={{ transform: `translateX(-50%) scale(${tooltipScale})` }}>
+            style={{ transform: `translateX(-50%)` }}>
             {getTooltipText(subject)}
             <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2
                             w-3 h-3 bg-[#1C2B1F] border-r-2 border-b-2 border-app
@@ -182,17 +180,9 @@ const SubjectNodeComponent = ({ data, selected }: NodeProps<SubjectNodeType>) =>
 
       {subject.status === SubjectStatus.APROBADA && (
         <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-lg">
-          {[...Array(3)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute w-1 h-1 bg-yellow-200 rounded-full animate-float"
-              style={{
-                left: `${20 + i * 30}%`,
-                animationDelay: `${i * 0.5}s`,
-                animationDuration: '2s',
-              }}
-            />
-          ))}
+          <div className="absolute w-1 h-1 bg-yellow-200 rounded-full animate-float" style={{ left: '20%', animationDelay: '0s', animationDuration: '2s' }} />
+          <div className="absolute w-1 h-1 bg-yellow-200 rounded-full animate-float" style={{ left: '50%', animationDelay: '0.5s', animationDuration: '2s' }} />
+          <div className="absolute w-1 h-1 bg-yellow-200 rounded-full animate-float" style={{ left: '80%', animationDelay: '1s', animationDuration: '2s' }} />
         </div>
       )}
 

@@ -12,7 +12,7 @@ interface AppHeaderProps {
 
 const NAV_ITEMS = [
   { id: 'home', label: 'Inicio' },
-  { id: 'tree', label: 'Árbol' },
+  { id: 'tree', label: 'Árbol de materias' },
   { id: 'dashboard', label: 'Tablero' },
   { id: 'recommendations', label: 'Planificador' },
   { id: 'history', label: 'Historia' },
