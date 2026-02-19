@@ -16,6 +16,7 @@ const NAV_ITEMS = [
   { id: 'dashboard', label: 'Dashboard' },
   { id: 'recommendations', label: 'Recomendaciones' },
   { id: 'history', label: 'Historia' },
+  { id: 'schedule', label: 'Horarios' },
   { id: 'trophies', label: 'Trofeos' },
 ];
 
@@ -72,11 +73,10 @@ export const AppHeader = ({
               return (
                 <button
                   key={item.id}
-                  className={`rounded-lg border-2 px-4 py-2 text-sm font-medium transition-all ${
-                    isActive
+                  className={`rounded-lg border-2 px-4 py-2 text-sm font-medium transition-all ${isActive
                       ? 'border-unlam-500 bg-unlam-500 text-black shadow-retro'
                       : 'border-app-border bg-app-bg text-app hover:border-unlam-500 hover:text-unlam-500'
-                  }`}
+                    }`}
                   onClick={() => onNavigate(item.id)}
                 >
                   {item.label}
@@ -94,7 +94,7 @@ export const AppHeader = ({
             >
               {theme === 'light' ? '🌙' : '☀️'}
             </button>
-            
+
             {userName ? (
               <div className="relative" ref={menuRef}>
                 <button
@@ -184,11 +184,10 @@ export const AppHeader = ({
                 return (
                   <button
                     key={item.id}
-                    className={`w-full rounded-lg border-2 px-4 py-2 text-left text-sm font-medium transition-all ${
-                      isActive
+                    className={`w-full rounded-lg border-2 px-4 py-2 text-left text-sm font-medium transition-all ${isActive
                         ? 'border-unlam-500 bg-unlam-500 text-black'
                         : 'border-app-border bg-app-bg text-app hover:border-unlam-500'
-                    }`}
+                      }`}
                     onClick={() => {
                       onNavigate(item.id);
                       setMobileMenuOpen(false);
@@ -199,7 +198,7 @@ export const AppHeader = ({
                 );
               })}
             </nav>
-            
+
             <div className="mt-4 border-t-2 border-app-border pt-4">
               {userName ? (
                 <div className="space-y-2">

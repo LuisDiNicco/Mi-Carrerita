@@ -15,9 +15,66 @@ export async function fetchAcademicGraph(): Promise<Subject[]> {
   }
 
   const data: Subject[] = await response.json();
-  if (!Array.isArray(data)) {
-    throw new Error("Invalid academic graph response");
+  return data;
+}
+
+export async function updateSubjectRecord(
+  subjectId: string,
+  payload: {
+    status: string;
+    grade?: number | null;
+    difficulty?: number | null;
+    notes?: string | null;
+    statusDate?: string | null;
+    isIntermediate?: boolean;
+  }
+): Promise<Subject> {
+  const response = await authFetch(`${API_URL}/academic-career/subjects/${subjectId}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Error ${response.status}: ${response.statusText}`);
   }
 
-  return data;
+  return response.json();
+}
+
+export interface AcademicHistoryRecord {
+  id: string;
+  status: string;
+  finalGrade: number | null;
+  statusDate: string | null;
+  subject: {
+    name: string;
+    planCode: string;
+    year: number;
+  };
+}
+
+export async function fetchAcademicHistory(params?: {
+  page?: number;
+  limit?: number;
+  search?: string;
+}): Promise<{ data: AcademicHistoryRecord[]; total: number; page: number }> {
+  const query = new URLSearchParams();
+  if (params?.page) query.append("page", String(params.page));
+  if (params?.limit) query.append("limit", String(params.limit));
+  if (params?.search) query.append("search", params.search);
+
+  const response = await authFetch(`${API_URL}/academic-history?${query.toString()}`, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Error ${response.status}: ${response.statusText}`);
+  }
+
+  return response.json();
 }

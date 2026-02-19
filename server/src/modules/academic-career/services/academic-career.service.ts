@@ -1,3 +1,4 @@
+import { validateAcademicRecord, parseIsolatedDate } from '../../../common/helpers/academic-validation.helper';
 import {
   BadRequestException,
   Injectable,
@@ -17,7 +18,7 @@ export class AcademicCareerService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly logger: Logger,
-  ) {}
+  ) { }
 
   async getCareerGraph(userEmail: string): Promise<SubjectNodeDto[]> {
     const user = await this.prisma.user.findUnique({
@@ -117,29 +118,15 @@ export class AcademicCareerService {
       throw new NotFoundException('Materia no encontrada.');
     }
 
-    if (payload.status === SubjectStatus.DISPONIBLE) {
-      throw new BadRequestException(
-        'El estado DISPONIBLE se calcula automaticamente.',
-      );
-    }
+    validateAcademicRecord({
+      status: payload.status,
+      grade: payload.grade,
+      notes: payload.notes,
+    });
 
-    if (payload.status === SubjectStatus.APROBADA && payload.grade === null) {
-      throw new BadRequestException(
-        'Una materia aprobada requiere nota final.',
-      );
-    }
-
-    if (payload.status !== SubjectStatus.APROBADA && payload.grade !== null) {
-      throw new BadRequestException(
-        'Solo una materia aprobada puede tener nota final.',
-      );
-    }
-
-    if (payload.status === SubjectStatus.PENDIENTE && payload.notes) {
-      this.logger.warn('Se guardan comentarios en materias pendientes.');
-    }
-
-    const statusDateValue = payload.statusDate ?? null;
+    const statusDateValue = payload.statusDate
+      ? parseIsolatedDate(payload.statusDate)
+      : null;
 
     return this.prisma.academicRecord.upsert({
       where: {

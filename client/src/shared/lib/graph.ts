@@ -71,7 +71,6 @@ function computeDistanceToSink(
 }
 
 function buildCriticalPathFromDistance(
-  subjects: Subject[],
   edges: GraphEdge[],
   distance: Map<string, number>,
 ): { nodeIds: Set<string>; edgeIds: Set<string> } {
@@ -132,7 +131,7 @@ export function getCriticalPath(
   edgeIds: Set<string>;
 } {
   const distance = computeDistanceToSink(subjects, edges);
-  return buildCriticalPathFromDistance(subjects, edges, distance);
+  return buildCriticalPathFromDistance(edges, distance);
 }
 
 export function getRecommendations(
@@ -154,7 +153,6 @@ export function getRecommendations(
 
   const distanceToSink = computeDistanceToSink(subjects, edges);
   const { nodeIds: criticalNodes } = buildCriticalPathFromDistance(
-    subjects,
     edges,
     distanceToSink,
   );
@@ -173,12 +171,7 @@ export function getRecommendations(
   return scored.slice(0, desiredCount).map((entry) => entry.subject);
 }
 
-function getLongestDistanceToSink(
-  subjects: Subject[],
-  edges: GraphEdge[],
-): Map<string, number> {
-  return computeDistanceToSink(subjects, edges);
-}
+
 
 // ==================== NEW RECOMMENDATION SYSTEM ====================
 
@@ -240,7 +233,6 @@ export function getRecommendationsWithReasons(
 
   const distanceToSink = computeDistanceToSink(subjects, edges);
   const { nodeIds: criticalNodes } = buildCriticalPathFromDistance(
-    subjects,
     edges,
     distanceToSink,
   );

@@ -10,6 +10,7 @@ import { HistoryTable } from '../features/academic/components/HistoryTable';
 import { Landing } from '../features/landing/Landing';
 import { TrophiesPanel } from '../features/trophies/TrophiesPanel';
 import { RecommendationsPage } from '../features/recommendations/RecommendationsPage';
+import { SchedulePage } from '../features/schedule/SchedulePage';
 import { AuthModal } from '../features/auth/components/AuthModal';
 import { useAuthStore } from '../features/auth/store/auth-store';
 import { clearAccessToken, setAccessToken } from '../features/auth/lib/auth';
@@ -120,6 +121,7 @@ function App() {
           )}
           {activeSection === 'dashboard' && <Dashboard />}
           {activeSection === 'recommendations' && <RecommendationsPage />}
+          {activeSection === 'schedule' && <SchedulePage />}
           {activeSection === 'history' && <HistoryTable />}
           {activeSection === 'trophies' && <TrophiesPanel />}
         </main>

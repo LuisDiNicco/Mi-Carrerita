@@ -1,3 +1,4 @@
+import { validateAcademicRecord, parseIsolatedDate } from '../../../common/helpers/academic-validation.helper';
 import {
   Injectable,
   NotFoundException,
@@ -21,7 +22,7 @@ import {
 
 @Injectable()
 export class AcademicHistoryService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   private readonly recordWithSubjectSelect = Prisma.validator<
     Prisma.AcademicRecordDefaultArgs
@@ -129,23 +130,11 @@ export class AcademicHistoryService {
     }
 
     // Validate before updating
-    if (update.status === 'DISPONIBLE') {
-      throw new BadRequestException(
-        'El estado DISPONIBLE se calcula automáticamente.',
-      );
-    }
-
-    if (update.status === 'APROBADA' && update.finalGrade === undefined) {
-      throw new BadRequestException(
-        'Una materia aprobada requiere nota final.',
-      );
-    }
-
-    if (update.status !== 'APROBADA' && update.finalGrade !== undefined) {
-      throw new BadRequestException(
-        'Solo una materia aprobada puede tener nota final.',
-      );
-    }
+    validateAcademicRecord({
+      status: update.status,
+      grade: update.finalGrade,
+      notes: update.notes,
+    });
 
     // Update record
     const updated = await this.prisma.academicRecord.update({
@@ -156,9 +145,9 @@ export class AcademicHistoryService {
         difficulty: update.difficulty ?? null,
         notes: update.notes ?? null,
         isIntermediate: update.isIntermediate ?? record.isIntermediate,
-        statusDate: update.statusDate ? new Date(update.statusDate) : null,
+        statusDate: update.statusDate ? parseIsolatedDate(update.statusDate) : null,
       },
-      include: { subject: true },
+      ...this.recordWithSubjectSelect,
     });
 
     return this.mapToAcademicHistoryRowDto(updated);
