@@ -130,6 +130,7 @@ export const TrophiesPanel = () => {
                       <img
                         src={trophy.icon}
                         alt={trophy.name}
+                        loading="lazy"
                         className="w-12 h-12 rounded bg-black/20 p-1"
                         onError={(e) => {
                           (e.target as HTMLImageElement).src = '/bronze-trophie.png'; // Fallback

@@ -50,6 +50,12 @@ const STATUS_STYLES: Record<SubjectStatus, {
     emoji: '🏆',
     border: 'border-[#2E7D4D]',
   },
+  [SubjectStatus.RECURSADA]: {
+    container: 'bg-[#E57373] text-[#2C0B0E]',
+    badge: 'bg-[#EF5350] border-[#B71C1C] text-[#2C0B0E]',
+    emoji: '⚠️',
+    border: 'border-[#B71C1C]',
+  },
 };
 
 const NODE_WIDTH_PX = 280;
@@ -196,6 +202,7 @@ function getTooltipText(subject: Subject): string {
     [SubjectStatus.EN_CURSO]: 'Cursando actualmente',
     [SubjectStatus.REGULARIZADA]: 'Materia regularizada',
     [SubjectStatus.APROBADA]: '¡Materia aprobada!',
+    [SubjectStatus.RECURSADA]: 'Tendrás que recursar esta materia',
   };
 
   return statusMessages[subject.status as keyof typeof statusMessages] || subject.name;

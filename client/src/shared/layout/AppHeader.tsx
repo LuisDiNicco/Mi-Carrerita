@@ -13,10 +13,9 @@ interface AppHeaderProps {
 const NAV_ITEMS = [
   { id: 'home', label: 'Inicio' },
   { id: 'tree', label: 'Árbol' },
-  { id: 'dashboard', label: 'Dashboard' },
-  { id: 'recommendations', label: 'Recomendaciones' },
+  { id: 'dashboard', label: 'Tablero' },
+  { id: 'recommendations', label: 'Planificador' },
   { id: 'history', label: 'Historia' },
-  { id: 'schedule', label: 'Horarios' },
   { id: 'trophies', label: 'Trofeos' },
 ];
 
@@ -74,8 +73,8 @@ export const AppHeader = ({
                 <button
                   key={item.id}
                   className={`rounded-lg border-2 px-4 py-2 text-sm font-medium transition-all ${isActive
-                      ? 'border-unlam-500 bg-unlam-500 text-black shadow-retro'
-                      : 'border-app-border bg-app-bg text-app hover:border-unlam-500 hover:text-unlam-500'
+                    ? 'border-unlam-500 bg-unlam-500 text-black shadow-retro'
+                    : 'border-app-border bg-app-bg text-app hover:border-unlam-500 hover:text-unlam-500'
                     }`}
                   onClick={() => onNavigate(item.id)}
                 >
@@ -185,8 +184,8 @@ export const AppHeader = ({
                   <button
                     key={item.id}
                     className={`w-full rounded-lg border-2 px-4 py-2 text-left text-sm font-medium transition-all ${isActive
-                        ? 'border-unlam-500 bg-unlam-500 text-black'
-                        : 'border-app-border bg-app-bg text-app hover:border-unlam-500'
+                      ? 'border-unlam-500 bg-unlam-500 text-black'
+                      : 'border-app-border bg-app-bg text-app hover:border-unlam-500'
                       }`}
                     onClick={() => {
                       onNavigate(item.id);

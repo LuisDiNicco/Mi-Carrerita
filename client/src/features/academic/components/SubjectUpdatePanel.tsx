@@ -22,6 +22,7 @@ const statusOptions: Array<{ label: string; value: SubjectStatus; disabled?: boo
   { label: 'En curso', value: SubjectStatusMap.EN_CURSO },
   { label: 'Regularizada', value: SubjectStatusMap.REGULARIZADA },
   { label: 'Aprobada', value: SubjectStatusMap.APROBADA },
+  { label: 'Recursada', value: SubjectStatusMap.RECURSADA },
 ];
 
 export const SubjectUpdatePanel = ({ subject, isOpen, onClose, onSave }: SubjectUpdatePanelProps) => {
@@ -47,7 +48,9 @@ export const SubjectUpdatePanel = ({ subject, isOpen, onClose, onSave }: Subject
 
   const isStatusLocked = status === SubjectStatusMap.DISPONIBLE;
 
-  const handleSave = async () => {
+  const [confirmOpen, setConfirmOpen] = useState(false);
+
+  const executeSave = async () => {
     setIsSaving(true);
     setError(null);
     try {
@@ -75,6 +78,17 @@ export const SubjectUpdatePanel = ({ subject, isOpen, onClose, onSave }: Subject
     }
   };
 
+  const handleSave = async () => {
+    // Check if we need confirmation
+    // If subject was PENDIENTE (blocked) and we are moving to anything else, warn user
+    if (subject.status === SubjectStatusMap.PENDIENTE && status !== SubjectStatusMap.PENDIENTE) {
+      setConfirmOpen(true);
+      return;
+    }
+
+    await executeSave();
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
@@ -94,91 +108,131 @@ export const SubjectUpdatePanel = ({ subject, isOpen, onClose, onSave }: Subject
           </button>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <label className="flex flex-col gap-2 text-sm text-muted">
-            Estado
-            <select
-              className="bg-surface border border-app rounded-lg px-3 py-2 text-app"
-              value={status}
-              onChange={(event) => setStatus(event.target.value as SubjectStatus)}
-            >
-              {statusOptions.map((option) => (
-                <option key={option.value} value={option.value} disabled={option.disabled}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </label>
+        {confirmOpen ? (
+          <div className="space-y-4 animate-fade-in-up">
+            <div className="p-4 border-2 border-yellow-500/50 bg-yellow-500/10 rounded-lg">
+              <h3 className="text-lg font-bold text-yellow-500 mb-2">⚠️ ¿Estás seguro?</h3>
+              <p className="text-sm text-app/90">
+                Esta materia figura como <strong>PENDIENTE</strong> (bloqueada por correlativas).
+                <br /><br />
+                Si cambias su estado manualmente, podrías estar rompiendo la cadena de correlatividades.
+                ¿Deseas continuar de todas formas?
+              </p>
+            </div>
+            <div className="flex justify-end gap-3 mt-4">
+              <button
+                onClick={() => setConfirmOpen(false)}
+                className="px-4 py-2 text-sm font-bold text-muted hover:text-app"
+              >
+                Cancelar
+              </button>
+              <RetroButton
+                variant="warning"
+                size="md"
+                onClick={executeSave}
+                disabled={isSaving}
+              >
+                {isSaving ? 'Forzar cambio...' : 'Sí, forzar cambio'}
+              </RetroButton>
+            </div>
+          </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <label className="flex flex-col gap-2 text-sm text-muted">
+                Estado
+                <select
+                  className="bg-surface border border-app rounded-lg px-3 py-2 text-app"
+                  value={status}
+                  onChange={(event) => setStatus(event.target.value as SubjectStatus)}
+                >
+                  {statusOptions.map((option) => (
+                    <option key={option.value} value={option.value} disabled={option.disabled}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
 
-          <label className="flex flex-col gap-2 text-sm text-muted">
-            Nota final
-            <input
-              type="number"
-              min={0}
-              max={10}
-              className="bg-surface border border-app rounded-lg px-3 py-2 text-app"
-              value={grade}
-              onChange={(event) => setGrade(event.target.value)}
-              placeholder="Ej: 8"
-            />
-          </label>
+              <label className="flex flex-col gap-2 text-sm text-muted">
+                Nota
+                <div className="relative">
+                  <input
+                    type="text"
+                    className="w-full bg-surface border border-app rounded-lg px-3 py-2 text-app"
+                    value={grade}
+                    placeholder="Ej: 8"
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val === '' || /^\d*\.?\d*$/.test(val)) {
+                        setGrade(val);
+                      }
+                    }}
+                  />
+                </div>
+              </label>
 
-          <label className="flex flex-col gap-2 text-sm text-muted">
-            Dificultad (1-100)
-            <input
-              type="number"
-              min={1}
-              max={100}
-              className="bg-surface border border-app rounded-lg px-3 py-2 text-app"
-              value={difficulty}
-              onChange={(event) => setDifficulty(event.target.value)}
-              placeholder="Ej: 70"
-            />
-          </label>
+              <label className="flex flex-col gap-2 text-sm text-muted">
+                Dificultad (1-100)
+                <div className="relative custom-number-input">
+                  <input
+                    type="number"
+                    min={1}
+                    max={100}
+                    className="w-full bg-surface border border-app rounded-lg px-3 py-2 text-app"
+                    value={difficulty}
+                    onChange={(event) => setDifficulty(event.target.value)}
+                    placeholder="Ej: 70"
+                  />
+                  {/* Custom arrows could go here if implemented purely in CSS/HTML structure */}
+                </div>
+              </label>
 
-          <label className="flex flex-col gap-2 text-sm text-muted">
-            Fecha
-            <input
-              type="date"
-              className="bg-surface border border-app rounded-lg px-3 py-2 text-app"
-              value={statusDate}
-              onChange={(event) => setStatusDate(event.target.value)}
-            />
-          </label>
+              <label className="flex flex-col gap-2 text-sm text-muted">
+                Fecha
+                <input
+                  type="date"
+                  className="bg-surface border border-app rounded-lg px-3 py-2 text-app"
+                  value={statusDate}
+                  onChange={(event) => setStatusDate(event.target.value)}
+                />
+              </label>
 
-          <label className="flex flex-col gap-2 text-sm text-muted md:col-span-2">
-            Comentarios
-            <textarea
-              rows={4}
-              className="bg-surface border border-app rounded-lg px-3 py-2 text-app resize-none"
-              value={notes}
-              onChange={(event) => setNotes(event.target.value)}
-              placeholder="Agrega un comentario o recordatorio..."
-            />
-          </label>
-        </div>
+              <label className="flex flex-col gap-2 text-sm text-muted md:col-span-2">
+                Comentarios
+                <textarea
+                  rows={4}
+                  className="bg-surface border border-app rounded-lg px-3 py-2 text-app resize-none"
+                  value={notes}
+                  onChange={(event) => setNotes(event.target.value)}
+                  placeholder="Agrega un comentario o recordatorio..."
+                />
+              </label>
+            </div>
 
-        {isStatusLocked && (
-          <p className="mt-3 text-xs text-muted">
-            El estado Disponible se calcula automaticamente. Elegi un estado real.
-          </p>
+            {isStatusLocked && (
+              <p className="mt-3 text-xs text-muted">
+                El estado Disponible se calcula automaticamente. Elegi un estado real.
+              </p>
+            )}
+
+            {error && <p className="mt-3 text-sm text-red-500">{error}</p>}
+
+            <div className="mt-6 flex items-center justify-end gap-3">
+              <button className="text-sm text-muted hover:text-app" onClick={onClose}>
+                Cancelar
+              </button>
+              <RetroButton
+                variant="primary"
+                size="md"
+                onClick={handleSave}
+                disabled={isSaving || isStatusLocked}
+              >
+                {isSaving ? 'Guardando...' : 'Guardar cambios'}
+              </RetroButton>
+            </div>
+          </>
         )}
-
-        {error && <p className="mt-3 text-sm text-red-500">{error}</p>}
-
-        <div className="mt-6 flex items-center justify-end gap-3">
-          <button className="text-sm text-muted hover:text-app" onClick={onClose}>
-            Cancelar
-          </button>
-          <RetroButton
-            variant="primary"
-            size="md"
-            onClick={handleSave}
-            disabled={isSaving || isStatusLocked}
-          >
-            {isSaving ? 'Guardando...' : 'Guardar cambios'}
-          </RetroButton>
-        </div>
       </div>
     </div>
   );

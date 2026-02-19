@@ -49,23 +49,7 @@ export const ProgressTrack = ({ progress }: ProgressTrackProps) => {
             style={{ width: `${clamped}%` }}
           >
             {clamped > 0 && (
-              <>
-                <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 spark-edge z-10 pointer-events-none" />
-                {/* Particles effect */}
-                <div className="absolute inset-0 overflow-hidden">
-                  {[...Array(12)].map((_, i) => (
-                    <div
-                      key={i}
-                      className="absolute w-1 h-1 bg-white rounded-full opacity-70 animate-[particle_2s_ease-in-out_infinite]"
-                      style={{
-                        left: `${Math.random() * 100}%`,
-                        animationDelay: `${Math.random() * 2}s`,
-                        top: `${20 + Math.random() * 60}%`,
-                      }}
-                    />
-                  ))}
-                </div>
-              </>
+              <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 spark-edge z-10 pointer-events-none" />
             )}
           </div>
         </div>
@@ -78,9 +62,9 @@ export const ProgressTrack = ({ progress }: ProgressTrackProps) => {
                 key={checkpoint}
                 className={`absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full border-2 transition-colors duration-500
                         ${isPassed
-                            ? 'bg-retro-light border-white shadow-[0_0_10px_var(--app-accent)]'
-                            : 'bg-app-bg border-app-border opacity-50'
-                        }`}
+                    ? 'bg-retro-light border-white shadow-[0_0_10px_var(--app-accent)]'
+                    : 'bg-app-bg border-app-border opacity-50'
+                  }`}
                 style={{ left: `calc(${checkpoint}% - ${CHECKPOINT_OFFSET_VISUAL}px)` }}
               >
                 <div className={`w-0.5 h-0.5 rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 ${isPassed ? 'bg-app-accent' : 'bg-transparent'}`}></div>

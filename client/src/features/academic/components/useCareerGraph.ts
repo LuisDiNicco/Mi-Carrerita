@@ -137,7 +137,10 @@ export const useCareerGraph = () => {
     if (!showCriticalPath) {
       return { nodeIds: new Set<string>(), edgeIds: new Set<string>() };
     }
-    const coreSubjects = subjects.filter((subject) => !subject.isOptional);
+    const coreSubjects = subjects.filter(
+      (subject) =>
+        !subject.isOptional && subject.status !== SubjectStatus.APROBADA
+    );
     const edgesList = buildEdges(coreSubjects);
     return getCriticalPath(coreSubjects, edgesList);
   }, [showCriticalPath, subjects]);
