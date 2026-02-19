@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import type { Subject } from '../../../shared/types/academic';
 import { SubjectStatus } from '../../../shared/types/academic';
 import { RetroButton } from '../../../shared/ui/RetroButton';
@@ -26,15 +27,13 @@ export const SubjectUpdatePanel = ({ subject, isOpen, onClose, onSave }: Subject
   const [error, setError] = useState<string | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
 
-  // Define options inside or use memo efficiently.
-  // Using the imported SubjectStatus object directly.
   const statusOptions = [
-    { label: 'Disponible (auto)', value: SubjectStatus.DISPONIBLE, disabled: true },
     { label: 'Pendiente', value: SubjectStatus.PENDIENTE },
+    { label: 'Disponible', value: SubjectStatus.DISPONIBLE, disabled: true },
     { label: 'En curso', value: SubjectStatus.EN_CURSO },
+    { label: 'Recursada', value: SubjectStatus.RECURSADA },
     { label: 'Regularizada', value: SubjectStatus.REGULARIZADA },
     { label: 'Aprobada', value: SubjectStatus.APROBADA },
-    { label: 'Recursada', value: SubjectStatus.RECURSADA },
   ];
 
   useEffect(() => {
@@ -53,6 +52,12 @@ export const SubjectUpdatePanel = ({ subject, isOpen, onClose, onSave }: Subject
     setConfirmOpen(false); // Reset confirmation on subject change
     setError(null);
   }, [subject]);
+
+  useEffect(() => {
+    if (status === SubjectStatus.RECURSADA) {
+      setGrade('2');
+    }
+  }, [status]);
 
   if (!isOpen || !subject) return null;
 
@@ -95,77 +100,95 @@ export const SubjectUpdatePanel = ({ subject, isOpen, onClose, onSave }: Subject
     await executeSave();
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative z-10 w-full max-w-xl bg-surface border border-app rounded-xl shadow-soft p-6">
-        <div className="flex items-start justify-between gap-4 mb-4">
+  const modalContent = (
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center px-4">
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]" onClick={onClose} />
+      <div className="relative z-10 w-full max-w-2xl bg-surface border-2 border-app rounded-xl shadow-retro p-0 flex flex-col md:flex-row overflow-hidden animate-[fadeInUp_0.3s_ease-out]">
+
+        {/* Left Side: Header info & Status */}
+        <div className="md:w-1/3 bg-elevated p-6 border-b md:border-b-0 md:border-r border-app flex flex-col justify-between">
           <div>
-            <p className="text-xs text-muted uppercase tracking-wider">Actualizar materia</p>
-            <h2 className="text-2xl font-bold text-app font-retro">{subject.name}</h2>
-            <p className="text-sm text-muted">Codigo {subject.planCode}</p>
+            <p className="text-[10px] text-muted uppercase tracking-widest font-bold mb-2">Actualizar Materia</p>
+            <h2 className="text-xl md:text-2xl font-bold text-app font-retro mb-4 leading-tight">{subject.name}</h2>
+            <div className="inline-block bg-surface px-2 py-1 border border-app rounded text-xs font-mono text-muted mb-6">
+              Código: {subject.planCode}
+            </div>
+
+            <label className="flex flex-col gap-2 text-sm text-muted">
+              <span className="font-bold flex items-center gap-2">Estado</span>
+              <select
+                className="bg-surface border-2 border-app rounded-lg px-3 py-2 text-app font-bold focus:ring-2 focus:ring-unlam-500/50 outline-none transition-all shadow-subtle hover:shadow-soft"
+                value={status}
+                onChange={(event) => setStatus(event.target.value as SubjectStatus)}
+              >
+                {statusOptions.map((option) => (
+                  <option key={option.value} value={option.value} disabled={option.disabled}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            {isStatusLocked && (
+              <div className="mt-4 p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg text-xs tracking-wide">
+                <span className="text-blue-400 font-bold mb-1 block">INFO:</span>
+                El estado <strong className="text-blue-300">Disponible</strong> se calcula automáticamente. Para modificar la materia, elegí un estado real.
+              </div>
+            )}
           </div>
-          <button
-            className="text-muted hover:text-app transition-colors text-xl font-bold w-8 h-8 flex items-center justify-center rounded-full hover:bg-elevated"
-            onClick={onClose}
-            aria-label="Cerrar"
-          >
-            ✕
-          </button>
         </div>
 
-        {confirmOpen ? (
-          <div className="space-y-4 animate-fade-in-up">
-            <div className="p-4 border-2 border-yellow-500/50 bg-yellow-500/10 rounded-lg">
-              <h3 className="text-lg font-bold text-yellow-500 mb-2 font-retro">⚠️ ¿Estás seguro?</h3>
-              <p className="text-sm text-app/90 leading-relaxed">
-                Esta materia figura como <strong>PENDIENTE</strong> (bloqueada por correlativas).
-                <br /><br />
-                Si cambias su estado manualmente, podrías estar rompiendo la cadena de correlatividades.
-                ¿Deseas continuar de todas formas?
-              </p>
-            </div>
-            <div className="flex justify-end gap-3 mt-4">
-              <button
-                onClick={() => setConfirmOpen(false)}
-                className="px-4 py-2 text-sm font-bold text-muted hover:text-app"
-              >
-                Cancelar
-              </button>
-              <RetroButton
-                variant="warning"
-                size="md"
-                onClick={executeSave}
-                disabled={isSaving}
-              >
-                {isSaving ? 'Forzar cambio...' : 'Sí, forzar cambio'}
-              </RetroButton>
-            </div>
+        {/* Right Side: Details Form */}
+        <div className="md:w-2/3 p-6 flex flex-col">
+          <div className="flex justify-between items-start mb-6">
+            <h3 className="text-lg font-retro text-app border-b-2 border-unlam-500/30 pb-1 inline-block">Detalles</h3>
+            <button
+              className="text-muted hover:text-red-400 bg-surface border border-transparent hover:border-red-400/50 transition-all text-xl font-bold w-8 h-8 flex items-center justify-center rounded-lg shadow-sm"
+              onClick={onClose}
+              aria-label="Cerrar"
+            >
+              ✕
+            </button>
           </div>
-        ) : (
-          <div className="space-y-4">
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <label className="flex flex-col gap-2 text-sm text-muted">
-                <span className="font-bold">Estado</span>
-                <select
-                  className="bg-surface border border-app rounded-lg px-3 py-2 text-app focus:ring-2 focus:ring-unlam-500/50 outline-none"
-                  value={status}
-                  onChange={(event) => setStatus(event.target.value as SubjectStatus)}
-                >
-                  {statusOptions.map((option) => (
-                    <option key={option.value} value={option.value} disabled={option.disabled}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              </label>
 
-              <label className="flex flex-col gap-2 text-sm text-muted">
-                <span className="font-bold">Nota</span>
-                <div className="relative">
+          {confirmOpen ? (
+            <div className="space-y-4 flex-1 flex flex-col justify-center animate-[fadeIn_0.3s_ease-out]">
+              <div className="p-5 border-2 border-yellow-500/50 bg-yellow-500/10 rounded-xl shadow-soft">
+                <h3 className="text-xl font-bold text-yellow-500 mb-3 font-retro flex items-center gap-2">
+                  <span className="text-2xl">⚠️</span> ¿Forzar Cambio?
+                </h3>
+                <p className="text-sm text-app/90 leading-relaxed">
+                  Esta materia figura como <strong className="bg-yellow-500/20 px-1 rounded text-yellow-400">PENDIENTE</strong> (bloqueada).
+                  <br /><br />
+                  Si cambias su estado manualmente, podrías estar rompiendo la cadena de correlatividades o el flujo del plan de estudios.
+                  ¿Deseas continuar bajo tu propio riesgo?
+                </p>
+              </div>
+              <div className="flex justify-end gap-3 mt-4">
+                <button
+                  onClick={() => setConfirmOpen(false)}
+                  className="px-5 py-2 text-sm font-bold text-muted hover:text-app bg-surface rounded-lg border border-app-border hover:border-app transition-all"
+                >
+                  Regresar
+                </button>
+                <RetroButton
+                  variant="warning"
+                  size="md"
+                  onClick={executeSave}
+                  disabled={isSaving}
+                >
+                  {isSaving ? 'Forzando...' : 'Forzar cambio'}
+                </RetroButton>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-5 flex-1 flex flex-col">
+              <div className="grid grid-cols-2 gap-5">
+                <label className="flex flex-col gap-2 text-sm text-muted">
+                  <span className="font-bold flex justify-between">Nota <span className="font-normal text-[10px] bg-surface px-1.5 py-0.5 rounded border border-app-border">Opcional</span></span>
                   <input
                     type="text"
-                    className="w-full bg-surface border border-app rounded-lg px-3 py-2 text-app focus:ring-2 focus:ring-unlam-500/50 outline-none"
+                    className="w-full bg-elevated border-2 border-app-border rounded-lg px-3 py-2.5 text-app focus:border-unlam-500 focus:ring-2 focus:ring-unlam-500/20 outline-none transition-all placeholder:text-muted/50"
                     value={grade}
                     placeholder="Ej: 8"
                     onChange={(e) => {
@@ -174,78 +197,77 @@ export const SubjectUpdatePanel = ({ subject, isOpen, onClose, onSave }: Subject
                         setGrade(val);
                       }
                     }}
+                    disabled={status === SubjectStatus.RECURSADA}
                   />
-                </div>
-              </label>
+                  {status === SubjectStatus.RECURSADA && <span className="text-[10px] text-red-400 tracking-wide">* Nota asignada auto x recursar</span>}
+                </label>
+
+                <label className="flex flex-col gap-2 text-sm text-muted">
+                  <span className="font-bold flex justify-between">Dificultad <span className="font-normal text-[10px] text-unlam-400 bg-unlam-500/10 px-1.5 py-0.5 rounded">1-100</span></span>
+                  <div className="relative custom-number-input">
+                    <input
+                      type="number"
+                      min={1}
+                      max={100}
+                      className="w-full bg-elevated border-2 border-app-border rounded-lg px-3 py-2.5 text-app focus:border-unlam-500 focus:ring-2 focus:ring-unlam-500/20 outline-none transition-all placeholder:text-muted/50"
+                      value={difficulty}
+                      onChange={(event) => setDifficulty(event.target.value)}
+                      placeholder="Ej: 70"
+                    />
+                  </div>
+                </label>
+              </div>
 
               <label className="flex flex-col gap-2 text-sm text-muted">
-                <span className="font-bold">Dificultad (1-100)</span>
-                <div className="relative custom-number-input">
-                  <input
-                    type="number"
-                    min={1}
-                    max={100}
-                    className="w-full bg-surface border border-app rounded-lg px-3 py-2 text-app focus:ring-2 focus:ring-unlam-500/50 outline-none"
-                    value={difficulty}
-                    onChange={(event) => setDifficulty(event.target.value)}
-                    placeholder="Ej: 70"
-                  />
-                </div>
-              </label>
-
-              <label className="flex flex-col gap-2 text-sm text-muted">
-                <span className="font-bold">Fecha</span>
+                <span className="font-bold">Fecha de Aprobación/Regularidad</span>
                 <input
                   type="date"
-                  className="bg-surface border border-app rounded-lg px-3 py-2 text-app focus:ring-2 focus:ring-unlam-500/50 outline-none"
+                  className="w-full bg-elevated border-2 border-app-border rounded-lg px-3 py-2.5 text-app focus:border-unlam-500 focus:ring-2 focus:ring-unlam-500/20 outline-none transition-all retro-calendar"
                   value={statusDate}
                   onChange={(event) => setStatusDate(event.target.value)}
                 />
               </label>
 
-              <label className="flex flex-col gap-2 text-sm text-muted md:col-span-2">
-                <span className="font-bold">Comentarios</span>
+              <label className="flex flex-col gap-2 text-sm text-muted flex-1">
+                <span className="font-bold">Comentarios o Recordatorios</span>
                 <textarea
-                  rows={3}
-                  className="bg-surface border border-app rounded-lg px-3 py-2 text-app resize-none focus:ring-2 focus:ring-unlam-500/50 outline-none"
+                  className="w-full h-full min-h-[80px] bg-elevated border-2 border-app-border rounded-lg px-3 py-2.5 text-app resize-none focus:border-unlam-500 focus:ring-2 focus:ring-unlam-500/20 outline-none transition-all placeholder:text-muted/50"
                   value={notes}
                   onChange={(event) => setNotes(event.target.value)}
-                  placeholder="Agrega un comentario o recordatorio..."
+                  placeholder="Ej: El final es oral y toma diseño de DB..."
                 />
               </label>
-            </div>
 
-            {isStatusLocked && (
-              <p className="px-3 py-2 bg-blue-500/10 border border-blue-500/30 rounded-lg text-xs text-app/80">
-                ℹ️ El estado <strong>Disponible</strong> se calcula automáticamente. Para modificar la materia, elegí un estado real (Cursando, Aprobada, etc).
-              </p>
-            )}
+              {error && (
+                <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg animate-[fadeIn_0.2s_ease-in]">
+                  <p className="text-sm text-red-400 font-bold flex items-center gap-2">
+                    <span>⛔</span> {error}
+                  </p>
+                </div>
+              )}
 
-            {error && (
-              <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
-                <p className="text-sm text-red-500 font-bold">⚠️ {error}</p>
+              <div className="mt-auto pt-4 flex items-center justify-end gap-3 border-t border-app-border/50">
+                <button
+                  className="px-5 py-2 text-sm font-bold text-muted hover:text-app bg-surface rounded-lg border border-transparent hover:border-app transition-all"
+                  onClick={onClose}
+                >
+                  Cancelar
+                </button>
+                <RetroButton
+                  variant="primary"
+                  size="md"
+                  onClick={handleSave}
+                  disabled={isSaving || isStatusLocked}
+                >
+                  {isSaving ? 'Guardando...' : 'Guardar Cambios'}
+                </RetroButton>
               </div>
-            )}
-
-            <div className="mt-6 flex items-center justify-end gap-3 pt-4 border-t border-app-border/50">
-              <button
-                className="px-4 py-2 text-sm font-bold text-muted hover:text-app transition-colors"
-                onClick={onClose}
-              >
-                Cancelar
-              </button>
-              <RetroButton
-                variant="primary"
-                size="md"
-                onClick={handleSave}
-                disabled={isSaving || isStatusLocked}
-              >
-                {isSaving ? 'Guardando...' : 'Guardar cambios'}
-              </RetroButton>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 };

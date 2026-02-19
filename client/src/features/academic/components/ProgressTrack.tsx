@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Trophy, Award, Zap, Star } from 'lucide-react';
 import { PROGRESS_CHECKPOINTS } from '../../../shared/lib/graph';
 
 interface ProgressTrackProps {
@@ -54,20 +55,34 @@ export const ProgressTrack = ({ progress }: ProgressTrackProps) => {
           </div>
         </div>
 
-        <div className="absolute inset-0 pointer-events-none z-10">
+        <div className="absolute inset-0 pointer-events-none z-10 font-retro">
           {PROGRESS_CHECKPOINTS.map((checkpoint) => {
             const isPassed = clamped >= checkpoint;
+            let icon = null;
+            let label = '';
+
+            // Map checkpoints to explicit labels/icons
+            if (checkpoint === 25) { label = '25% completado'; }
+            else if (checkpoint === 50) { label = '50% completado'; icon = <Award size={10} className={isPassed ? "text-app-bg" : "text-app-border"} />; }
+            else if (checkpoint === 75) { label = '75% completado'; icon = <Star size={10} className={isPassed ? "text-app-bg" : "text-app-border"} />; }
+            else if (checkpoint === 100) { label = 'Ingeniero Informático'; icon = <Trophy size={10} className={isPassed ? "text-app-bg" : "text-app-border"} />; }
+
             return (
               <div
                 key={checkpoint}
-                className={`absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full border-2 transition-colors duration-500
+                className={`absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full border-2 transition-colors duration-500 flex items-center justify-center
                         ${isPassed
-                    ? 'bg-retro-light border-white shadow-[0_0_10px_var(--app-accent)]'
-                    : 'bg-app-bg border-app-border opacity-50'
+                    ? 'bg-app-accent border-white shadow-[0_0_10px_var(--app-accent)]'
+                    : 'bg-app-bg border-app-border opacity-60'
                   }`}
-                style={{ left: `calc(${checkpoint}% - ${CHECKPOINT_OFFSET_VISUAL}px)` }}
+                style={{ left: `calc(${checkpoint}% - 8px)` }}
               >
-                <div className={`w-0.5 h-0.5 rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 ${isPassed ? 'bg-app-accent' : 'bg-transparent'}`}></div>
+                {icon ? icon : <div className={`w-1 h-1 rounded-full ${isPassed ? 'bg-app-bg' : 'bg-transparent'}`}></div>}
+
+                {/* Checkpoint Label below */}
+                <div className={`absolute top-full mt-3 left-1/2 -translate-x-1/2 text-center whitespace-pre-line text-[10px] sm:text-xs uppercase tracking-widest font-bold transition-all duration-300 drop-shadow-md ${isPassed ? 'text-app-accent scale-105' : 'text-muted'}`}>
+                  {label}
+                </div>
               </div>
             );
           })}
@@ -85,9 +100,11 @@ export const ProgressTrack = ({ progress }: ProgressTrackProps) => {
         </div>
       </div>
 
-      <div className="flex justify-between text-[10px] text-muted mt-4 uppercase tracking-wider font-bold px-1">
-        <span>Start</span>
-        <span>Master</span>
+      <div className="flex justify-between text-[10px] text-muted mt-6 uppercase tracking-wider font-bold px-1 items-center">
+        <div className="flex flex-col items-center gap-1">
+          <Zap size={14} className={clamped > 0 ? "text-app-accent" : "text-muted"} />
+          <span className={clamped > 0 ? "text-app-accent drop-shadow-md" : "text-muted"}>Inicio</span>
+        </div>
       </div>
     </div>
   );

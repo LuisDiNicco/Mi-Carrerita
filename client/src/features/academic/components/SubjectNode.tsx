@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Handle, Position } from '@xyflow/react';
+import { useState, memo } from 'react';
+import { Handle, Position, useViewport } from '@xyflow/react';
 import type { Node, NodeProps } from '@xyflow/react';
 import { SubjectStatus } from '../../../shared/types/academic';
 import type { Subject } from '../../../shared/types/academic';
@@ -64,9 +64,10 @@ const TITLE_CLASS = 'text-xl leading-tight';
 const META_CLASS = 'text-lg';
 const BADGE_CLASS = 'text-base';
 
-export const SubjectNode = ({ data, selected }: NodeProps<SubjectNodeType>) => {
+const SubjectNodeComponent = ({ data, selected }: NodeProps<SubjectNodeType>) => {
   const subject = data.subject;
   const [isHovered, setIsHovered] = useState(false);
+  const { zoom } = useViewport();
 
   if (!subject) {
     return <div className="p-4 bg-red-500 text-white">ERROR: Materia no encontrada</div>;
@@ -74,10 +75,12 @@ export const SubjectNode = ({ data, selected }: NodeProps<SubjectNodeType>) => {
 
   const statusConfig = STATUS_STYLES[subject.status];
   const emoji = statusConfig.emoji;
-  const canInteract = subject.status !== SubjectStatus.PENDIENTE;
   const isCritical = Boolean(data.isCritical);
   const isRecentlyUpdated = Boolean(data.isRecentlyUpdated);
   const isFocused = Boolean(data.isFocused);
+
+  // Base scale calculation so tooltip is readable when zoomed out
+  const tooltipScale = Math.max(0.75, Math.min(2.5, 1 / zoom));
 
   return (
     <div
@@ -85,7 +88,7 @@ export const SubjectNode = ({ data, selected }: NodeProps<SubjectNodeType>) => {
         'relative group transition-all duration-200',
         selected && 'scale-105 z-50'
       )}
-      onMouseEnter={() => canInteract && setIsHovered(true)}
+      onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       style={{ imageRendering: 'pixelated', width: NODE_WIDTH_PX }}
     >
@@ -102,7 +105,7 @@ export const SubjectNode = ({ data, selected }: NodeProps<SubjectNodeType>) => {
           'font-retro text-center',
           'transition-all duration-200',
           'shadow-subtle',
-          isHovered && canInteract && 'shadow-soft translate-x-[2px] translate-y-[2px]',
+          isHovered && 'shadow-soft translate-x-[2px] translate-y-[2px]',
           statusConfig.container,
           statusConfig.border,
           isCritical && 'border-red-400 critical-glow',
@@ -154,16 +157,17 @@ export const SubjectNode = ({ data, selected }: NodeProps<SubjectNodeType>) => {
           )}
         </div>
 
-        {isHovered && canInteract && (
-          <div className="absolute -top-14 left-1/2 -translate-x-1/2 z-50
-                          bg-[#1C2B1F] text-white text-xs px-3 py-2 rounded
-                          border border-app
-                          whitespace-nowrap
-                          shadow-subtle
-                          animate-[fadeIn_0.2s_ease-in]">
+        {isHovered && (
+          <div className="absolute -top-14 left-1/2 -translate-x-1/2 z-50 origin-bottom
+                          bg-[#1C2B1F] text-white px-4 py-2 rounded-lg
+                          border-2 border-app
+                          whitespace-nowrap font-bold
+                          shadow-lg tracking-wide
+                          animate-[fadeIn_0.2s_ease-out]"
+            style={{ transform: `translateX(-50%) scale(${tooltipScale})` }}>
             {getTooltipText(subject)}
-            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2
-                            w-2 h-2 bg-[#1C2B1F] border-r border-b border-app
+            <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2
+                            w-3 h-3 bg-[#1C2B1F] border-r-2 border-b-2 border-app
                             rotate-45" />
           </div>
         )}
@@ -196,8 +200,20 @@ export const SubjectNode = ({ data, selected }: NodeProps<SubjectNodeType>) => {
   );
 };
 
+export const SubjectNode = memo(SubjectNodeComponent, (prevProps, nextProps) => {
+  return (
+    prevProps.selected === nextProps.selected &&
+    prevProps.data.isCritical === nextProps.data.isCritical &&
+    prevProps.data.isRecentlyUpdated === nextProps.data.isRecentlyUpdated &&
+    prevProps.data.isFocused === nextProps.data.isFocused &&
+    prevProps.data.subject.status === nextProps.data.subject.status &&
+    prevProps.data.subject.grade === nextProps.data.subject.grade
+  );
+});
+
 function getTooltipText(subject: Subject): string {
   const statusMessages = {
+    [SubjectStatus.PENDIENTE]: 'Bloqueada por correlativas',
     [SubjectStatus.DISPONIBLE]: '¡Podes cursar esta materia!',
     [SubjectStatus.EN_CURSO]: 'Cursando actualmente',
     [SubjectStatus.REGULARIZADA]: 'Materia regularizada',

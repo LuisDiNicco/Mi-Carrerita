@@ -267,7 +267,8 @@ export const useCareerGraph = () => {
       );
 
       if (!response.ok) {
-        throw new Error("No se pudo guardar la materia.");
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.message || "No se pudo guardar la materia. Intentá revisar los campos nuevamente.");
       }
 
       updateSubject(activeSubject.id, payload);

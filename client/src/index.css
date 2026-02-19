@@ -197,6 +197,17 @@
    UTILIDADES ESPECIALES
    ======================================== */
 @layer utilities {
+  .retro-calendar::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    filter: invert(0.8) sepia(1) hue-rotate(80deg) saturate(3) brightness(1.2);
+    transition: all 0.2s ease;
+  }
+
+  .retro-calendar::-webkit-calendar-picker-indicator:hover {
+    filter: invert(0.8) sepia(1) hue-rotate(80deg) saturate(4) brightness(1.4);
+    transform: scale(1.1);
+  }
+
   .bg-app {
     background-color: var(--app-bg);
   }
