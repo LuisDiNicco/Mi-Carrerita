@@ -3,6 +3,7 @@
  * Query building and filtering logic
  */
 
+import { Prisma } from '@prisma/client';
 import { AcademicHistoryFilterDto } from '../dto';
 
 /**
@@ -11,8 +12,8 @@ import { AcademicHistoryFilterDto } from '../dto';
 export function buildWhereClause(
   userId: string,
   filter: AcademicHistoryFilterDto,
-): any {
-  const where: any = { userId };
+): Prisma.AcademicRecordWhereInput {
+  const where: Prisma.AcademicRecordWhereInput = { userId };
 
   // Date range filter
   if (filter.dateFrom || filter.dateTo) {
@@ -52,12 +53,14 @@ export function buildWhereClause(
 /**
  * Build Prisma where clause for subject filters
  */
-export function buildSubjectWhereClause(filter: AcademicHistoryFilterDto): any {
-  const where: any = {};
+export function buildSubjectWhereClause(
+  filter: AcademicHistoryFilterDto,
+): Prisma.SubjectWhereInput {
+  const where: Prisma.SubjectWhereInput = {};
 
   // Subject code filter
   if (filter.planCode) {
-    where.planCode = { contains: filter.planCode, mode: 'insensitive' };
+    where.planCode = { contains: filter.planCode };
   }
 
   // Subject year filter
@@ -81,18 +84,19 @@ export function inferSemesterFromDate(date: Date | null, year: number): number {
 /**
  * Build order by clause
  */
-export function buildOrderByClause(sortBy?: string): any {
+export function buildOrderByClause(
+  sortBy?: string,
+): Prisma.AcademicRecordOrderByWithRelationInput {
   const sort = sortBy || 'date';
 
-  switch (sort) {
-    case 'grade':
-      return { finalGrade: 'desc' };
-    case 'code':
-      return { subject: { planCode: 'asc' } };
-    case 'status':
-      return { status: 'asc' };
-    case 'date':
-    default:
-      return { statusDate: 'desc' };
-  }
+  const orderBy: Prisma.AcademicRecordOrderByWithRelationInput =
+    sort === 'grade'
+      ? { finalGrade: 'desc' }
+      : sort === 'code'
+        ? { subject: { planCode: 'asc' } }
+        : sort === 'status'
+          ? { status: 'asc' }
+          : { statusDate: 'desc' };
+
+  return orderBy;
 }

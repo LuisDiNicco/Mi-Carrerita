@@ -23,7 +23,7 @@ export interface TrophyDto extends TrophyDefinitionDto {
   unlocked: boolean;
   unlockedAt?: string; // ISO date string
   progress: number; // 0-100 (%)
-  metadata?: Record<string, any>; // Custom data per trophy (subjects, grades, etc.)
+  metadata?: Record<string, unknown>; // Custom data per trophy (subjects, grades, etc.)
 }
 
 /** Check trophies request (manual trigger) */

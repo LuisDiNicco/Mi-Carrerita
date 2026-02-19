@@ -10,6 +10,7 @@ import {
   RecommendationResultDto,
   RecommendedSubjectDto,
   UpdateRecommendationStatusDto,
+  ConflictDto,
 } from '../dto';
 import { SubjectStatus } from '../../../common/constants/academic-enums';
 import { detectConflicts, TimetableCheck } from '../helpers/schedule.helpers';
@@ -97,7 +98,7 @@ export class RecommendationService {
 
     // Build recommendation result
     const recommendedSubjects: RecommendedSubjectDto[] = [];
-    const conflicts: any[] = [];
+    const conflicts: ConflictDto[] = [];
 
     for (const subject of availableSubjects) {
       const existingRec = recommendationMap.get(subject.id);

@@ -2,7 +2,7 @@
 /**
  * Formato de respuesta estándar para API
  */
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   success: boolean;
   statusCode: number;
   message: string;
@@ -31,7 +31,7 @@ export class ApiResponseBuilder {
   static error(
     message: string = 'Error',
     statusCode: number = 400,
-  ): ApiResponse {
+  ): ApiResponse<undefined> {
     return {
       success: false,
       statusCode,

@@ -4,6 +4,7 @@ import {
   BadRequestException,
   ForbiddenException,
 } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../../prisma/prisma.service';
 import {
   AcademicHistoryFilterDto,
@@ -21,6 +22,23 @@ import {
 @Injectable()
 export class AcademicHistoryService {
   constructor(private readonly prisma: PrismaService) {}
+
+  private readonly recordWithSubjectSelect = Prisma.validator<
+    Prisma.AcademicRecordDefaultArgs
+  >()({
+    include: {
+      subject: {
+        select: {
+          id: true,
+          name: true,
+          planCode: true,
+          year: true,
+          hours: true,
+          isOptional: true,
+        },
+      },
+    },
+  });
 
   /**
    * Get paginated and filtered academic history
@@ -47,25 +65,24 @@ export class AcademicHistoryService {
     const page = Math.max(1, filter.page || 1);
     const skip = (page - 1) * limit;
 
-    // Query total count
-    const total = await this.prisma.academicRecord.count({
-      where: whereRecord,
-    });
+    const recordWhere: Prisma.AcademicRecordWhereInput = {
+      ...whereRecord,
+      subject:
+        whereSubject && Object.keys(whereSubject).length > 0
+          ? whereSubject
+          : undefined,
+    };
 
-    // Query records
-    const records = await this.prisma.academicRecord.findMany({
-      where: {
-        ...whereRecord,
-        subject:
-          whereSubject && Object.keys(whereSubject).length > 0
-            ? whereSubject
-            : undefined,
-      },
-      include: { subject: true },
-      orderBy,
-      skip,
-      take: limit,
-    });
+    const [total, records] = await this.prisma.$transaction([
+      this.prisma.academicRecord.count({ where: recordWhere }),
+      this.prisma.academicRecord.findMany({
+        where: recordWhere,
+        ...this.recordWithSubjectSelect,
+        orderBy,
+        skip,
+        take: limit,
+      }),
+    ]);
 
     // Map to DTOs
     const data = records.map((r) => this.mapToAcademicHistoryRowDto(r));
@@ -138,7 +155,7 @@ export class AcademicHistoryService {
         finalGrade: update.finalGrade ?? null,
         difficulty: update.difficulty ?? null,
         notes: update.notes ?? null,
-        isIntermediate: update.isIntermediate ?? false,
+        isIntermediate: update.isIntermediate ?? record.isIntermediate,
         statusDate: update.statusDate ? new Date(update.statusDate) : null,
       },
       include: { subject: true },
@@ -199,7 +216,9 @@ export class AcademicHistoryService {
   /**
    * Internal helper: map record to DTO
    */
-  private mapToAcademicHistoryRowDto(record: any): AcademicHistoryRowDto {
+  private mapToAcademicHistoryRowDto(
+    record: Prisma.AcademicRecordGetPayload<typeof this.recordWithSubjectSelect>,
+  ): AcademicHistoryRowDto {
     const semester = inferSemesterFromDate(
       record.statusDate,
       record.subject.year,

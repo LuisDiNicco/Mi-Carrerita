@@ -5,16 +5,19 @@ import {
   OnModuleInit,
 } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
-import { TrophyCaseDto, TrophyDto, TrophyCheckResultDto } from '../dto';
+import { TrophyCaseDto, TrophyDto } from '../dto';
 import {
   TrophyTier,
-  TROPHY_TIER_WEIGHTS,
 } from '../../../common/constants/trophy-enums';
 import { SubjectStatus } from '../../../common/constants/academic-enums';
 import {
   TROPHY_DEFINITIONS,
   getTrophiesByTier,
 } from '../helpers/trophy-definitions';
+import {
+  AcademicRecordWithSubject,
+  TrophyEvaluationContext,
+} from '../types/trophy.types';
 
 @Injectable()
 export class TrophyService implements OnModuleInit {
@@ -34,27 +37,33 @@ export class TrophyService implements OnModuleInit {
    * Seed trophy definitions into database (one-time on startup)
    */
   async seedTrophies(): Promise<void> {
-    // Check if trophies already exist
-    const existingCount = await this.prisma.trophy.count();
-    if (existingCount > 0) {
-      return; // Already seeded
+    const existing = await this.prisma.trophy.findMany({
+      select: { code: true },
+    });
+    const existingCodes = new Set(existing.map((t) => t.code));
+    const missing = TROPHY_DEFINITIONS.filter(
+      (def) => !existingCodes.has(def.code),
+    );
+
+    if (missing.length === 0) {
+      return;
     }
 
-    for (const def of TROPHY_DEFINITIONS) {
-      await this.prisma.trophy.create({
-        data: {
-          code: def.code,
-          name: def.name,
-          description: def.description,
-          tier: def.tier,
-          icon: def.icon,
-          rarity: def.rarity,
-          criteria: def.criteria,
-        },
-      });
-    }
-
-    this.logger.log(`Seeded ${TROPHY_DEFINITIONS.length} trophies`);
+    await this.prisma.$transaction(
+      missing.map((def) =>
+        this.prisma.trophy.create({
+          data: {
+            code: def.code,
+            name: def.name,
+            description: def.description,
+            tier: def.tier,
+            icon: def.icon,
+            rarity: def.rarity,
+            criteria: def.criteria ?? null,
+          },
+        }),
+      ),
+    );
   }
 
   /**
@@ -69,67 +78,69 @@ export class TrophyService implements OnModuleInit {
       throw new NotFoundException('Usuario no encontrado.');
     }
 
+    const [trophies, userTrophies] = await this.prisma.$transaction([
+      this.prisma.trophy.findMany({
+        where: { code: { in: TROPHY_DEFINITIONS.map((d) => d.code) } },
+      }),
+      this.prisma.userTrophy.findMany({
+        where: { userId: user.id },
+        select: { trophyId: true, unlockedAt: true },
+      }),
+    ]);
+
+    const context = await this.buildEvaluationContext(user.id, user.email);
+
+    const trophyByCode = new Map(trophies.map((t) => [t.code, t]));
+    const userTrophyById = new Map(
+      userTrophies.map((t) => [t.trophyId, t]),
+    );
+
     const newlyUnlocked: TrophyDto[] = [];
 
-    // Evaluate all trophies
     for (const definition of TROPHY_DEFINITIONS) {
+      const trophyRecord = trophyByCode.get(definition.code);
+      if (!trophyRecord) {
+        continue;
+      }
+
       const isUnlocked = await this.evaluateTrophyCriteria(
         definition.code,
-        user.id,
+        context,
       );
 
-      // Check if already unlocked
-      const existing = await this.prisma.userTrophy.findUnique({
-        where: {
-          userId_trophyId: {
-            userId: user.id,
-            trophyId: (await this.prisma.trophy.findUnique({
-              where: { code: definition.code },
-              select: { id: true },
-            }))!.id,
-          },
-        },
-      });
-
+      const existing = userTrophyById.get(trophyRecord.id);
       if (isUnlocked && !existing?.unlockedAt) {
-        // Unlock trophy
-        const trophyRecord = await this.prisma.trophy.findUnique({
-          where: { code: definition.code },
-        });
-
-        if (trophyRecord) {
-          await this.prisma.userTrophy.upsert({
-            where: {
-              userId_trophyId: {
-                userId: user.id,
-                trophyId: trophyRecord.id,
-              },
-            },
-            create: {
+        await this.prisma.userTrophy.upsert({
+          where: {
+            userId_trophyId: {
               userId: user.id,
               trophyId: trophyRecord.id,
-              unlockedAt: new Date(),
-              progress: 100,
             },
-            update: {
-              unlockedAt: new Date(),
-              progress: 100,
-            },
-          });
-
-          newlyUnlocked.push({
-            id: trophyRecord.id,
-            code: definition.code,
-            name: definition.name,
-            description: definition.description || '',
-            tier: definition.tier as TrophyTier,
-            icon: definition.icon,
-            rarity: definition.rarity,
-            unlocked: true,
-            unlockedAt: new Date().toISOString(),
+          },
+          create: {
+            userId: user.id,
+            trophyId: trophyRecord.id,
+            unlockedAt: new Date(),
             progress: 100,
-          });
-        }
+          },
+          update: {
+            unlockedAt: new Date(),
+            progress: 100,
+          },
+        });
+
+        newlyUnlocked.push({
+          id: trophyRecord.id,
+          code: definition.code,
+          name: definition.name,
+          description: definition.description || '',
+          tier: definition.tier as TrophyTier,
+          icon: definition.icon,
+          rarity: definition.rarity,
+          unlocked: true,
+          unlockedAt: new Date().toISOString(),
+          progress: 100,
+        });
       }
     }
 
@@ -181,7 +192,7 @@ export class TrophyService implements OnModuleInit {
 
     // Count by tier
     const unlockedTrophies = trophyDtos.filter((t) => t.unlocked);
-    const byTier = {
+    const byTier: TrophyCaseDto['byTier'] = {
       bronze: {
         tier: TrophyTier.BRONZE,
         unlocked: unlockedTrophies.filter((t) => t.tier === TrophyTier.BRONZE)
@@ -236,7 +247,7 @@ export class TrophyService implements OnModuleInit {
       unlockedCount: totalUnlocked,
       unlockedPercentage:
         totalCount > 0 ? Math.round((totalUnlocked / totalCount) * 100) : 0,
-      byTier: byTier as any,
+      byTier,
       trophies: trophyDtos,
       recentlyUnlocked,
     };
@@ -292,30 +303,25 @@ export class TrophyService implements OnModuleInit {
    */
   private async evaluateTrophyCriteria(
     code: string,
-    userId: string,
+    context: TrophyEvaluationContext,
   ): Promise<boolean> {
-    // Get user's academic records
-    const records = await this.prisma.academicRecord.findMany({
-      where: { userId },
-      include: { subject: true },
-    });
-
+    const records = context.subjectRecords;
     const completedSubjects = records.filter(
       (r) =>
         r.status === SubjectStatus.APROBADA ||
         r.status === SubjectStatus.REGULARIZADA,
     );
-
-    const totalSubjects = await this.prisma.subject.count();
     const completionPercentage =
-      (completedSubjects.length / totalSubjects) * 100;
+      context.totalSubjects > 0
+        ? (completedSubjects.length / context.totalSubjects) * 100
+        : 0;
 
     // Define criteria evaluation
     const criteriaMap: Record<string, boolean> = {
       FIRST_SUBJECT_COMPLETED: completedSubjects.length >= 1,
       THREE_SUBJECT_STREAK: completedSubjects.length >= 3,
       PERFECT_SCORE_100: records.some((r) => r.finalGrade === 100),
-      COMEBACK_PASS: false, // TODO: Complex logic (retries)
+      COMEBACK_PASS: this.checkComebackPass(records),
       DIFFICULT_SUBJECT_PASSED: completedSubjects.some(
         (r) => r.difficulty! >= 8,
       ),
@@ -323,11 +329,11 @@ export class TrophyService implements OnModuleInit {
       SEMESTER_AVERAGE_90: this.checkSemesterAverage90(records),
       YEAR_NO_FAILURES: this.checkYearNoFailures(records),
       TEN_SUBJECTS_PASSED: completedSubjects.length >= 10,
-      EARLY_BIRD: false, // TODO: Date comparison logic
+      EARLY_BIRD: this.checkEarlyBird(records),
       CONSISTENCY_BRONZE: this.checkConsistency(records, 5),
       AVERAGE_80_OVERALL: this.checkOverallAverage(records, 80),
       MIXED_STATUS_PASS: this.checkMixedStatus(records),
-      SUBJECT_RETRY_SUCCESS: false, // TODO: Retry logic
+      SUBJECT_RETRY_SUCCESS: this.checkRetrySuccess(records),
       HOURS_100_COMPLETED: this.checkHoursCompleted(records, 100),
 
       // SILVER
@@ -346,10 +352,11 @@ export class TrophyService implements OnModuleInit {
       // GOLD
       CAREER_COMPLETION: completionPercentage >= 100,
       PERFECT_AVERAGE: this.checkOverallAverage(records, 90),
-      SPEED_RUNNER: false, // TODO: Time-based logic
-      FLAWLESS_EXECUTION: completedSubjects.length >= totalSubjects * 0.9,
+      SPEED_RUNNER: this.checkSpeedRunner(records, completionPercentage),
+      FLAWLESS_EXECUTION:
+        completedSubjects.length >= context.totalSubjects * 0.9,
       CONSISTENT_EXCELLENCE: this.checkConsistentExcellence(records),
-      CHALLENGE_ACCEPTED: false, // TODO: Top 5 hardest
+      CHALLENGE_ACCEPTED: this.checkChallengeAccepted(records),
       MARATHON_CHAMPION: this.checkHoursCompleted(records, 200),
 
       // PLATINUM
@@ -362,9 +369,50 @@ export class TrophyService implements OnModuleInit {
     return criteriaMap[code] ?? false;
   }
 
+  private async buildEvaluationContext(
+    userId: string,
+    userEmail: string,
+  ): Promise<TrophyEvaluationContext> {
+    const [records, subjectStats] = await this.prisma.$transaction([
+      this.prisma.academicRecord.findMany({
+        where: { userId },
+        include: { subject: true },
+      }),
+      this.prisma.subject.aggregate({
+        _count: { id: true },
+        _sum: { hours: true },
+      }),
+    ]);
+
+    const completedRecords = records.filter(
+      (r) =>
+        r.status === SubjectStatus.APROBADA ||
+        r.status === SubjectStatus.REGULARIZADA,
+    );
+
+    const completedHours = completedRecords.reduce(
+      (sum, record) => sum + (record.subject.hours || 0),
+      0,
+    );
+
+    return {
+      userId,
+      userEmail,
+      totalSubjects: subjectStats._count.id,
+      completedSubjects: completedRecords.length,
+      totalHours: subjectStats._sum.hours ?? 0,
+      completedHours,
+      grades: records.map((record) => record.finalGrade ?? null),
+      hasIntermediateDegree: records.some((record) => record.isIntermediate),
+      subjectRecords: records,
+    };
+  }
+
   // Helper methods for complex criteria evaluation
 
-  private checkAllOptionalsCompleted(records: any[]): boolean {
+  private checkAllOptionalsCompleted(
+    records: AcademicRecordWithSubject[],
+  ): boolean {
     const optionals = records.filter((r) => r.subject.isOptional);
     const completedOptionals = optionals.filter(
       (r) =>
@@ -376,34 +424,62 @@ export class TrophyService implements OnModuleInit {
     );
   }
 
-  private checkSemesterAverage90(records: any[]): boolean {
-    // Simplified: check if any record has a grade >= 90
-    return records.some((r) => r.finalGrade && r.finalGrade >= 90);
+  private checkSemesterAverage90(
+    records: AcademicRecordWithSubject[],
+  ): boolean {
+    const semesterGroups = this.groupBySemester(records);
+    for (const semesterRecords of semesterGroups.values()) {
+      const grades = semesterRecords
+        .map((r) => r.finalGrade)
+        .filter((grade): grade is number => typeof grade === 'number');
+      if (grades.length === 0) continue;
+      const average = grades.reduce((sum, grade) => sum + grade, 0) / grades.length;
+      if (average >= 90) {
+        return true;
+      }
+    }
+    return false;
   }
 
-  private checkYearNoFailures(records: any[]): boolean {
-    // TODO: Group by year and check pass rate per year
-    return true;
+  private checkYearNoFailures(records: AcademicRecordWithSubject[]): boolean {
+    const yearGroups = this.groupByYear(records);
+    for (const yearRecords of yearGroups.values()) {
+      if (yearRecords.length === 0) continue;
+      const allPassed = yearRecords.every((r) => this.isPassed(r));
+      if (allPassed) {
+        return true;
+      }
+    }
+    return false;
   }
 
-  private checkConsistency(records: any[], minSemesters: number): boolean {
-    // TODO: Group by semester and count semesters with at least 1 pass
-    return (
-      records.filter((r) => r.status === SubjectStatus.APROBADA).length >=
-      minSemesters
-    );
+  private checkConsistency(
+    records: AcademicRecordWithSubject[],
+    minSemesters: number,
+  ): boolean {
+    const semesterGroups = this.groupBySemester(records);
+    let count = 0;
+    for (const semesterRecords of semesterGroups.values()) {
+      if (semesterRecords.some((r) => this.isPassed(r))) {
+        count += 1;
+      }
+    }
+    return count >= minSemesters;
   }
 
-  private checkOverallAverage(records: any[], threshold: number): boolean {
+  private checkOverallAverage(
+    records: AcademicRecordWithSubject[],
+    threshold: number,
+  ): boolean {
     const grades = records
-      .filter((r) => r.finalGrade !== null)
-      .map((r) => r.finalGrade);
+      .map((r) => r.finalGrade)
+      .filter((grade): grade is number => typeof grade === 'number');
     if (grades.length === 0) return false;
-    const average = grades.reduce((a, b) => a + b, 0) / grades.length;
+    const average = grades.reduce((sum, grade) => sum + grade, 0) / grades.length;
     return average >= threshold;
   }
 
-  private checkMixedStatus(records: any[]): boolean {
+  private checkMixedStatus(records: AcademicRecordWithSubject[]): boolean {
     const hasRegularized = records.some(
       (r) => r.status === SubjectStatus.REGULARIZADA,
     );
@@ -411,7 +487,10 @@ export class TrophyService implements OnModuleInit {
     return hasRegularized && hasFinal;
   }
 
-  private checkHoursCompleted(records: any[], minHours: number): boolean {
+  private checkHoursCompleted(
+    records: AcademicRecordWithSubject[],
+    minHours: number,
+  ): boolean {
     const completed = records
       .filter(
         (r) =>
@@ -423,30 +502,221 @@ export class TrophyService implements OnModuleInit {
   }
 
   private checkConsecutiveCleanSemesters(
-    records: any[],
+    records: AcademicRecordWithSubject[],
     minSemesters: number,
   ): boolean {
-    // TODO: Group by semester and check consecutive clean semesters
-    return true;
+    const semesterGroups = this.groupBySemester(records);
+    const semesters = Array.from(semesterGroups.entries())
+      .map(([key, value]) => ({ key, value }))
+      .sort((a, b) => this.semesterIndex(a.key) - this.semesterIndex(b.key));
+
+    let streak = 0;
+    let lastIndex: number | null = null;
+    for (const { key, value } of semesters) {
+      const isClean = value.length > 0 && value.every((r) => this.isPassed(r));
+      const index = this.semesterIndex(key);
+      if (isClean && (lastIndex === null || index === lastIndex + 1)) {
+        streak += 1;
+      } else if (isClean) {
+        streak = 1;
+      } else {
+        streak = 0;
+      }
+      lastIndex = isClean ? index : lastIndex;
+
+      if (streak >= minSemesters) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
-  private checkIntermediateDegree(records: any[]): boolean {
-    // TODO: Check if intermediate degree is completed
-    return true;
+  private checkIntermediateDegree(records: AcademicRecordWithSubject[]): boolean {
+    return records.some((r) => r.isIntermediate && this.isPassed(r));
   }
 
-  private checkPerfectSemester(records: any[]): boolean {
-    // TODO: Check for a semester with all subjects passed and avg 90+
-    return true;
+  private checkPerfectSemester(records: AcademicRecordWithSubject[]): boolean {
+    const semesterGroups = this.groupBySemester(records);
+    for (const semesterRecords of semesterGroups.values()) {
+      if (semesterRecords.length === 0) continue;
+      if (!semesterRecords.every((r) => this.isPassed(r))) continue;
+      const grades = semesterRecords
+        .map((r) => r.finalGrade)
+        .filter((grade): grade is number => typeof grade === 'number');
+      if (grades.length === 0) continue;
+      const average = grades.reduce((sum, grade) => sum + grade, 0) / grades.length;
+      if (average >= 90) {
+        return true;
+      }
+    }
+    return false;
   }
 
-  private checkQuickProgress(records: any[]): boolean {
-    // TODO: Check if 15+ hours completed in one semester
-    return true;
+  private checkQuickProgress(records: AcademicRecordWithSubject[]): boolean {
+    const semesterGroups = this.groupBySemester(records);
+    for (const semesterRecords of semesterGroups.values()) {
+      const completedHours = semesterRecords
+        .filter((r) => this.isPassed(r))
+        .reduce((sum, r) => sum + (r.subject.hours || 0), 0);
+      if (completedHours >= 15) {
+        return true;
+      }
+    }
+    return false;
   }
 
-  private checkConsistentExcellence(records: any[]): boolean {
-    // TODO: Check if 80% of semesters have average 85+
-    return true;
+  private checkConsistentExcellence(
+    records: AcademicRecordWithSubject[],
+  ): boolean {
+    const semesterGroups = this.groupBySemester(records);
+    const semesterAverages: number[] = [];
+
+    for (const semesterRecords of semesterGroups.values()) {
+      const grades = semesterRecords
+        .map((r) => r.finalGrade)
+        .filter((grade): grade is number => typeof grade === 'number');
+      if (grades.length === 0) continue;
+      const average = grades.reduce((sum, grade) => sum + grade, 0) / grades.length;
+      semesterAverages.push(average);
+    }
+
+    if (semesterAverages.length === 0) {
+      return false;
+    }
+
+    const excellentCount = semesterAverages.filter((avg) => avg >= 85).length;
+    return excellentCount / semesterAverages.length >= 0.8;
+  }
+
+  private checkComebackPass(records: AcademicRecordWithSubject[]): boolean {
+    return records.some(
+      (record) =>
+        this.isPassed(record) &&
+        this.getAttemptCount(record.notes) >= 2,
+    );
+  }
+
+  private checkRetrySuccess(records: AcademicRecordWithSubject[]): boolean {
+    return records.some(
+      (record) =>
+        this.isPassed(record) &&
+        this.getAttemptCount(record.notes) >= 3,
+    );
+  }
+
+  private checkEarlyBird(records: AcademicRecordWithSubject[]): boolean {
+    const pending = records.filter((r) => !this.isPassed(r));
+    const minPendingYear = pending.reduce(
+      (min, record) => Math.min(min, record.subject.year),
+      Number.POSITIVE_INFINITY,
+    );
+
+    if (minPendingYear === Number.POSITIVE_INFINITY) {
+      return false;
+    }
+
+    return records.some(
+      (record) =>
+        this.isPassed(record) && record.subject.year > minPendingYear,
+    );
+  }
+
+  private checkSpeedRunner(
+    records: AcademicRecordWithSubject[],
+    completionPercentage: number,
+  ): boolean {
+    if (completionPercentage < 100) {
+      return false;
+    }
+
+    const dates = records
+      .filter((r) => this.isPassed(r) && r.statusDate)
+      .map((r) => r.statusDate as Date)
+      .sort((a, b) => a.getTime() - b.getTime());
+
+    if (dates.length < 2) {
+      return false;
+    }
+
+    const durationMs = dates[dates.length - 1].getTime() - dates[0].getTime();
+    const durationYears = durationMs / (1000 * 60 * 60 * 24 * 365);
+    return durationYears <= 2.5;
+  }
+
+  private checkChallengeAccepted(records: AcademicRecordWithSubject[]): boolean {
+    const difficult = records
+      .filter((r) => typeof r.difficulty === 'number')
+      .sort((a, b) => (b.difficulty ?? 0) - (a.difficulty ?? 0))
+      .slice(0, 5);
+
+    if (difficult.length === 0) {
+      return false;
+    }
+
+    return difficult.every((record) => this.isPassed(record));
+  }
+
+  private groupByYear(
+    records: AcademicRecordWithSubject[],
+  ): Map<number, AcademicRecordWithSubject[]> {
+    const grouped = new Map<number, AcademicRecordWithSubject[]>();
+    for (const record of records) {
+      const year = record.subject.year;
+      const list = grouped.get(year) ?? [];
+      list.push(record);
+      grouped.set(year, list);
+    }
+    return grouped;
+  }
+
+  private groupBySemester(
+    records: AcademicRecordWithSubject[],
+  ): Map<string, AcademicRecordWithSubject[]> {
+    const grouped = new Map<string, AcademicRecordWithSubject[]>();
+    for (const record of records) {
+      if (!record.statusDate) continue;
+      const key = this.getSemesterKey(record.statusDate);
+      const list = grouped.get(key) ?? [];
+      list.push(record);
+      grouped.set(key, list);
+    }
+    return grouped;
+  }
+
+  private getSemesterKey(date: Date): string {
+    const year = date.getFullYear();
+    const semester = date.getMonth() + 1 <= 6 ? 1 : 2;
+    return `${year}-${semester}`;
+  }
+
+  private semesterIndex(key: string): number {
+    const [year, semester] = key.split('-').map(Number);
+    return year * 2 + semester;
+  }
+
+  private isPassed(record: AcademicRecordWithSubject): boolean {
+    return (
+      record.status === SubjectStatus.APROBADA ||
+      record.status === SubjectStatus.REGULARIZADA
+    );
+  }
+
+  private getAttemptCount(notes: string | null): number {
+    if (!notes) {
+      return 1;
+    }
+
+    const lowered = notes.toLowerCase();
+    const attemptMatch = lowered.match(/intento\s*(\d+)/);
+    if (attemptMatch) {
+      return Number(attemptMatch[1]);
+    }
+
+    if (lowered.includes('reintento') || lowered.includes('recurs') || lowered.includes('retry')) {
+      return 2;
+    }
+
+    return 1;
   }
 }

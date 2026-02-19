@@ -3,7 +3,12 @@
  * Not exposed in DTOs, used for service unlock logic
  */
 
+import { Prisma } from '@prisma/client';
 import { TrophyTier } from '../../../common/constants/trophy-enums';
+
+export type AcademicRecordWithSubject = Prisma.AcademicRecordGetPayload<{
+  include: { subject: true };
+}>;
 
 /** Trophy unlock criteria evaluator */
 export interface TrophyCriteria {
@@ -21,7 +26,7 @@ export interface TrophyEvaluationContext {
   completedHours: number;
   grades: (number | null)[];
   hasIntermediateDegree: boolean;
-  subjectRecords: any[]; // AcademicRecord[]
+  subjectRecords: AcademicRecordWithSubject[];
   trophyProgress?: number; // Current progress 0-100
 }
 
@@ -31,7 +36,7 @@ export type TrophyMetadata =
   | { type: 'grade_threshold'; threshold: number }
   | { type: 'streak'; count: number }
   | { type: 'subject_list'; subjects: string[] }
-  | { type: 'custom'; data: Record<string, any> };
+  | { type: 'custom'; data: Record<string, unknown> };
 
 /** Internal trophy state */
 export interface InternalTrophyState {

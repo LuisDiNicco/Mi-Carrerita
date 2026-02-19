@@ -28,7 +28,7 @@ export type SortDirection = 'asc' | 'desc';
 
 /** Query builder state */
 export interface QueryState {
-  filters: Map<string, any>;
+  filters: Map<string, unknown>;
   sortBy: string;
   sortDir: SortDirection;
   page: number;

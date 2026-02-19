@@ -64,7 +64,10 @@ export function IsUUID(validationOptions?: ValidationOptions) {
 /**
  * Validar que el valor esté en una lista de opciones (mejorado)
  */
-export function IsInEnum(enumType: any, validationOptions?: ValidationOptions) {
+export function IsInEnum(
+  enumType: Record<string, string | number>,
+  validationOptions?: ValidationOptions,
+) {
   return function (target: object, propertyName: string) {
     registerDecorator({
       target: target.constructor,
