@@ -102,3 +102,38 @@ export async function fetchRecommendations(): Promise<RecommendationResultDto> {
     if (!response.ok) throw new Error("Error fetching recommendations");
     return response.json();
 }
+
+// ========================
+// PDF Upload Functions
+// ========================
+
+/** Parsed offering returned by the backend after uploading an Oferta PDF */
+export interface ParsedTimetableOffer {
+    planCode: string;
+    description: string;
+    dayLabel: string;     // e.g. "Lunes"
+    periodLabel: string;  // e.g. "Noche", "Tarde", "Mañana"
+    commission: string;
+    modality: string;
+    location: string;
+}
+
+/** Upload an Oferta de Materias PDF and receive parsed offerings */
+export async function uploadOfertaPdf(
+    file: File
+): Promise<{ data: ParsedTimetableOffer[] }> {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const response = await authFetch(`${API_URL}/schedule/upload-oferta`, {
+        method: "POST",
+        body: formData,
+    });
+
+    if (!response.ok) {
+        const errorBody = await response.json().catch(() => null);
+        throw new Error(errorBody?.message || `Error ${response.status}: No se pudo procesar el PDF.`);
+    }
+
+    return response.json();
+}

@@ -1,13 +1,20 @@
 import {
   Controller,
   Get,
+  Post,
   Patch,
   Delete,
   Query,
   Param,
   Body,
   UseGuards,
+  UseInterceptors,
+  UploadedFile,
+  ParseFilePipe,
+  MaxFileSizeValidator,
+  FileTypeValidator,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AcademicHistoryService } from '../services/academic-history.service';
 import {
@@ -15,14 +22,19 @@ import {
   EditAcademicRecordDto,
   AcademicHistoryRowDto,
   AcademicHistoryPageDto,
+  BatchSaveHistoryDto,
 } from '../dto';
+import { PdfParserService } from '../../../shared/pdf-parser/pdf-parser.service';
 import { EnvironmentAuthGuard } from '../../../common/guards/environment-auth.guard';
 import { CurrentUser } from '../../../common/decorators/current-user.decorator';
 
 @Controller('history')
 @UseGuards(EnvironmentAuthGuard)
 export class AcademicHistoryController {
-  constructor(private readonly historyService: AcademicHistoryService) {}
+  constructor(
+    private readonly historyService: AcademicHistoryService,
+    private readonly pdfParserService: PdfParserService,
+  ) { }
 
   @Get()
   @ApiOperation({ summary: 'Obtener historial académico con filtros' })
@@ -32,6 +44,35 @@ export class AcademicHistoryController {
     @CurrentUser('email') userEmail: string,
   ): Promise<AcademicHistoryPageDto> {
     return this.historyService.getHistory(userEmail, filter);
+  }
+
+  @Post('upload')
+  @ApiOperation({ summary: 'Parsear un PDF de Historia Académica' })
+  @ApiResponse({ status: 200, description: 'Parsed PDF data ready for preview' })
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadPdf(
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 5000000 }), // 5MB
+          new FileTypeValidator({ fileType: 'pdf' }),
+        ],
+      }),
+    )
+    file: Express.Multer.File,
+  ) {
+    const parsedData = await this.pdfParserService.parseHistoriaAcademica(file.buffer);
+    return { data: parsedData };
+  }
+
+  @Post('batch')
+  @ApiOperation({ summary: 'Guardar múltiples registros de historia académica' })
+  @ApiResponse({ status: 200, description: 'Records updated' })
+  async batchUpdateRecords(
+    @Body() dto: BatchSaveHistoryDto,
+    @CurrentUser('email') userEmail: string,
+  ) {
+    return this.historyService.batchUpdateRecords(userEmail, dto.records);
   }
 
   @Patch(':recordId')

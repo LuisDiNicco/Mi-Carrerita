@@ -16,6 +16,7 @@ import {
   EditAcademicRecordDto,
   AcademicHistoryRowDto,
   AcademicHistoryPageDto,
+  BatchAcademicRecordDto,
 } from '../dto';
 import {
   buildWhereClause,
@@ -29,7 +30,7 @@ export class AcademicHistoryService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly eventEmitter: EventEmitter2,
-  ) {}
+  ) { }
 
   private readonly recordWithSubjectSelect =
     Prisma.validator<Prisma.AcademicRecordDefaultArgs>()({
@@ -101,6 +102,66 @@ export class AcademicHistoryService {
       limit,
       totalPages: Math.ceil(total / limit),
     };
+  }
+
+  /**
+   * Batch update or insert multiple records safely
+   */
+  async batchUpdateRecords(userEmail: string, records: BatchAcademicRecordDto[]): Promise<{ count: number }> {
+    const user = await this.prisma.user.findUnique({
+      where: { email: userEmail },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Usuario no encontrado.');
+    }
+
+    let updatedCount = 0;
+
+    await this.prisma.$transaction(async (tx) => {
+      for (const record of records) {
+        // Encontrar la materia por código de plan
+        const subject = await tx.subject.findUnique({
+          where: { planCode: record.planCode },
+        });
+
+        if (!subject) continue; // Skip if it doesn't exist in our DB
+
+        const existingRecord = await tx.academicRecord.findUnique({
+          where: {
+            userId_subjectId: {
+              userId: user.id,
+              subjectId: subject.id,
+            },
+          },
+        });
+
+        if (existingRecord) {
+          await tx.academicRecord.update({
+            where: { id: existingRecord.id },
+            data: {
+              status: record.status,
+              finalGrade: record.finalGrade ?? null,
+              statusDate: record.statusDate ? parseIsolatedDate(record.statusDate) : null,
+            },
+          });
+        } else {
+          await tx.academicRecord.create({
+            data: {
+              userId: user.id,
+              subjectId: subject.id,
+              status: record.status,
+              finalGrade: record.finalGrade ?? null,
+              statusDate: record.statusDate ? parseIsolatedDate(record.statusDate) : null,
+            },
+          });
+        }
+        updatedCount++;
+      }
+    });
+
+    this.eventEmitter.emit('subject.status.updated', { userEmail });
+    return { count: updatedCount };
   }
 
   /**

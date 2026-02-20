@@ -6,7 +6,10 @@ import {
   IsBoolean,
   Min,
   Max,
+  IsArray,
+  ValidateNested,
 } from 'class-validator';
+import { Type } from 'class-transformer';
 import { SubjectStatus } from '../../../common/constants/academic-enums';
 
 /**
@@ -95,6 +98,31 @@ export class EditAcademicRecordDto {
   @IsOptional()
   @IsDateString()
   statusDate?: string; // ISO date
+}
+
+/** Single academic record for batch operations */
+export class BatchAcademicRecordDto {
+  @IsString()
+  planCode: string;
+
+  @IsString()
+  status: string; // SubjectStatus value
+
+  @IsOptional()
+  @IsNumber()
+  finalGrade?: number | null;
+
+  @IsOptional()
+  @IsDateString()
+  statusDate?: string | null; // ISO date
+}
+
+/** Payload for batch saving history */
+export class BatchSaveHistoryDto {
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => BatchAcademicRecordDto)
+  records: BatchAcademicRecordDto[];
 }
 
 /** Single row in academic history table */

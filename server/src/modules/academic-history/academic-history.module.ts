@@ -5,9 +5,10 @@ import { PrismaModule } from '../../prisma/prisma.module';
 import { DevAuthGuard } from '../../common/guards/dev-auth.guard';
 import { EnvironmentAuthGuard } from '../../common/guards/environment-auth.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { PdfParserModule } from '../../shared/pdf-parser/pdf-parser.module';
 
 @Module({
-  imports: [PrismaModule],
+  imports: [PrismaModule, PdfParserModule],
   providers: [
     AcademicHistoryService,
     DevAuthGuard,
@@ -17,4 +18,4 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
   controllers: [AcademicHistoryController],
   exports: [AcademicHistoryService],
 })
-export class AcademicHistoryModule {}
+export class AcademicHistoryModule { }

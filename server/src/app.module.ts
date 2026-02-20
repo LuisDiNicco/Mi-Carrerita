@@ -9,6 +9,7 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { ScheduleModule } from './modules/schedule/schedule.module';
 import { AcademicHistoryModule } from './modules/academic-history/academic-history.module';
 import { TrophyModule } from './modules/trophy/trophy.module';
+import { PdfParserModule } from './shared/pdf-parser/pdf-parser.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { TrophyModule } from './modules/trophy/trophy.module';
     ScheduleModule,
     AcademicHistoryModule,
     TrophyModule,
+    PdfParserModule,
   ],
 })
-export class AppModule {}
+export class AppModule { }

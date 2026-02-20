@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useAcademicStore } from '../academic/store/academic-store';
 import { buildEdges, getRecommendationsWithReasons } from '../../shared/lib/graph';
 import { fetchAcademicGraph } from '../academic/lib/academic-api';
-import { Lock, Unlock, RotateCcw, Calendar, List, Wand2 } from 'lucide-react';
+import { Lock, Unlock, RotateCcw, Calendar, List, Wand2, Upload, CheckCircle, AlertTriangle } from 'lucide-react';
 import { UnifiedSchedulePlanner } from '../schedule/components/UnifiedSchedulePlanner';
-import { fetchTimetables, createTimetable, deleteTimetable } from '../schedule/lib/schedule-api';
-import type { TimetableDto, TimePeriod, DayOfWeek } from '../schedule/lib/schedule-api';
+import { fetchTimetables, createTimetable, deleteTimetable, uploadOfertaPdf } from '../schedule/lib/schedule-api';
+import type { TimetableDto, TimePeriod, DayOfWeek, ParsedTimetableOffer } from '../schedule/lib/schedule-api';
 
 const DEFAULT_COUNT = 4;
 
@@ -30,6 +30,12 @@ export const RecommendationsPage = () => {
   // Schedule State
   const [timetables, setTimetables] = useState<TimetableDto[]>([]);
   const [availability, setAvailability] = useState<Map<string, boolean>>(new Map());
+
+  // Oferta PDF State
+  const ofertaFileRef = useRef<HTMLInputElement>(null);
+  const [isUploadingOferta, setIsUploadingOferta] = useState(false);
+  const [ofertaData, setOfertaData] = useState<ParsedTimetableOffer[]>([]);
+  const [ofertaMessage, setOfertaMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
 
   // Load Data
   useEffect(() => {
@@ -60,6 +66,17 @@ export const RecommendationsPage = () => {
             console.error("Failed to parse availability", e);
           }
         }
+
+        // Load oferta from localStorage
+        const storedOferta = localStorage.getItem('oferta_materias');
+        if (storedOferta) {
+          try {
+            setOfertaData(JSON.parse(storedOferta));
+          } catch (e) {
+            console.error("Failed to parse oferta data", e);
+          }
+        }
+
 
       } catch (err) {
         if (!active) return;
@@ -224,6 +241,31 @@ export const RecommendationsPage = () => {
     }
   };
 
+  // Oferta PDF Upload Handler
+  const handleOfertaFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    e.target.value = '';
+
+    setIsUploadingOferta(true);
+    setOfertaMessage(null);
+    try {
+      const result = await uploadOfertaPdf(file);
+      if (result.data.length === 0) {
+        setOfertaMessage({ text: 'No se encontraron ofertas. Verificá que el PDF sea válido.', type: 'error' });
+        return;
+      }
+      setOfertaData(result.data);
+      localStorage.setItem('oferta_materias', JSON.stringify(result.data));
+      setOfertaMessage({ text: `Se cargaron ${result.data.length} horarios desde el PDF.`, type: 'success' });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Error al procesar el PDF.';
+      setOfertaMessage({ text: message, type: 'error' });
+    } finally {
+      setIsUploadingOferta(false);
+    }
+  };
+
   return (
     <section className="space-y-6 max-w-6xl mx-auto pb-20 animate-in fade-in duration-500">
       <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -234,27 +276,70 @@ export const RecommendationsPage = () => {
           </p>
         </div>
 
-        <div className="flex bg-elevated p-1 rounded-lg border border-app shadow-subtle">
+        <div className="flex items-center gap-3">
+          <input
+            ref={ofertaFileRef}
+            type="file"
+            accept=".pdf"
+            className="hidden"
+            onChange={handleOfertaFileSelect}
+          />
           <button
-            onClick={() => setViewMode('CALENDAR')}
-            className={`px-4 py-2 flex items-center gap-2 rounded-md text-sm font-bold transition-all ${viewMode === 'CALENDAR'
-              ? 'bg-unlam-500 text-app-accent-ink shadow-sm'
-              : 'text-muted hover:text-app'
-              }`}
+            onClick={() => ofertaFileRef.current?.click()}
+            disabled={isUploadingOferta}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg border-2 border-dashed border-unlam-500/50 text-unlam-500 hover:bg-unlam-500/10 hover:border-unlam-500 transition-all font-bold text-sm whitespace-nowrap disabled:opacity-50"
           >
-            <Calendar size={18} /> Calendario Visual
+            <Upload size={16} />
+            {isUploadingOferta ? 'Procesando...' : 'Subir Oferta (PDF)'}
           </button>
-          <button
-            onClick={() => setViewMode('LIST')}
-            className={`px-4 py-2 flex items-center gap-2 rounded-md text-sm font-bold transition-all ${viewMode === 'LIST'
-              ? 'bg-unlam-500 text-app-accent-ink shadow-sm'
-              : 'text-muted hover:text-app'
-              }`}
-          >
-            <List size={18} /> Materias Clave
-          </button>
+
+          <div className="flex bg-elevated p-1 rounded-lg border border-app shadow-subtle">
+            <button
+              onClick={() => setViewMode('CALENDAR')}
+              className={`px-4 py-2 flex items-center gap-2 rounded-md text-sm font-bold transition-all ${viewMode === 'CALENDAR'
+                ? 'bg-unlam-500 text-app-accent-ink shadow-sm'
+                : 'text-muted hover:text-app'
+                }`}
+            >
+              <Calendar size={18} /> Calendario Visual
+            </button>
+            <button
+              onClick={() => setViewMode('LIST')}
+              className={`px-4 py-2 flex items-center gap-2 rounded-md text-sm font-bold transition-all ${viewMode === 'LIST'
+                ? 'bg-unlam-500 text-app-accent-ink shadow-sm'
+                : 'text-muted hover:text-app'
+                }`}
+            >
+              <List size={18} /> Materias Clave
+            </button>
+          </div>
         </div>
       </header>
+
+      {/* Oferta Message */}
+      {ofertaMessage && (
+        <div className={`flex items-center gap-2 px-4 py-3 rounded-xl border text-sm font-bold ${ofertaMessage.type === 'success'
+          ? 'bg-green-500/10 border-green-500/30 text-green-500'
+          : 'bg-red-500/10 border-red-500/30 text-red-500'
+          }`}>
+          {ofertaMessage.type === 'success' ? <CheckCircle size={16} /> : <AlertTriangle size={16} />}
+          {ofertaMessage.text}
+          <button onClick={() => setOfertaMessage(null)} className="ml-auto text-muted hover:text-app">×</button>
+        </div>
+      )}
+
+      {/* Oferta summary */}
+      {ofertaData.length > 0 && (
+        <div className="flex items-center gap-2 px-4 py-2 rounded-xl border border-app bg-elevated/50 text-xs text-muted">
+          📚 Oferta cargada: <strong className="text-app">{ofertaData.length}</strong> horarios disponibles.
+          <button
+            onClick={() => { setOfertaData([]); localStorage.removeItem('oferta_materias'); }}
+            className="ml-auto text-red-400 hover:text-red-500 text-[10px] font-bold uppercase"
+          >
+            Limpiar
+          </button>
+        </div>
+      )}
 
       {/* Input Section */}
       <div className="rounded-xl border border-app bg-surface p-5 shadow-subtle">

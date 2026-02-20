@@ -35,13 +35,13 @@ describe('useGraphSearch hook', () => {
         const { result } = renderHook(() => useGraphSearch(mockSubjects, mockNodes, mockFlowInstance, mockSetFocusedId));
 
         act(() => {
-            result.current.setSearchQuery('mate');
+            result.current.setSearchQuery('analisis');
         });
 
-        expect(result.current.searchResults).toHaveLength(2); // Matematica Discreta, Analisis Matematico
+        expect(result.current.searchResults).toHaveLength(2); // Analisis I, Analisis II
 
         act(() => {
-            result.current.setSearchQuery('SYS102');
+            result.current.setSearchQuery('MAT2');
         });
         expect(result.current.searchResults).toHaveLength(1);
         expect(result.current.searchResults[0].id).toBe('2');

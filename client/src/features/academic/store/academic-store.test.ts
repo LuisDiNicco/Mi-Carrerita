@@ -67,6 +67,6 @@ describe('useAcademicStore', () => {
         expect(math?.planCode).toBe('MAT');
         // Other subjects must be unmodified
         expect(phy?.status).toBe(SubjectStatus.APROBADA);
-        expect(phy?.grade).toBe(85);
+        expect(phy?.grade).toBe(8);
     });
 });

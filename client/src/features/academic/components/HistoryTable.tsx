@@ -1,11 +1,14 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useAcademicStore } from '../store/academic-store';
 import { formatDate, formatGrade } from '../../../shared/lib/utils';
 import { authFetch } from '../../auth/lib/api';
 import { fetchAcademicGraph } from '../lib/academic-api';
 import { SubjectStatus } from '../../../shared/types/academic';
-import { Search, ArrowUpDown, Edit2, Trash2, X, AlertTriangle } from 'lucide-react';
+import { Search, ArrowUpDown, Edit2, Trash2, X, AlertTriangle, Upload } from 'lucide-react';
 import { cn } from '../../../shared/lib/utils';
+import { uploadHistoriaPdf, batchSaveHistory } from '../lib/academic-api';
+import type { ParsedAcademicRecord, BatchAcademicRecordPayload } from '../lib/academic-api';
+import { PdfPreviewModal } from './PdfPreviewModal';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 const STATUS_OPTIONS = [
@@ -34,6 +37,11 @@ export const HistoryTable = () => {
   const [notes, setNotes] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // PDF Upload State
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [parsedRecords, setParsedRecords] = useState<ParsedAcademicRecord[] | null>(null);
 
   // Filter & Sort State
   const [searchTerm, setSearchTerm] = useState('');
@@ -227,6 +235,38 @@ export const HistoryTable = () => {
     }
   };
 
+  // PDF Upload Handlers
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    // Reset input so re-uploading the same file works
+    e.target.value = '';
+
+    setIsUploading(true);
+    setError(null);
+    try {
+      const result = await uploadHistoriaPdf(file);
+      if (result.data.length === 0) {
+        setError('No se encontraron registros en el PDF. Verificá que sea un PDF válido de Historia Académica.');
+        return;
+      }
+      setParsedRecords(result.data);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Error al procesar el PDF.';
+      setError(message);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleBatchConfirm = async (records: BatchAcademicRecordPayload[]) => {
+    await batchSaveHistory(records);
+    setParsedRecords(null);
+    // Refresh the graph after batch save
+    const graphData = await fetchAcademicGraph();
+    setSubjects(graphData);
+  };
+
   return (
     <div className="space-y-6 pb-20">
 
@@ -347,15 +387,32 @@ export const HistoryTable = () => {
 
       {/* Toolbar */}
       <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-elevated/50 p-4 rounded-xl border border-app">
-        <div className="relative w-full md:w-64">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" size={16} />
+        <div className="flex items-center gap-3 w-full md:w-auto">
+          <div className="relative flex-1 md:w-64">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" size={16} />
+            <input
+              type="text"
+              placeholder="Buscar materia..."
+              className="w-full pl-9 pr-4 py-2 bg-surface border border-app rounded-lg text-sm focus:ring-1 focus:ring-unlam-500 outline-none"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
           <input
-            type="text"
-            placeholder="Buscar materia..."
-            className="w-full pl-9 pr-4 py-2 bg-surface border border-app rounded-lg text-sm focus:ring-1 focus:ring-unlam-500 outline-none"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            ref={fileInputRef}
+            type="file"
+            accept=".pdf"
+            className="hidden"
+            onChange={handleFileSelect}
           />
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isUploading}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg border-2 border-dashed border-unlam-500/50 text-unlam-500 hover:bg-unlam-500/10 hover:border-unlam-500 transition-all font-bold text-sm whitespace-nowrap disabled:opacity-50"
+          >
+            <Upload size={16} />
+            {isUploading ? 'Procesando...' : 'Subir PDF'}
+          </button>
         </div>
         <div className="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0 scrollbar-hide flex-nowrap">
           {['ALL', SubjectStatus.APROBADA, SubjectStatus.EN_CURSO, SubjectStatus.REGULARIZADA, SubjectStatus.RECURSADA].map((st) => {
@@ -473,6 +530,15 @@ export const HistoryTable = () => {
           </table>
         </div>
       </div>
+
+      {/* PDF Preview Modal */}
+      {parsedRecords && (
+        <PdfPreviewModal
+          records={parsedRecords}
+          onConfirm={handleBatchConfirm}
+          onClose={() => setParsedRecords(null)}
+        />
+      )}
     </div>
   );
 };
