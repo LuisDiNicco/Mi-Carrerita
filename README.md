@@ -1,331 +1,107 @@
-# 🎓 Mi Carrerita
+# Mi Carrerita 🎓
 
-> Una plataforma interactiva para rastrear, optimizar e visualizar tu carrera universitaria mediante grafos, recomendaciones inteligentes y gamificación.
+Este repositorio contiene el código fuente de **Mi Carrerita**, una aplicación web diseñada para resolver el problema clásico de la gestión y planificación de asignaturas a lo largo de una carrera universitaria, utilizando visualización de grafos, algoritmos de rutas críticas e inferencia de recomendaciones horarias sin solapamientos.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![TypeScript](https://img.shields.io/badge/TypeScript-100%25-blue)](https://www.typescriptlang.org/)
-[![Node.js](https://img.shields.io/badge/Node.js-18+-green)](https://nodejs.org/)
-[![React](https://img.shields.io/badge/React-18-61dafb?logo=react)](https://react.dev)
-[![NestJS](https://img.shields.io/badge/NestJS-11-ea2845?logo=nestjs)](https://nestjs.com)
+## Propósito y Contexto del Proyecto
 
----
+El proyecto nace de la necesidad de tener una herramienta centralizada que no solo lleve el trackeo del progreso académico (materias aprobadas, en curso, pendientes) sino que actúe como un planificador de cursada real. Con motores de recomendación inteligentes, permite al estudiante universitario anticipar cuellos de botella mediante el cálculo de la Ruta Crítica de su plan de estudios y evitar conflictos de horarios.
 
-## ✨ Características
-
-### 📊 Visualización Interactiva
-- **Carrera Académica en Grafn** - Visualización de correlatividades pre-requisitos
-- **Estado en Tiempo Real** - Colores por estatus (Pendiente, En Curso, Aprobada, etc.)
-- **Búsqueda & Filtrado** - Encuentra asignaturas rápidamente
-- **Ruta Crítica** - Visualiza el camino más corto a la graduación
-- **Fullscreen Mode** - Zoom y pan para explorar tu carrera
-
-### 🎯 Recomendaciones Inteligentes
-- **3 Planes Alternativos** - A (rápido), B (equilibrado), C (lento)
-- **Basado en Algoritmos** - Cálculo de ruta crítica automático
-- **Optimizado para Ti** - Considera prerequisitos y disponibilidad
-
-### 📈 Dashboard & Análisis
-- **Estadísticas Completas** - Progreso, promedio, creditos, etc.
-- **Gráficos Interactivos** - Pie charts, barras, líneas
-- **Proyecciones** - Estimaciones de fecha de graduación
-
-### 🏆 Sistema de Logros
-- **Milestones Progresivos** - Desbloquea logros conforme avanzas
-- **Tiers (Bronze → Platinum)** - Gamificación motivadora
-- **Barra de Progreso Animada** - Visualización del avance
-
-### 🔐 Autenticación
-- **Google OAuth 2.0** - Login rápido y seguro
-- **JWT + Refresh Tokens** - Tokens seguros con vencimiento
-- **Sesión Persistente** - Mantiene tu sesión iniciada
-- **Modo Guest** - Explora sin loguear (readonly)
+Las reglas de negocio propias del sistema universitario (como las franjas horarias de cursada, correlatividades restrictivas y evaluación de rendimiento) fueron modeladas y aisladas bajo una arquitectura orientada a servicios.
 
 ---
 
-## 🚀 Quick Start (5 minutos)
+## Arquitectura y Stack Tecnológico
 
-### Requisitos
-- Node.js 18+
-- npm 8+
-- Credenciales de Google OAuth ([obtener aquí](https://console.cloud.google.com/))
+El sistema se divide en dos capas bien definidas que se comunican mediante una API RESTful, asegurada con JWT y estrategias OAuth 2.0.
 
-### Instalación
+### Frontend (SPA)
+Se optó por una Single Page Application (SPA) para garantizar una experiencia de usuario fluida y persistente, especialmente crítica en la manipulación in-place del grafo interactivo de materias.
+
+- **Framework Core:** React 18 + Vite (para optimización de compilación y HMR ultrarrápido).
+- **Lenguaje:** TypeScript estricto, mitigando errores en tiempo de ejecución.
+- **Gestión de Estado Centralizado:** `Zustand`. Se priorizó sobre Redux para reducir el boilerplate, aprovechando hooks reactivos ligeros sin sacrificar control de estado global (ej. sesión de usuario, carga asíncrona del grafo).
+- **Core de Visualización:** `React Flow`. Maneja el layout algorítmico del grafo de materias en un canvas de alto rendimiento.
+- **Estilado:** Tailwind CSS, logrando un diseño atómico y un theme _retro_ altamente consistente sin la sobrecarga de preprocesadores pesados.
+
+### Backend (API Gateway)
+El servidor funciona como el cerebro del cálculo de grafos, persistencia transaccional y validación estricta de reglas de negocio.
+
+- **Framework Core:** NestJS 11. Su inyección de dependencias (DI) y patrón modular garantizan una base de código desacoplada, fácilmente testeable y escalable a microservicios a futuro funcional.
+- **Lenguaje:** TypeScript (sincronizado con los DTOs del frontend).
+- **Persistencia y ORM:** Prisma ORM interactuando con SQLite (entorno de desarrollo local) y PostgreSQL (producción). Provee Type-Safety desde el esquema de la DB hasta el resolutor de la ruta HTTP.
+- **Seguridad y Auth:** Passport.js para la integración con Google OAuth 2.0. La gestión de estado stateless utiliza JSON Web Tokens (JWT) asimétricos con rotación para invalidación de sesiones.
+- **Event-Driven:** Uso interno de `EventEmitter2` para lógica desacoplada, particularmente vital en casos de uso de cómputo diferido como el cálculo asíncrono de Logros/Trofeos.
+
+Para una inmersión técnica absoluta en la toma de decisiones, compensaciones (trade-offs) y diseño del sistema, referirse a la documentación técnica en `ARCHITECTURE.md`.
+
+---
+
+## Características Principales
+
+1. **Motor de Renderizado de Grafo de Materias:** 
+   Evalúa el árbol de dependencias (`Correlatividades`) de un plan de estudio en tiempo real, separándolo en hitos y calculando la "Ruta Crítica": el camino más largo de dependencias que define el tiempo mínimo de graduación.
+2. **Planificador Interactivo Evita-Colisiones:**
+   Permite volcar la oferta horaria real. Mediante un algoritmo de validación transversal, cruza los horarios propuestos para emitir una "Recomendación de Cursada", filtrando las materias disponibles donde exista solapamiento e ignorando franjas sin oferta (ej. 12hs-14hs y 18hs-19hs).
+3. **Métricas Avanzadas (Dashboard):**
+   Trackeo analítico del rendimiento histórico. Visualiza velocidad de avance, distribución de notas, y asignaturas cuello de botella.
+4. **Sistema Desacoplado de Trofeos (Observer Pattern):**
+   Motor de gamificación evaluado de manera lazy y asíncrona del lado del servidor para no bloquear el Event Loop de Node.js durante la mutación de estado de las cursadas.
+
+---
+
+## Ejecución en Entorno de Desarrollo Local
+
+### Prerrequisitos
+- Node.js (v18+)
+- Gestor de paquetes `npm` o `pnpm`.
+- Instancia local o credenciales de cloud para bases de datos (SQLite default) y Google OAuth.
+
+### Levantamiento
+1. Instalar variables de entorno a partir de los templates `.env.example` en `./server` y `./client`.
+2. Instalar las dependencias de los monorepos:
+   ```bash
+   cd server && npm install
+   cd ../client && npm install
+   ```
+3. Correr las migraciones y seeders de Prisma (Genera datos iniciales como la lista de materias y sus correlatividades):
+   ```bash
+   cd ../server
+   npx prisma migrate dev
+   npx prisma db seed
+   ```
+4. Levantar instancias en parelelo:
+   ```bash
+   # Terminal 1 - Backend
+   cd server && npm run start:dev
+   
+   # Terminal 2 - Frontend
+   cd client && npm run dev
+   ```
+
+## Entorno de Pruebas (Testing Suite)
+
+La aplicación cuenta con una amplia cobertura de pruebas (Superando métricas > 75%), utilizando un enfoque tanto unitario como asíncrono (E2E).
+Para ejecutar la Suite en su totalidad:
+
+### Frontend (Vitest & Testing Library)
+Abarca renderizado de portales modales, interacciones the doble-click al grafo virtual y consistencia the Stores.
 ```bash
-# 1. Configurar variables de entorno
-# Editar server/.env y client/.env (ver QUICKSTART.md)
-
-# 2. Instalar dependencias
-cd client && npm install
-cd ../server && npm install
-
-# 3. Setup base de datos
-npx prisma migrate dev
-npx prisma db seed
-
-# 4. Iniciar servidores
-# Terminal 1:
-cd server && npm run start:dev
-
-# Terminal 2:
-cd client && npm run dev
-
-# 5. Abrir navegador
-# http://localhost:5173
+cd client
+npm run test:cov
 ```
 
-👉 **[Ver guía detallada →](QUICKSTART.md)**
-
----
-
-## 📚 Documentación
-
-| Documento | Descripción |
-|-----------|------------|
-| **[QUICKSTART.md](QUICKSTART.md)** | Inicio en 5 minutos |
-| **[SETUP.md](SETUP.md)** | Guía completa de instalación |
-| **[API.md](API.md)** | Documentación de endpoints REST |
-| **[ARCHITECTURE.md](ARCHITECTURE.md)** | Diseño técnico del proyecto |
-| **[FAQ.md](FAQ.md)** | Preguntas frecuentes & troubleshooting |
-| **[CONTRIBUTING.md](CONTRIBUTING.md)** | Cómo contribuir |
-| **[ROADMAP.md](ROADMAP.md)** | Plan futuro del proyecto |
-| **[INDEX.md](INDEX.md)** | Mapa completo de documentación |
-
----
-
-## 🏗️ Arquitectura
-
-### Cliente (React + TypeScript + Vite)
-```
-src/
-├── app/              # Root component
-├── features/         # Módulos principales
-│   ├── academic/    # Carrera académica
-│   ├── auth/        # Autenticación
-│   ├── dashboard/   # Estadísticas
-│   ├── landing/     # Landing page
-│   ├── recommendations/
-│   └── trophies/    # Sistema de logros
-└── shared/          # Componentes reutilizables
-    ├── components/
-    ├── layout/
-    ├── ui/
-    ├── lib/         # graph.ts, utils.ts
-    └── styles/      # Design system
-```
-
-### Servidor (NestJS + Prisma)
-```
-src/
-├── modules/         # Módulos principal
-│   ├── auth/       # OAuth + JWT
-│   └── academic-career/  # Gestión carrera
-├── common/          # Utilidades compartidas
-├── prisma/          # Base de datos
-└── app.module.ts    # Bootstrap
+### Backend (Jest Suite)
+Abarca pruebas a algoritmos the rutas críticas, colisión de horarios N+1, y E2E the la REST API.
+```bash
+cd server
+npm run test
 ```
 
 ---
 
-## 🛠️ Stack Tecnológico
-
-### Frontend
-- **React 18** - Framework UI
-- **TypeScript** - Type safety
-- **Vite** - Build tool ultrarrápido
-- **Zustand** - State management
-- **React Flow** - Visualización de grafos
-- **Recharts** - Gráficos
-- **Tailwind CSS** - Estilos
-
-### Backend
-- **NestJS 11** - Framework Node.js
-- **Prisma** - ORM type-safe
-- **Passport.js** - Autenticación
-- **JWT** - Token management
-- **SQLite** (dev) / **PostgreSQL** (prod)
+## Documentación Adjunta
+- `ARCHITECTURE.md`: Deep-dive sobre las decisiones arquitectónicas, tradeoffs de renderizado/estado y diseño relacional.
+- `BUSINESS_RULES.md`: Dominio lógico y casos de uso estructurados propios del ámbito universitario aplicados al código.
 
 ---
-
-## 📦 Bases de Datos
-
-### Tablas
-- **User** - Información de usuario + Google ID
-- **Subject** - Asignaturas del plan de estudio
-- **AcademicRecord** - Historial académico
-- **Correlativity** - Relaciones de pre-requisitos
-- **SubjectReview** - Reseñas de asignaturas
-
-### Seed Data
-- 21 asignaturas del plan 2023
-- Correlatividades configuradas
-- Usuario admin para testing
-
----
-
-## 🎨 Diseño & UX
-
-- **Tema Retro** - Colores vibrantes e inspiración vintage
-- **Responsive** - Desktop, tablet y móvil
-- **Accesible** - WCAG 2.1 AA (mejorando)
-- **Animaciones Suaves** - Sin exceso pero elegante
-
----
-
-## 🔐 Seguridad
-
-✅ **Implementado**
-- CORS configurado por origen
-- JWT con vencimiento (15 minutos)
-- Refresh tokens seguros (httpOnly cookies)
-- Validación de DTOs
-- Type-safe queries
-
-🔒 **Para Producción**
-- HTTPS obligatorio
-- Rate limiting
-- Monitoring & alerting
-- Backup automático
-
----
-
-## 🚀 Deployment
-
-### Frontend
-- Vercel / Netlify: Conecta tu repo, auto-deploy en cada push
-- Build output: `dist/`
-
-### Backend
-- Railway / Heroku: Docker ready
-- Database: PostgreSQL en cloud
-- Environment: Variables en plataform
-
-Ver detalle en [SETUP.md](SETUP.md#deployment)
-
----
-
-## 📊 Estado del Proyecto
-
-| Componente | Estatus |
-|-----------|---------|
-| Frontend base | ✅ MVP Completado |
-| Backend base | ✅ MVP Completado |
-| Autenticación | ✅ OAuth Google + JWT |
-| Visualización | ✅ React Flow + Grafos |
-| Recomendaciones | ✅ 3 planes (A/B/C) |
-| Dashboard | ✅ Estadísticas completas |
-| Logros | ✅ Tiers (Bronze → Platinum) |
-| Documentación | ✅ Completa |
-| Testing | 🟡 Parcial (30%) |
-| Mobile | 🟡 Funcional pero no optimizado |
-
----
-
-## 🗺️ Roadmap
-
-### v1.1.0 (Q2 2024)
-- [ ] Múltiples carreras
-- [ ] Personalización de temas
-- [ ] Exportar/Importar datos
-- [ ] Notificaciones
-
-### v1.2.0 (Q3 2024)
-- [ ] Grupos de estudio
-- [ ] Compartir carrera
-- [ ] Comentarios en asignaturas
-- [ ] Leaderboards
-
-### v1.3.0 (Q4 2024)
-- [ ] Recomendaciones con IA
-- [ ] Chatbot asistente
-- [ ] Análisis predictivo
-
-Ver [ROADMAP.md](ROADMAP.md) máss detalle.
-
----
-
-## 🤝 Contribuir
-
-¡Las contribuciones son bienvenidas! 
-
-1. Fork el proyecto
-2. Crea una rama feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tu código (`git commit -m 'feat: agregar algo'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
-
-Ver [CONTRIBUTING.md](CONTRIBUTING.md) para más detalles.
-
----
-
-## ❓ FAQ
-
-**¿Necesito cuenta de Google para usar?**  
-No, hay modo guest para explorar.
-
-**¿Es código abierto?**  
-Sí, bajo licencia MIT.
-
-**¿Puedo modificar para mi universidad?**  
-Sí, es fácil agregar nuevas carreras. Ver [FAQ.md](FAQ.md#how-do-i-add-a-new-subject).
-
-**¿Cómo se almacenan mis datos?**  
-En tu propia instancia de base de datos (por defecto SQLite o PostgreSQL).
-
-Ver más en [FAQ.md](FAQ.md).
-
----
-
-## 🐛 Report a Bug
-
-Encontraste un error? 
-1. Revisa [FAQ.md](FAQ.md) primero
-2. Abre un [Issue](https://github.com/usuario/Mi-Carrerita/issues)
-3. Incluye: pasos para reproducir, capturas, entorno
-
----
-
-## 📄 Licencia
-
-Este proyecto está bajo la licencia MIT. Ver [LICENSE](LICENSE) para más.
-
----
-
-## 👤 Autor
-
-Creado con ❤️ para estudiantes universitarios que quieren dominar su carrera.
-
----
-
-## 🙏 Agradecimientos
-
-- [NestJS](https://nestjs.com) - Framework backend
-- [React](https://react.dev) - Framework frontend
-- [Prisma](https://www.prisma.io) - ORM moderno
-- [React Flow](https://reactflow.dev) - Visualización de grafos
-- El equipo de open source de otros proyectos
-
----
-
-## 📞 Soporte
-
-- **Documentación:** [INDEX.md](INDEX.md) - Mapa completo
-- **Problemas:** [FAQ.md](FAQ.md) - Troubleshooting
-- **Preguntas:** [Discussions](https://github.com) - GitHub Discussions
-- **Bugs:** [Issues](https://github.com) - GitHub Issues
-
----
-
-## 🎯 Próximos Pasos
-
-1. **Empezar:** [QUICKSTART.md](QUICKSTART.md)
-2. **Entender:** [ARCHITECTURE.md](ARCHITECTURE.md)
-3. **Desarrollar:** Abre `client` y `server` en tu IDE
-4. **Contribuir:** Lee [CONTRIBUTING.md](CONTRIBUTING.md)
-
----
-
-**¡Que disfrutes optimizando tu carrera universitaria con Mi Carrerita! 🚀🎓**
-
----
-
-`Última actualización: Enero 2024 | Versión: 1.0.0 | Estado: MVP Completado ✅`
+*Desarrollado y mantenido focalizando la ingeniería de software aplicada, código robusto y principios SOLID.*

@@ -1,10 +1,14 @@
-import { validateAcademicRecord, parseIsolatedDate } from '../../../common/helpers/academic-validation.helper';
+import {
+  validateAcademicRecord,
+  parseIsolatedDate,
+} from '../../../common/helpers/academic-validation.helper';
 import {
   Injectable,
   NotFoundException,
   BadRequestException,
   ForbiddenException,
 } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../../prisma/prisma.service';
 import {
@@ -22,24 +26,26 @@ import {
 
 @Injectable()
 export class AcademicHistoryService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly eventEmitter: EventEmitter2,
+  ) {}
 
-  private readonly recordWithSubjectSelect = Prisma.validator<
-    Prisma.AcademicRecordDefaultArgs
-  >()({
-    include: {
-      subject: {
-        select: {
-          id: true,
-          name: true,
-          planCode: true,
-          year: true,
-          hours: true,
-          isOptional: true,
+  private readonly recordWithSubjectSelect =
+    Prisma.validator<Prisma.AcademicRecordDefaultArgs>()({
+      include: {
+        subject: {
+          select: {
+            id: true,
+            name: true,
+            planCode: true,
+            year: true,
+            hours: true,
+            isOptional: true,
+          },
         },
       },
-    },
-  });
+    });
 
   /**
    * Get paginated and filtered academic history
@@ -145,10 +151,14 @@ export class AcademicHistoryService {
         difficulty: update.difficulty ?? null,
         notes: update.notes ?? null,
         isIntermediate: update.isIntermediate ?? record.isIntermediate,
-        statusDate: update.statusDate ? parseIsolatedDate(update.statusDate) : null,
+        statusDate: update.statusDate
+          ? parseIsolatedDate(update.statusDate)
+          : null,
       },
       ...this.recordWithSubjectSelect,
     });
+
+    this.eventEmitter.emit('subject.status.updated', { userEmail });
 
     return this.mapToAcademicHistoryRowDto(updated);
   }
@@ -183,6 +193,8 @@ export class AcademicHistoryService {
     await this.prisma.academicRecord.delete({
       where: { id: recordId },
     });
+
+    this.eventEmitter.emit('subject.status.updated', { userEmail });
   }
 
   /**
@@ -200,13 +212,17 @@ export class AcademicHistoryService {
     await this.prisma.academicRecord.deleteMany({
       where: { userId: user.id },
     });
+
+    this.eventEmitter.emit('subject.status.updated', { userEmail });
   }
 
   /**
    * Internal helper: map record to DTO
    */
   private mapToAcademicHistoryRowDto(
-    record: Prisma.AcademicRecordGetPayload<typeof this.recordWithSubjectSelect>,
+    record: Prisma.AcademicRecordGetPayload<
+      typeof this.recordWithSubjectSelect
+    >,
   ): AcademicHistoryRowDto {
     const semester = inferSemesterFromDate(
       record.statusDate,

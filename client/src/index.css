@@ -23,14 +23,12 @@
     --app-accent-strong: #6AD16F;
     --app-accent-ink: #0B2A14;
 
-    --scanlines: repeating-linear-gradient(
-      0deg,
-      rgba(0, 0, 0, 0.08),
-      rgba(0, 0, 0, 0.08) 1px,
-      transparent 1px,
-      transparent 3px
-    );
-    
+    --scanlines: repeating-linear-gradient(0deg,
+        rgba(0, 0, 0, 0.08),
+        rgba(0, 0, 0, 0.08) 1px,
+        transparent 1px,
+        transparent 3px);
+
     /* Efectos CRT */
     --crt-curve: 0.02;
     --scanline-opacity: 0.1;
@@ -60,22 +58,24 @@
     color: var(--app-text);
     font-size: 22px;
     line-height: 1.6;
-    
+
     /* Background visual moderno sutilo */
     background-image:
-      repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px),
+      repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.03) 2px, rgba(0, 0, 0, 0.03) 4px),
       radial-gradient(circle at 20% 50%, rgba(107, 168, 111, 0.04) 0%, transparent 50%),
       radial-gradient(circle at 80% 80%, rgba(107, 168, 111, 0.03) 0%, transparent 50%);
-    
+
     /* Prevenir selección de texto para mejor UX tipo juego */
     user-select: none;
-    
+
     /* Overflow suave */
     overflow-x: hidden;
   }
 
   /* Hacer que los inputs y textareas tengan estilo retro */
-  input, textarea, select {
+  input,
+  textarea,
+  select {
     @apply font-retro px-3 py-2;
     background-color: var(--app-surface);
     color: var(--app-text);
@@ -87,7 +87,12 @@
   }
 
   /* Headings con estilo retro */
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-retro font-bold tracking-wider;
     text-shadow: none;
   }
@@ -141,12 +146,13 @@
    COMPONENTES PERSONALIZADOS
    ======================================== */
 @layer components {
+
   /* Contenedor tipo pantalla CRT */
   .crt-screen {
     background-color: var(--app-surface);
     border: 2px solid var(--app-border);
     @apply rounded-2xl;
-    box-shadow: 
+    box-shadow:
       inset 0 0 40px rgba(0, 0, 0, 0.2),
       0 0 30px rgba(123, 203, 122, 0.15);
     background-image: var(--scanlines);
@@ -182,7 +188,7 @@
   .pixel-badge {
     @apply inline-block px-2 py-1 text-xs font-retro font-bold;
     @apply border-2 uppercase tracking-wider;
-    @apply shadow-[2px_2px_0px_rgba(0,0,0,0.8)];
+    @apply shadow-[2px_2px_0px_rgba(0, 0, 0, 0.8)];
     image-rendering: pixelated;
   }
 }
@@ -191,6 +197,17 @@
    UTILIDADES ESPECIALES
    ======================================== */
 @layer utilities {
+  .retro-calendar::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    filter: invert(0.8) sepia(1) hue-rotate(80deg) saturate(3) brightness(1.2);
+    transition: all 0.2s ease;
+  }
+
+  .retro-calendar::-webkit-calendar-picker-indicator:hover {
+    filter: invert(0.8) sepia(1) hue-rotate(80deg) saturate(4) brightness(1.4);
+    transform: scale(1.1);
+  }
+
   .bg-app {
     background-color: var(--app-bg);
   }
@@ -226,6 +243,7 @@
   .shadow-subtle {
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
   }
+
   /* Renderizado pixelado para todos los elementos que lo necesiten */
   .pixelated {
     image-rendering: pixelated;
@@ -240,43 +258,46 @@
   }
 
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
 
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0);
-    opacity: 1;
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
-  50% {
-    transform: translateY(-20px);
-    opacity: 0;
-  }
-}
 
-.animate-float {
-  animation: float 2s ease-in-out infinite;
-}
+  @keyframes float {
+
+    0%,
+    100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    50% {
+      transform: translateY(-20px);
+      opacity: 0;
+    }
+  }
+
+  .animate-float {
+    animation: float 2s ease-in-out infinite;
+  }
+
   /* Efecto scanlines para pantallas CRT */
   .scanlines::before {
     content: '';
     position: absolute;
     inset: 0;
-    background: repeating-linear-gradient(
-      0deg,
-      rgba(0, 0, 0, 0.15),
-      rgba(0, 0, 0, 0.15) 1px,
-      transparent 1px,
-      transparent 2px
-    );
+    background: repeating-linear-gradient(0deg,
+        rgba(0, 0, 0, 0.15),
+        rgba(0, 0, 0, 0.15) 1px,
+        transparent 1px,
+        transparent 2px);
     pointer-events: none;
     z-index: 10;
   }
@@ -344,10 +365,13 @@
    ======================================== */
 
 @keyframes float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0);
     opacity: 1;
   }
+
   50% {
     transform: translateY(-20px);
     opacity: 0.5;
@@ -359,27 +383,35 @@
     opacity: 0;
     transform: scaleY(0.01);
   }
+
   50% {
     opacity: 1;
     transform: scaleY(0.01);
   }
+
   100% {
     transform: scaleY(1);
   }
 }
 
 @keyframes glitch {
-  0%, 90%, 100% {
+
+  0%,
+  90%,
+  100% {
     transform: translate(0);
   }
+
   92% {
     transform: translate(-2px, 2px);
     filter: hue-rotate(90deg);
   }
+
   94% {
     transform: translate(2px, -2px);
     filter: hue-rotate(180deg);
   }
+
   96% {
     transform: translate(-2px, -2px);
     filter: hue-rotate(270deg);
@@ -392,6 +424,7 @@
     transform: translateY(-100%);
     opacity: 0.8;
   }
+
   100% {
     transform: translateY(100vh);
     opacity: 0;
@@ -402,9 +435,11 @@
   0% {
     transform: translate3d(0, 0, 0);
   }
+
   50% {
     transform: translate3d(-20px, 12px, 0);
   }
+
   100% {
     transform: translate3d(0, 0, 0);
   }
@@ -414,15 +449,19 @@
   0% {
     background-position: 0 0;
   }
+
   100% {
     background-position: 80px 60px;
   }
 }
 
 @keyframes walk {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-2px);
   }
@@ -439,8 +478,13 @@
 
 /* Efecto de texto tecleando */
 @keyframes typing {
-  from { width: 0; }
-  to { width: 100%; }
+  from {
+    width: 0;
+  }
+
+  to {
+    width: 100%;
+  }
 }
 
 .typing-effect {
@@ -586,9 +630,17 @@
     @apply px-4 py-2 text-sm;
   }
 
-  h1 { font-size: 1.75rem; }
-  h2 { font-size: 1.5rem; }
-  h3 { font-size: 1.25rem; }
+  h1 {
+    font-size: 1.75rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  h3 {
+    font-size: 1.25rem;
+  }
 }
 
 /* ========================================
@@ -605,6 +657,7 @@
 
 /* Reducir movimiento si el usuario lo prefiere */
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {
@@ -624,9 +677,11 @@
   0% {
     filter: brightness(1);
   }
+
   50% {
     filter: brightness(1.2);
   }
+
   100% {
     filter: brightness(1);
   }
@@ -636,9 +691,11 @@
   0% {
     box-shadow: 0 0 0 rgba(123, 203, 122, 0.2);
   }
+
   50% {
     box-shadow: 0 0 16px rgba(123, 203, 122, 0.6);
   }
+
   100% {
     box-shadow: 0 0 0 rgba(123, 203, 122, 0.2);
   }
@@ -649,10 +706,12 @@
     opacity: 0;
     transform: scaleX(0.6);
   }
+
   60% {
     opacity: 1;
     transform: scaleX(1);
   }
+
   100% {
     opacity: 0;
   }
@@ -665,12 +724,13 @@
   left: 50%;
   transform: translate(-50%, -50%);
   width: 4px;
-  height: 24px; /* Un poco más alto que la barra */
+  height: 24px;
+  /* Un poco más alto que la barra */
   background: #fff;
   border-radius: 4px;
-  box-shadow: 
-    0 0 10px #fff, 
-    0 0 20px var(--app-accent), 
+  box-shadow:
+    0 0 10px #fff,
+    0 0 20px var(--app-accent),
     0 0 30px var(--app-accent-strong);
   animation: electric-flicker 0.2s infinite;
 }
@@ -682,27 +742,52 @@
   left: 50%;
   width: 20px;
   height: 20px;
-  background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0) 70%);
   transform: translate(-50%, -50%) scale(0);
   animation: spark-particles 1s linear infinite;
 }
 
 @keyframes electric-flicker {
-  0%, 100% { opacity: 1; height: 24px; }
-  50% { opacity: 0.8; height: 20px; }
-  25% { opacity: 0.9; transform: translate(-50%, -50%) rotate(5deg); }
-  75% { opacity: 0.9; transform: translate(-50%, -50%) rotate(-5deg); }
+
+  0%,
+  100% {
+    opacity: 1;
+    height: 24px;
+  }
+
+  50% {
+    opacity: 0.8;
+    height: 20px;
+  }
+
+  25% {
+    opacity: 0.9;
+    transform: translate(-50%, -50%) rotate(5deg);
+  }
+
+  75% {
+    opacity: 0.9;
+    transform: translate(-50%, -50%) rotate(-5deg);
+  }
 }
 
 @keyframes spark-particles {
-  0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
-  100% { transform: translate(-50%, -50%) scale(2); opacity: 0; }
+  0% {
+    transform: translate(-50%, -50%) scale(0.5);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translate(-50%, -50%) scale(2);
+    opacity: 0;
+  }
 }
 
 .spark-edge {
-    width: 10px; 
-    height: 30px; /* Un poco más alto que la barra para que sobresalga el brillo vertical */
-    /* background: rgba(255, 0, 0, 0.3); Para debug: ver dónde está el contenedor */
+  width: 10px;
+  height: 30px;
+  /* Un poco más alto que la barra para que sobresalga el brillo vertical */
+  /* background: rgba(255, 0, 0, 0.3); Para debug: ver dónde está el contenedor */
 }
 
 /* El núcleo brillante vertical */
@@ -713,15 +798,17 @@
   left: 50%;
   transform: translate(-50%, -50%);
   width: 3px;
-  height: 100%; /* Ocupa el alto del contenedor padre */
+  height: 100%;
+  /* Ocupa el alto del contenedor padre */
   background: #fff;
   border-radius: 10px;
   /* Un brillo intenso blanco y cian/retro */
-  box-shadow: 
-    0 0 8px #fff, 
-    0 0 15px var(--app-accent), 
+  box-shadow:
+    0 0 8px #fff,
+    0 0 15px var(--app-accent),
     0 0 25px var(--app-accent-strong);
-  animation: electric-flicker 0.15s infinite alternate; /* Más rápido y alternado */
+  animation: electric-flicker 0.15s infinite alternate;
+  /* Más rápido y alternado */
   z-index: 2;
 }
 
@@ -731,10 +818,11 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 30px; /* Área más grande para las partículas */
+  width: 30px;
+  /* Área más grande para las partículas */
   height: 30px;
   /* Gradiente radial para que las partículas se desvanezcan hacia afuera */
-  background: radial-gradient(circle, rgba(255,255,255,0.9) 10%, var(--app-accent) 30%, rgba(255,255,255,0) 60%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 10%, var(--app-accent) 30%, rgba(255, 255, 255, 0) 60%);
   transform: translate(-50%, -50%) scale(0);
   animation: spark-particles 0.8s linear infinite;
   z-index: 1;
@@ -742,11 +830,140 @@
 }
 
 @keyframes electric-flicker {
-  0% { height: 90%; opacity: 1; filter: brightness(1.2); }
-  100% { height: 110%; opacity: 0.8; filter: brightness(1); }
+  0% {
+    height: 90%;
+    opacity: 1;
+    filter: brightness(1.2);
+  }
+
+  100% {
+    height: 110%;
+    opacity: 0.8;
+    filter: brightness(1);
+  }
 }
 
 @keyframes spark-particles {
-  0% { transform: translate(-50%, -50%) scale(0.2) rotate(0deg); opacity: 1; }
-  100% { transform: translate(-50%, -50%) scale(1.8) rotate(180deg); opacity: 0; }
+  0% {
+    transform: translate(-50%, -50%) scale(0.2) rotate(0deg);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translate(-50%, -50%) scale(1.8) rotate(180deg);
+    opacity: 0;
+  }
+}
+
+/* Nuevas animaciones para Hero centering */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 40px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -40px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes gradientXY {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.animate-fade-in-down {
+  animation: fadeInDown 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.animate-gradient-xy {
+  animation: gradientXY 3s ease infinite;
+  background-size: 200% 200%;
+}
+
+.delay-100 {
+  animation-delay: 100ms;
+}
+
+.delay-200 {
+  animation-delay: 200ms;
+}
+
+.delay-300 {
+  animation-delay: 300ms;
+}
+
+/* Custom Date Picker Styles */
+input[type="date"] {
+  position: relative;
+  padding-right: 20px;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  background: transparent;
+  bottom: 0;
+  color: transparent;
+  cursor: pointer;
+  height: auto;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: auto;
+  z-index: 10;
+}
+
+input[type="date"]::after {
+  content: '📅';
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-size: 14px;
+  filter: grayscale(1);
+}
+
+/* Custom Number Input Arrows */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+  /* Firefox */
+  position: relative;
+}
+
+/* Custom Arrows container (needs wrapper in component, but globally we hide defaults) */
+.custom-number-input {
+  position: relative;
 }

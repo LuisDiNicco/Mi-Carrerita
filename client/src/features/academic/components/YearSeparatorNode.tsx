@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import type { Node, NodeProps } from '@xyflow/react';
 
 export type YearSeparatorNodeData = {
@@ -7,7 +8,7 @@ export type YearSeparatorNodeData = {
 
 export type YearSeparatorNodeType = Node<YearSeparatorNodeData, 'yearSeparator'>;
 
-export const YearSeparatorNode = ({ data }: NodeProps<YearSeparatorNodeType>) => {
+export const YearSeparatorNode = memo(({ data }: NodeProps<YearSeparatorNodeType>) => {
   return (
     <div className="relative flex items-center justify-center pointer-events-none" style={{ width: data.width }}>
       <div className="absolute left-0 right-0 top-1/2 border-t-2 border-dashed border-unlam-500/60" />
@@ -16,4 +17,4 @@ export const YearSeparatorNode = ({ data }: NodeProps<YearSeparatorNodeType>) =>
       </span>
     </div>
   );
-};
+}, (prev, next) => prev.data.label === next.data.label && prev.data.width === next.data.width);

@@ -50,7 +50,7 @@ function inferSemesterFromDateOrDefault(
 
 /** Calculate average grade from array of grades */
 export function calculateAverage(grades: (number | null)[]): number | null {
-  const validGrades = grades.filter((g) => g !== null) as number[];
+  const validGrades = grades.filter((g) => g !== null);
   if (validGrades.length === 0) return null;
   return (
     Math.round(
@@ -205,7 +205,7 @@ export function findTopSubjectsByRanking(
       avgGrade: r.finalGrade,
       userPerceivedDifficulty: r.difficulty,
       status: r.status,
-      category: category as 'mata-promedio' | 'salvavidas',
+      category: category,
     }));
 
   // Sort by difficulty (desc) if mata-promedio, or by grade (desc) if salvavidas

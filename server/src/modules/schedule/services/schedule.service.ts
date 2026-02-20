@@ -16,7 +16,7 @@ import { TimetableWithSubject } from '../../../shared/types/database.types';
 
 @Injectable()
 export class ScheduleService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   /**
    * Create or update a timetable entry for a subject
@@ -112,9 +112,6 @@ export class ScheduleService {
   /**
    * Set multiple timetable entries at once
    */
-  /**
-   * Set multiple timetable entries at once
-   */
   async setMultipleTimetables(
     userEmail: string,
     dtos: CreateTimetableDto[],
@@ -127,21 +124,36 @@ export class ScheduleService {
       throw new NotFoundException('Usuario no encontrado.');
     }
 
+    // Peticiones agrupadas (Pre-fetching) para evitar N+1
+    const subjectIds = [...new Set(dtos.map((dto) => dto.subjectId))];
+    const subjects = await this.prisma.subject.findMany({
+      where: { id: { in: subjectIds } },
+    });
+    const subjectMap = new Map(subjects.map((s) => [s.id, s]));
+
+    const existingTimetables = await this.prisma.timetable.findMany({
+      where: { userId: user.id },
+      include: { subject: true },
+    });
+
+    const activeChecks: TimetableCheck[] = existingTimetables.map((t) => ({
+      subjectId: t.subjectId,
+      subjectName: t.subject.name,
+      planCode: t.subject.planCode,
+      period: t.period,
+      dayOfWeek: t.dayOfWeek,
+    }));
+
     // Wrap in transaction to ensure atomicity
     return this.prisma.$transaction(async (tx) => {
       const results: TimetableDto[] = [];
       for (const dto of dtos) {
-        // We need to pass the transaction client to setTimetable if we want it to be part of the transaction.
-        // However, setTimetable uses this.prisma. To avoid refactoring everything,
-        // we can implement the logic here or refactor setTimetable to accept an optional tx client.
-        // A cleaner approach for this specific method without major refactoring:
-
-        const subject = await tx.subject.findUnique({
-          where: { id: dto.subjectId },
-        });
+        const subject = subjectMap.get(dto.subjectId);
 
         if (!subject) {
-          throw new NotFoundException(`Materia no encontrada: ${dto.subjectId}`);
+          throw new NotFoundException(
+            `Materia no encontrada: ${dto.subjectId}`,
+          );
         }
 
         const validation = isValidTimetable({
@@ -156,21 +168,7 @@ export class ScheduleService {
           throw new BadRequestException(validation.error);
         }
 
-        // Check for conflicts with existing timetables (including ones we just added in this transaction!)
-        const existingTimetables = await tx.timetable.findMany({
-          where: { userId: user.id },
-          include: { subject: true },
-        });
-
-        const existingCheck: TimetableCheck[] = existingTimetables.map((t) => ({
-          subjectId: t.subjectId,
-          subjectName: t.subject.name,
-          planCode: t.subject.planCode,
-          period: t.period,
-          dayOfWeek: t.dayOfWeek,
-        }));
-
-        const conflicts = checkNewTimetableConflicts(existingCheck, {
+        const conflicts = checkNewTimetableConflicts(activeChecks, {
           subjectId: dto.subjectId,
           subjectName: subject.name,
           planCode: subject.planCode,
@@ -185,6 +183,14 @@ export class ScheduleService {
               .join(', ')}`,
           );
         }
+
+        activeChecks.push({
+          subjectId: dto.subjectId,
+          subjectName: subject.name,
+          planCode: subject.planCode,
+          period: dto.period,
+          dayOfWeek: dto.dayOfWeek,
+        });
 
         const timetableRecord = await tx.timetable.upsert({
           where: {
@@ -202,10 +208,19 @@ export class ScheduleService {
             dayOfWeek: dto.dayOfWeek,
           },
           update: {},
-          include: { subject: true },
         });
 
-        results.push(this.mapToTimetableDto(timetableRecord));
+        results.push({
+          id: timetableRecord.id,
+          subjectId: timetableRecord.subjectId,
+          subjectName: subject.name,
+          planCode: subject.planCode,
+          period: timetableRecord.period,
+          dayOfWeek: timetableRecord.dayOfWeek,
+          dayLabel:
+            DAY_LABELS[timetableRecord.dayOfWeek] ||
+            `Day ${timetableRecord.dayOfWeek}`,
+        });
       }
       return results;
     });

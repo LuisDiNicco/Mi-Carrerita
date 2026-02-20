@@ -4,11 +4,10 @@ import {
   NotFoundException,
   OnModuleInit,
 } from '@nestjs/common';
+import { OnEvent } from '@nestjs/event-emitter';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { TrophyCaseDto, TrophyDto } from '../dto';
-import {
-  TrophyTier,
-} from '../../../common/constants/trophy-enums';
+import { TrophyTier } from '../../../common/constants/trophy-enums';
 import { SubjectStatus } from '../../../common/constants/academic-enums';
 import {
   TROPHY_DEFINITIONS,
@@ -24,7 +23,7 @@ export class TrophyService implements OnModuleInit {
   constructor(
     private readonly prisma: PrismaService,
     private readonly logger: Logger,
-  ) { }
+  ) {}
 
   /**
    * Initialize trophy definitions on module startup
@@ -91,9 +90,7 @@ export class TrophyService implements OnModuleInit {
     const context = await this.buildEvaluationContext(user.id, user.email);
 
     const trophyByCode = new Map(trophies.map((t) => [t.code, t]));
-    const userTrophyById = new Map(
-      userTrophies.map((t) => [t.trophyId, t]),
-    );
+    const userTrophyById = new Map(userTrophies.map((t) => [t.trophyId, t]));
 
     const newlyUnlocked: TrophyDto[] = [];
 
@@ -134,7 +131,7 @@ export class TrophyService implements OnModuleInit {
           code: definition.code,
           name: definition.name,
           description: definition.description || '',
-          tier: definition.tier as TrophyTier,
+          tier: definition.tier,
           icon: definition.icon,
           rarity: definition.rarity,
           unlocked: true,
@@ -145,6 +142,24 @@ export class TrophyService implements OnModuleInit {
     }
 
     return newlyUnlocked;
+  }
+
+  /**
+   * Listen to academic record updates to automatically check trophies
+   */
+  @OnEvent('subject.status.updated', { async: true })
+  async handleSubjectStatusUpdated(payload: { userEmail: string }) {
+    try {
+      this.logger.log(`Evaluating trophies for user ${payload.userEmail}`);
+      const unlocked = await this.checkAndUnlockTrophies(payload.userEmail);
+      if (unlocked.length > 0) {
+        this.logger.log(
+          `User ${payload.userEmail} unlocked ${unlocked.length} new trophies.`,
+        );
+      }
+    } catch (err: any) {
+      this.logger.error(`Error checking trophies on event: ${err.message}`);
+    }
   }
 
   /**
@@ -433,7 +448,8 @@ export class TrophyService implements OnModuleInit {
         .map((r) => r.finalGrade)
         .filter((grade): grade is number => typeof grade === 'number');
       if (grades.length === 0) continue;
-      const average = grades.reduce((sum, grade) => sum + grade, 0) / grades.length;
+      const average =
+        grades.reduce((sum, grade) => sum + grade, 0) / grades.length;
       if (average >= 90) {
         return true;
       }
@@ -475,7 +491,8 @@ export class TrophyService implements OnModuleInit {
       .map((r) => r.finalGrade)
       .filter((grade): grade is number => typeof grade === 'number');
     if (grades.length === 0) return false;
-    const average = grades.reduce((sum, grade) => sum + grade, 0) / grades.length;
+    const average =
+      grades.reduce((sum, grade) => sum + grade, 0) / grades.length;
     return average >= threshold;
   }
 
@@ -532,7 +549,9 @@ export class TrophyService implements OnModuleInit {
     return false;
   }
 
-  private checkIntermediateDegree(records: AcademicRecordWithSubject[]): boolean {
+  private checkIntermediateDegree(
+    records: AcademicRecordWithSubject[],
+  ): boolean {
     return records.some((r) => r.isIntermediate && this.isPassed(r));
   }
 
@@ -545,7 +564,8 @@ export class TrophyService implements OnModuleInit {
         .map((r) => r.finalGrade)
         .filter((grade): grade is number => typeof grade === 'number');
       if (grades.length === 0) continue;
-      const average = grades.reduce((sum, grade) => sum + grade, 0) / grades.length;
+      const average =
+        grades.reduce((sum, grade) => sum + grade, 0) / grades.length;
       if (average >= 90) {
         return true;
       }
@@ -577,7 +597,8 @@ export class TrophyService implements OnModuleInit {
         .map((r) => r.finalGrade)
         .filter((grade): grade is number => typeof grade === 'number');
       if (grades.length === 0) continue;
-      const average = grades.reduce((sum, grade) => sum + grade, 0) / grades.length;
+      const average =
+        grades.reduce((sum, grade) => sum + grade, 0) / grades.length;
       semesterAverages.push(average);
     }
 
@@ -611,7 +632,9 @@ export class TrophyService implements OnModuleInit {
   /**
    * Helper: Group records by semester (e.g., "1-1", "1-2")
    */
-  private groupBySemester(records: AcademicRecordWithSubject[]): Map<string, AcademicRecordWithSubject[]> {
+  private groupBySemester(
+    records: AcademicRecordWithSubject[],
+  ): Map<string, AcademicRecordWithSubject[]> {
     const groups = new Map<string, AcademicRecordWithSubject[]>();
     for (const r of records) {
       // Assuming subject has semester field, default to 1 if not present (or use planCode if needed)
@@ -629,7 +652,9 @@ export class TrophyService implements OnModuleInit {
   /**
    * Helper: Group records by year
    */
-  private groupByYear(records: AcademicRecordWithSubject[]): Map<number, AcademicRecordWithSubject[]> {
+  private groupByYear(
+    records: AcademicRecordWithSubject[],
+  ): Map<number, AcademicRecordWithSubject[]> {
     const groups = new Map<number, AcademicRecordWithSubject[]>();
     for (const r of records) {
       const key = r.subject.year;
@@ -646,7 +671,7 @@ export class TrophyService implements OnModuleInit {
    */
   private semesterIndex(key: string): number {
     const [year, semester] = key.split('-').map(Number);
-    return (year * 10) + (semester || 0);
+    return year * 10 + (semester || 0);
   }
 
   /**
@@ -654,18 +679,21 @@ export class TrophyService implements OnModuleInit {
    * Simplified: Pass a subject from year > 1.
    */
   private checkEarlyBird(records: AcademicRecordWithSubject[]): boolean {
-    return records.some(r => r.subject.year > 1 && this.isPassed(r));
+    return records.some((r) => r.subject.year > 1 && this.isPassed(r));
   }
 
   /**
    * Check Speed Runner: Complete all subjects in < 2.5 years from first passed subject
    */
-  private checkSpeedRunner(records: AcademicRecordWithSubject[], completionPercentage: number): boolean {
+  private checkSpeedRunner(
+    records: AcademicRecordWithSubject[],
+    completionPercentage: number,
+  ): boolean {
     if (completionPercentage < 100) return false;
 
     const passedDates = records
-      .filter(r => this.isPassed(r) && r.updatedAt) // using updatedAt as proxy for passedAt if passedAt missing
-      .map(r => new Date(r.updatedAt).getTime());
+      .filter((r) => this.isPassed(r) && r.updatedAt) // using updatedAt as proxy for passedAt if passedAt missing
+      .map((r) => new Date(r.updatedAt).getTime());
 
     if (passedDates.length < 2) return false;
 
@@ -679,14 +707,20 @@ export class TrophyService implements OnModuleInit {
   /**
    * Check Challenge Accepted: Pass 3+ hard subjects (difficulty >= 8)
    */
-  private checkChallengeAccepted(records: AcademicRecordWithSubject[]): boolean {
-    const hardSubjects = records.filter(r => (r.difficulty ?? 0) >= 8);
-    return hardSubjects.length >= 3 && hardSubjects.every(r => this.isPassed(r));
+  private checkChallengeAccepted(
+    records: AcademicRecordWithSubject[],
+  ): boolean {
+    const hardSubjects = records.filter((r) => (r.difficulty ?? 0) >= 8);
+    return (
+      hardSubjects.length >= 3 && hardSubjects.every((r) => this.isPassed(r))
+    );
   }
 
-  private checkYearCompletion(records: AcademicRecordWithSubject[], year: number): boolean {
-
-    const yearSubjects = records.filter(r => r.subject.year === year);
+  private checkYearCompletion(
+    records: AcademicRecordWithSubject[],
+    year: number,
+  ): boolean {
+    const yearSubjects = records.filter((r) => r.subject.year === year);
     if (yearSubjects.length === 0) return false;
 
     // We need to know TOTAL subjects for that year to be sure we completed ALL.
@@ -697,13 +731,13 @@ export class TrophyService implements OnModuleInit {
     // Ideally we'd need to query all subjects of that year.
     // For simplicity, we can check if all records OF THAT YEAR that exist are passed?
     // No, that's cheating if they haven't started one.
-    // We should assume 'records' contains the user's progress. 
+    // We should assume 'records' contains the user's progress.
     // If the system seeds all subjects as PENDING for a new user, then records contains all.
     // Let's assume the user has records for all subjects (seeded).
     // If not, we might need a better check.
 
     // Let's check the implementation of seed.
     // Assuming records contains all subjects in the plan:
-    return yearSubjects.every(r => this.isPassed(r));
+    return yearSubjects.every((r) => this.isPassed(r));
   }
 }

@@ -75,7 +75,7 @@ export function isValidTimetable(timetable: TimetableCheck): {
     return { valid: false, error: 'Day of week must be 1-6 (Mon-Sat)' };
   }
 
-  const validPeriods = ['AM', 'PM', 'EVENING'];
+  const validPeriods = Object.values(TimePeriod) as string[];
   if (!validPeriods.includes(timetable.period)) {
     return {
       valid: false,

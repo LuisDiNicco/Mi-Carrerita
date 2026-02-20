@@ -10,18 +10,16 @@ import { authFetch } from "../../auth/lib/api";
 import {
   buildEdges,
   getCriticalPath,
-  SEARCH_RESULTS_LIMIT,
 } from "../../../shared/lib/graph";
-import { GRAPH_LAYOUT, layoutNodesByYear } from "../lib/graph-layout";
+import { layoutNodesByYear } from "../lib/graph-layout";
 import {
   EDGE_MARKER,
   EDGE_STYLES,
-  FOCUS_TIMEOUT_MS,
-  SEARCH_MIN_CHARS,
-  SEARCH_ZOOM,
   UPDATE_FLASH_MS,
 } from "../lib/graph-constants";
 import { buildYearSeparatorNodes } from "../lib/year-separators";
+import { useGraphUI } from "./useGraphUI";
+import { useGraphSearch } from "./useGraphSearch";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
@@ -38,27 +36,34 @@ export const useCareerGraph = () => {
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeSubject, setActiveSubject] = useState<Subject | null>(null);
-  const [isPanelOpen, setIsPanelOpen] = useState(false);
-  const [showCriticalPath, setShowCriticalPath] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
   const [recentUpdateId, setRecentUpdateId] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [searchOpen, setSearchOpen] = useState(false);
   const [focusedId, setFocusedId] = useState<string | null>(null);
-  const focusTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const {
+    isFullscreen,
+    setIsFullscreen,
+    showCriticalPath,
+    setShowCriticalPath,
+    activeSubject,
+    setActiveSubject,
+    isPanelOpen,
+    setIsPanelOpen,
+    containerClass,
+  } = useGraphUI();
+
+  const {
+    searchQuery,
+    setSearchQuery,
+    searchOpen,
+    setSearchOpen,
+    searchResults,
+    handleSelectSubject,
+  } = useGraphSearch(subjects, nodes, flowInstance, setFocusedId);
 
   useEffect(() => {
     nodesRef.current = nodes;
   }, [nodes]);
 
-  useEffect(() => {
-    return () => {
-      if (focusTimeoutRef.current) {
-        clearTimeout(focusTimeoutRef.current);
-      }
-    };
-  }, []);
 
   const fetchCareerData = useCallback(
     async (options?: { preserveLayout?: boolean; silent?: boolean }) => {
@@ -137,7 +142,10 @@ export const useCareerGraph = () => {
     if (!showCriticalPath) {
       return { nodeIds: new Set<string>(), edgeIds: new Set<string>() };
     }
-    const coreSubjects = subjects.filter((subject) => !subject.isOptional);
+    const coreSubjects = subjects.filter(
+      (subject) =>
+        !subject.isOptional && subject.status !== SubjectStatus.APROBADA
+    );
     const edgesList = buildEdges(coreSubjects);
     return getCriticalPath(coreSubjects, edgesList);
   }, [showCriticalPath, subjects]);
@@ -147,42 +155,59 @@ export const useCareerGraph = () => {
     [subjects],
   );
 
-  const searchResults = useMemo(() => {
-    const query = searchQuery.trim().toLowerCase();
-    if (query.length < SEARCH_MIN_CHARS) return [];
-    return subjects
-      .filter(
-        (subject) =>
-          subject.name.toLowerCase().includes(query) ||
-          subject.planCode.toLowerCase().includes(query),
-      )
-      .slice(0, SEARCH_RESULTS_LIMIT);
-  }, [searchQuery, subjects]);
+  // Update node metadata in-place to prevent React Flow infinite remeasure loops
+  useEffect(() => {
+    setNodes((nds) => {
+      let changed = false;
+      const nextNodes = nds.map((node) => {
+        const subject = (node.data as any).subject as Subject | undefined;
+        if (!subject) return node;
 
-  const enrichedNodes = useMemo(
-    () =>
-      nodes.map((node) => {
-        const subject = (node.data as { subject?: Subject }).subject;
+        const isCritical = criticalPath.nodeIds.has(subject.id);
+        const isRecentlyUpdated = subject.id === recentUpdateId;
+        const isFocused = subject.id === focusedId;
+
+        if (
+          node.data.isCritical === isCritical &&
+          node.data.isRecentlyUpdated === isRecentlyUpdated &&
+          node.data.isFocused === isFocused
+        ) {
+          return node;
+        }
+
+        changed = true;
         return {
           ...node,
           data: {
-            subject,
-            isCritical: subject ? criticalPath.nodeIds.has(subject.id) : false,
-            isRecentlyUpdated: subject ? subject.id === recentUpdateId : false,
-            isFocused: subject ? subject.id === focusedId : false,
+            ...node.data,
+            isCritical,
+            isRecentlyUpdated,
+            isFocused,
           },
         };
-      }),
-    [criticalPath.nodeIds, focusedId, nodes, recentUpdateId],
-  );
+      });
+      return changed ? nextNodes : nds;
+    });
+  }, [criticalPath.nodeIds, focusedId, recentUpdateId, setNodes]);
 
-  const enrichedEdges = useMemo(
-    () =>
-      edges.map((edge) => {
+  // Update edge metadata in-place
+  useEffect(() => {
+    setEdges((eds) => {
+      let changed = false;
+      const nextEdges = eds.map((edge) => {
         const edgeKey = `${edge.source}-${edge.target}`;
         const isCritical = criticalPath.edgeIds.has(edgeKey);
         const targetSubject = subjectById.get(edge.target);
         const isBlocked = targetSubject?.status === SubjectStatus.PENDIENTE;
+
+        if (
+          (edge.data as any)?.isCritical === isCritical &&
+          (edge.data as any)?.isBlocked === isBlocked
+        ) {
+          return edge;
+        }
+
+        changed = true;
         const edgeColor = isCritical
           ? EDGE_STYLES.critical.stroke
           : isBlocked
@@ -203,45 +228,22 @@ export const useCareerGraph = () => {
             height: EDGE_MARKER.height,
             color: edgeColor,
           },
+          data: {
+            ...edge.data,
+            isCritical,
+            isBlocked,
+          },
         };
-      }),
-    [criticalPath.edgeIds, edges, subjectById],
-  );
+      });
+      return changed ? nextEdges : eds;
+    });
+  }, [criticalPath.edgeIds, subjectById, setEdges]);
 
   const yearSeparatorNodes = useMemo(
-    () => buildYearSeparatorNodes(subjects, nodes),
-    [nodes, subjects],
+    () => buildYearSeparatorNodes(subjects, []),
+    [subjects],
   );
 
-  const containerClass = isFullscreen
-    ? "fixed inset-0 z-40 bg-app p-6 w-full h-full"
-    : "w-full h-[70vh] bg-app rounded-xl overflow-hidden";
-
-  const handleSelectSubject = useCallback(
-    (subject: Subject) => {
-      const node = nodesRef.current.find((item) => item.id === subject.id);
-      if (!node) return;
-      const centerX = node.position.x + GRAPH_LAYOUT.nodeWidth / 2;
-      const centerY = node.position.y + GRAPH_LAYOUT.nodeHeight / 2;
-      if (flowInstance) {
-        flowInstance.setCenter(centerX, centerY, {
-          zoom: SEARCH_ZOOM,
-          duration: 300,
-        });
-      }
-      setFocusedId(subject.id);
-      setSearchQuery("");
-      setSearchOpen(false);
-      if (focusTimeoutRef.current) {
-        clearTimeout(focusTimeoutRef.current);
-      }
-      focusTimeoutRef.current = setTimeout(
-        () => setFocusedId(null),
-        FOCUS_TIMEOUT_MS,
-      );
-    },
-    [flowInstance],
-  );
 
   const handleSaveSubject = useCallback(
     async (payload: {
@@ -264,7 +266,16 @@ export const useCareerGraph = () => {
       );
 
       if (!response.ok) {
-        throw new Error("No se pudo guardar la materia.");
+        const errorData = await response.json().catch(() => null);
+        let msg = "No se pudo guardar la materia. Revisá los datos e intentá de nuevo.";
+        if (errorData?.message) {
+          if (Array.isArray(errorData.message)) {
+            msg = errorData.message.join(" - ");
+          } else if (typeof errorData.message === "string") {
+            msg = errorData.message;
+          }
+        }
+        throw new Error(msg);
       }
 
       updateSubject(activeSubject.id, payload);
@@ -278,8 +289,8 @@ export const useCareerGraph = () => {
   return {
     loading,
     error,
-    nodes: enrichedNodes,
-    edges: enrichedEdges,
+    nodes,
+    edges,
     onNodesChange,
     onEdgesChange,
     setFlowInstance,
