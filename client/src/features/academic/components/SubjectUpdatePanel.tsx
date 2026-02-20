@@ -65,6 +65,7 @@ export const SubjectUpdatePanel = ({ subject, isOpen, onClose, onSave }: Subject
   const isStatusLocked = status === SubjectStatus.DISPONIBLE;
 
   const executeSave = async () => {
+    setConfirmOpen(false);
     setIsSaving(true);
     setError(null);
     try {

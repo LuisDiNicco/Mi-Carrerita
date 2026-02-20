@@ -78,6 +78,25 @@ Para una inmersión técnica absoluta en la toma de decisiones, compensaciones (
    cd client && npm run dev
    ```
 
+## Entorno de Pruebas (Testing Suite)
+
+La aplicación cuenta con una amplia cobertura de pruebas (Superando métricas > 75%), utilizando un enfoque tanto unitario como asíncrono (E2E).
+Para ejecutar la Suite en su totalidad:
+
+### Frontend (Vitest & Testing Library)
+Abarca renderizado de portales modales, interacciones the doble-click al grafo virtual y consistencia the Stores.
+```bash
+cd client
+npm run test:cov
+```
+
+### Backend (Jest Suite)
+Abarca pruebas a algoritmos the rutas críticas, colisión de horarios N+1, y E2E the la REST API.
+```bash
+cd server
+npm run test
+```
+
 ---
 
 ## Documentación Adjunta

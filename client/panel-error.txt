@@ -1,0 +1,327 @@
+
+ RUN  v4.0.18 C:/Users/luisd/Desktop/Proyectos/Mi-Carrerita/client
+
+ ❯ src/features/academic/components/SubjectUpdatePanel.test.tsx (6 tests | 1 failed) 1335ms
+     ✓ no debería renderizar si isOpen es falso 17ms
+     ✓ debería renderizar correctamente si isOpen es true 24ms
+     ✓ debería mostrar alerta de Forzar Cambio si se intenta guardar desde PENDIENTE a otro estado 133ms
+     ✓ debería autocompletar la nota a 2 al seleccionar RECURSADA 74ms
+     × debería arrojar error si se intenta guardar APROBADA sin nota 1038ms
+     ✓ debería guardar la fecha limpiando el timezone 47ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/academic/components/SubjectUpdatePanel.test.tsx > SubjectUpdatePanel > debería arrojar error si se intenta guardar APROBADA sin nota
+TestingLibraryElementError: Unable to find an element with the text: /La nota es obligatoria para materias Aprobadas/. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"fixed inset-0 z-[9999] flex items-center justify-center px-4"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"absolute inset-0 bg-black/60 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]"[39m
+    [36m/>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"relative z-10 w-full max-w-2xl bg-surface border-2 border-app rounded-xl shadow-retro p-0 flex flex-col md:flex-row overflow-hidden animate-[fadeInUp_0.3s_ease-out]"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"md:w-1/3 bg-elevated p-6 border-b md:border-b-0 md:border-r border-app flex flex-col justify-between"[39m
+      [36m>[39m
+        [36m<div>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-[10px] text-muted uppercase tracking-widest font-bold mb-2"[39m
+          [36m>[39m
+            [0mActualizar Materia[0m
+          [36m</p>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"text-xl md:text-2xl font-bold text-app font-retro mb-4 leading-tight"[39m
+          [36m>[39m
+            [0mMatematica[0m
+          [36m</h2>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"inline-block bg-surface px-2 py-1 border border-app rounded text-xs font-mono text-muted mb-6"[39m
+          [36m>[39m
+            [0mCódigo: [0m
+            [0mMAT[0m
+          [36m</div>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"flex flex-col gap-2 text-sm text-muted"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"font-bold flex items-center gap-2"[39m
+            [36m>[39m
+              [0mEstado[0m
+            [36m</span>[39m
+            [36m<select[39m
+              [33mclass[39m=[32m"bg-surface border-2 border-app rounded-lg px-3 py-2 text-app font-bold focus:ring-2 focus:ring-unlam-500/50 outline-none transition-all shadow-subtle hover:shadow-soft"[39m
+            [36m>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"PENDIENTE"[39m
+              [36m>[39m
+                [0mPendiente[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mdisabled[39m=[32m""[39m
+                [33mvalue[39m=[32m"DISPONIBLE"[39m
+              [36m>[39m
+                [0mDisponible[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"EN_CURSO"[39m
+              [36m>[39m
+                [0mEn curso[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"RECURSADA"[39m
+              [36m>[39m
+                [0mRecursada[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"REGULARIZADA"[39m
+              [36m>[39m
+                [0mRegularizada[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"APROBADA"[39m
+              [36m>[39m
+                [0mAprobada[0m
+              [36m</option>[39m
+            [36m</select>[39m
+          [36m</label>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"md:w-2/3 p-6 flex flex-col"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex justify-between items-start mb-6"[39m
+        [36m>[39m
+          [36m<h3[39m
+            [33mclass[39m=[32m"text-lg font-retro text-app border-b-2 border-unlam-500/30 pb-1 inline-block"[39m
+          [36m>[39m
+            [0mDetalles[0m
+          [36m</h3>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"Cerrar"[39m
+            [33mclass[39m=[32m"text-muted hover:text-red-400 bg-surface border border-transparent hover:border-red-400/50 transition-all text-xl font-bold w-8 h-8 flex items-center justify-center rounded-lg shadow-sm"[39m
+          [36m>[39m
+            [0m✕[0m
+          [36m</button>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"space-y-4 flex-1 flex flex-col justify-center animate-[fadeIn_0.3s_ease-out]"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"p-5 border-2 border-yellow-500/50 bg-yellow-500/10 rounded-xl shadow-soft"[39m
+          [36m>[39m
+            [36m<h3[39m
+              [33mclass[39m=[32m"text-xl font-bold text-yellow-500 mb-3 font-retro flex items-center gap-2"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"text-2xl"[39m
+              [36m>[39m
+                [0m⚠️[0m
+              [36m</span>[39m
+              [0m ¿Forzar Cambio?[0m
+            [36m</h3>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"text-sm text-app/90 leading-relaxed"[39m
+            [36m>[39m
+              [0mEsta materia figura como [0m
+              [36m<strong[39m
+                [33mclass[39m=[32m"bg-yellow-500/20 px-1 rounded text-yellow-400"[39m
+              [36m>[39m
+                [0mPENDIENTE[0m
+              [36m</strong>[39m
+              [0m (bloqueada).[0m
+              [36m<br />[39m
+              [36m<br />[39m
+              [0mSi cambias su estado manualmente, podrías estar rompiendo la cadena de correlatividades o el flujo del plan de estudios. ¿Deseas continuar bajo tu propio riesgo?[0m
+            [36m</p>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex justify-end gap-3 mt-4"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"px-5 py-2 text-sm font-bold text-muted hover:text-app bg-surface rounded-lg border border-app-border hover:border-app transition-all"[39m
+            [36m>[39m
+              [0mRegresar[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"font-retro font-bold uppercase tracking-wider border-2 transition-all duration-100 shadow-subtle active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none image-rendering-pixelated bg-[#FCE94F] border-[#C4A000] text-[#2E3436] hover:bg-[#EDD400] px-4 py-2 text-base"[39m
+            [36m>[39m
+              [0mForzar cambio[0m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"fixed inset-0 z-[9999] flex items-center justify-center px-4"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"absolute inset-0 bg-black/60 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]"[39m
+    [36m/>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"relative z-10 w-full max-w-2xl bg-surface border-2 border-app rounded-xl shadow-retro p-0 flex flex-col md:flex-row overflow-hidden animate-[fadeInUp_0.3s_ease-out]"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"md:w-1/3 bg-elevated p-6 border-b md:border-b-0 md:border-r border-app flex flex-col justify-between"[39m
+      [36m>[39m
+        [36m<div>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-[10px] text-muted uppercase tracking-widest font-bold mb-2"[39m
+          [36m>[39m
+            [0mActualizar Materia[0m
+          [36m</p>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"text-xl md:text-2xl font-bold text-app font-retro mb-4 leading-tight"[39m
+          [36m>[39m
+            [0mMatematica[0m
+          [36m</h2>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"inline-block bg-surface px-2 py-1 border border-app rounded text-xs font-mono text-muted mb-6"[39m
+          [36m>[39m
+            [0mCódigo: [0m
+            [0mMAT[0m
+          [36m</div>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"flex flex-col gap-2 text-sm text-muted"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"font-bold flex items-center gap-2"[39m
+            [36m>[39m
+              [0mEstado[0m
+            [36m</span>[39m
+            [36m<select[39m
+              [33mclass[39m=[32m"bg-surface border-2 border-app rounded-lg px-3 py-2 text-app font-bold focus:ring-2 focus:ring-unlam-500/50 outline-none transition-all shadow-subtle hover:shadow-soft"[39m
+            [36m>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"PENDIENTE"[39m
+              [36m>[39m
+                [0mPendiente[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mdisabled[39m=[32m""[39m
+                [33mvalue[39m=[32m"DISPONIBLE"[39m
+              [36m>[39m
+                [0mDisponible[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"EN_CURSO"[39m
+              [36m>[39m
+                [0mEn curso[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"RECURSADA"[39m
+              [36m>[39m
+                [0mRecursada[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"REGULARIZADA"[39m
+              [36m>[39m
+                [0mRegularizada[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"APROBADA"[39m
+              [36m>[39m
+                [0mAprobada[0m
+              [36m</option>[39m
+            [36m</select>[39m
+          [36m</label>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"md:w-2/3 p-6 flex flex-col"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex justify-between items-start mb-6"[39m
+        [36m>[39m
+          [36m<h3[39m
+            [33mclass[39m=[32m"text-lg font-retro text-app border-b-2 border-unlam-500/30 pb-1 inline-block"[39m
+          [36m>[39m
+            [0mDetalles[0m
+          [36m</h3>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"Cerrar"[39m
+            [33mclass[39m=[32m"text-muted hover:text-red-400 bg-surface border border-transparent hover:border-red-400/50 transition-all text-xl font-bold w-8 h-8 flex items-center justify-center rounded-lg shadow-sm"[39m
+          [36m>[39m
+            [0m✕[0m
+          [36m</button>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"space-y-4 flex-1 flex flex-col justify-center animate-[fadeIn_0.3s_ease-out]"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"p-5 border-2 border-yellow-500/50 bg-yellow-500/10 rounded-xl shadow-soft"[39m
+          [36m>[39m
+            [36m<h3[39m
+              [33mclass[39m=[32m"text-xl font-bold text-yellow-500 mb-3 font-retro flex items-center gap-2"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"text-2xl"[39m
+              [36m>[39m
+                [0m⚠️[0m
+              [36m</span>[39m
+              [0m ¿Forzar Cambio?[0m
+            [36m</h3>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"text-sm text-app/90 leading-relaxed"[39m
+            [36m>[39m
+              [0mEsta materia figura como [0m
+              [36m<strong[39m
+                [33mclass[39m=[32m"bg-yellow-500/20 px-1 rounded text-yellow-400"[39m
+              [36m>[39m
+                [0mPENDIENTE[0m
+              [36m</strong>[39m
+              [0m (bloqueada).[0m
+              [36m<br />[39m
+              [36m<br />[39m
+              [0mSi cambias su estado manualmente, podrías estar rompiendo la cadena de correlatividades o el flujo del plan de estudios. ¿Deseas continuar bajo tu propio riesgo?[0m
+            [36m</p>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex justify-end gap-3 mt-4"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"px-5 py-2 text-sm font-bold text-muted hover:text-app bg-surface rounded-lg border border-app-border hover:border-app transition-all"[39m
+            [36m>[39m
+              [0mRegresar[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"font-retro font-bold uppercase tracking-wider border-2 transition-all duration-100 shadow-subtle active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none image-rendering-pixelated bg-[#FCE94F] border-[#C4A000] text-[#2E3436] hover:bg-[#EDD400] px-4 py-2 text-base"[39m
+            [36m>[39m
+              [0mForzar cambio[0m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/features/academic/components/SubjectUpdatePanel.test.tsx:140:29
+    138| 
+    139|         // Verificamos error en pantalla
+    140|         expect(await screen.findByText(/La nota es obligatoria para ma…
+       |                             ^
+    141|         expect(mockOnSave).not.toHaveBeenCalled();
+    142|     });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 5 passed (6)
+   Start at  09:27:50
+   Duration  2.55s (transform 120ms, setup 100ms, import 240ms, tests 1.33s, environment 676ms)
+
