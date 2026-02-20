@@ -12,6 +12,7 @@ interface PdfPreviewModalProps {
 
 const STATUS_OPTIONS = [
     { label: 'Aprobada', value: SubjectStatus.APROBADA },
+    { label: 'Equivalencia', value: SubjectStatus.EQUIVALENCIA },
     { label: 'Regularizada', value: SubjectStatus.REGULARIZADA },
     { label: 'En curso', value: SubjectStatus.EN_CURSO },
     { label: 'Recursada', value: SubjectStatus.RECURSADA },
@@ -41,7 +42,7 @@ export const PdfPreviewModal = ({ records, onConfirm, onClose }: PdfPreviewModal
         records.map((r) => ({
             planCode: r.planCode,
             name: r.name,
-            status: r.grade !== null && r.grade >= 4 ? SubjectStatus.APROBADA : SubjectStatus.REGULARIZADA,
+            status: r.status === 'EQUIVALENCIA' ? SubjectStatus.EQUIVALENCIA : (r.grade !== null && r.grade >= 4 ? SubjectStatus.APROBADA : SubjectStatus.REGULARIZADA),
             grade: r.grade !== null ? String(r.grade) : '',
             date: toIsoDate(r.date) || '',
             acta: r.acta,
@@ -88,7 +89,7 @@ export const PdfPreviewModal = ({ records, onConfirm, onClose }: PdfPreviewModal
     const activeCount = editableRecords.filter((r) => !r.excluded).length;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in">
+        <div className="fixed inset-0 z-[9999] isolate flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in">
             <div className="bg-surface border-2 border-app rounded-xl w-full max-w-4xl max-h-[85vh] shadow-retro scale-100 animate-in zoom-in-95 overflow-hidden flex flex-col">
                 {/* Header */}
                 <div className="bg-elevated p-5 border-b border-app flex items-center justify-between shrink-0">

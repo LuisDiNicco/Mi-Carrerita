@@ -1,4 +1,4 @@
-# Mi Carrerita 🎓
+# Mi Carrerita
 
 Este repositorio contiene el código fuente de **Mi Carrerita**, una aplicación web diseñada para resolver el problema clásico de la gestión y planificación de asignaturas a lo largo de una carrera universitaria, utilizando visualización de grafos, algoritmos de rutas críticas e inferencia de recomendaciones horarias sin solapamientos.
 

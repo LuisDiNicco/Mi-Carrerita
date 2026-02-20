@@ -17,11 +17,20 @@ export function calculateDashboardData(
     subjects: Subject[],
     scope: DashboardScope
 ): DashboardDataDto {
+    const filteredSubjects = subjects.filter(s => {
+        if (s.status === SubjectStatus.EQUIVALENCIA) return false;
+        if (s.isOptional) {
+            const activeStatuses = [SubjectStatus.APROBADA, SubjectStatus.REGULARIZADA, SubjectStatus.EN_CURSO] as string[];
+            return activeStatuses.includes(s.status);
+        }
+        return true;
+    });
+
     // 1. Filter based on scope
     const scopedSubjects =
         scope === 'TOTAL'
-            ? subjects
-            : subjects.filter((s) => s.isIntermediateDegree);
+            ? filteredSubjects
+            : filteredSubjects.filter((s) => s.isIntermediateDegree);
 
     // 2. Summary Calculation
     const totalSubjects =
@@ -60,13 +69,14 @@ export function calculateDashboardData(
     };
 
     // 3. Subject Volume Chart
-    const statusCounts = {
+    const statusCounts: Record<string, number> = {
         [SubjectStatus.APROBADA]: 0,
         [SubjectStatus.REGULARIZADA]: 0,
         [SubjectStatus.EN_CURSO]: 0,
         [SubjectStatus.DISPONIBLE]: 0,
         [SubjectStatus.PENDIENTE]: 0,
         [SubjectStatus.RECURSADA]: 0,
+        [SubjectStatus.EQUIVALENCIA]: 0,
     };
 
     scopedSubjects.forEach((s) => {

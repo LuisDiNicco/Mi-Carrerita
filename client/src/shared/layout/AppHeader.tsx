@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { Sun, Moon } from 'lucide-react';
 
 interface AppHeaderProps {
   theme: 'light' | 'dark';
@@ -91,7 +92,7 @@ export const AppHeader = ({
               onClick={onToggleTheme}
               aria-label="Cambiar tema"
             >
-              {theme === 'light' ? '🌙' : '☀️'}
+              {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
             </button>
 
             {userName ? (
@@ -162,7 +163,7 @@ export const AppHeader = ({
               onClick={onToggleTheme}
               aria-label="Cambiar tema"
             >
-              {theme === 'light' ? '🌙' : '☀️'}
+              {theme === 'light' ? <Moon size={16} /> : <Sun size={16} />}
             </button>
             <button
               className="flex h-8 w-8 items-center justify-center rounded-lg border-2 border-app-border bg-app-bg text-app"

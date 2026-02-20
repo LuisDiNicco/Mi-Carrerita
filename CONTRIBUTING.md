@@ -1,10 +1,10 @@
-# 🤝 Contributing to Mi Carrerita
+# Contributing to Mi Carrerita
 
 ¡Gracias por considerar contribuir a Mi Carrerita! Este documento te guiará en el proceso.
 
 ---
 
-## 📋 Código de Conducta
+## Código de Conducta
 
 - Sé respetuoso y profésional
 - Acepta crítica constructiva
@@ -13,7 +13,7 @@
 
 ---
 
-## 🚀 Cómo Contribuir
+## Cómo Contribuir
 
 ### 1. Reporting Bugs
 
@@ -169,7 +169,7 @@ Links a documentación, issues relacionados, etc.
 
 ---
 
-## 📐 Guías de Estilo
+## Guías de Estilo
 
 ### TypeScript
 
@@ -259,7 +259,7 @@ export class UserController {
 
 ---
 
-## 🧪 Testing
+## Testing
 
 ### Antes de hacer PR:
 
@@ -316,7 +316,7 @@ describe('AcademicCareerService', () => {
 
 ---
 
-## 📖 Documentación
+## Documentación
 
 - Actualiza [README.md](README.md) para cambios visibles
 - Actualiza [SETUP.md](SETUP.md) para cambios de instalación
@@ -325,7 +325,7 @@ describe('AcademicCareerService', () => {
 
 ---
 
-## 🔒 Seguridad
+## Seguridad
 
 Si encuentras una vulnerabilidad:
 
@@ -336,7 +336,7 @@ Si encuentras una vulnerabilidad:
 
 ---
 
-## ✅ Proceso de Review
+## Proceso de Review
 
 Tu PR será revisado por al menos un mantenedor:
 
@@ -349,7 +349,7 @@ Puede haber feedback. **No toma a pecho las críticas** - queremos mejorar junto
 
 ---
 
-## 🎯 Áreas donde Podemos Ayuda
+## Áreas donde Podemos Ayudar
 
 ### 🟢 Fáciles (para comenzar)
 - [ ] Mejorar documentación
@@ -371,7 +371,7 @@ Puede haber feedback. **No toma a pecho las críticas** - queremos mejorar junto
 
 ---
 
-## 📚 Recursos
+## Recursos
 
 - [SETUP.md](SETUP.md) - Guía de instalación
 - [ARCHITECTURE.md](ARCHITECTURE.md) - Diseño del proyecto
@@ -381,7 +381,7 @@ Puede haber feedback. **No toma a pecho las críticas** - queremos mejorar junto
 
 ---
 
-## 💬 Preguntas?
+## Preguntas?
 
 - Abre una [Discussion](https://github.com/usuario/Mi-Carrerita/discussions)
 - Pregunta en Issues antes de empezar trabajo grande
@@ -389,7 +389,7 @@ Puede haber feedback. **No toma a pecho las críticas** - queremos mejorar junto
 
 ---
 
-## 🙏 Agradecimientos
+## Agradecimientos
 
 ¡Gracias por contribuir! Tu ayuda hace que Mi Carrerita sea mejor para todos. 🎉
 

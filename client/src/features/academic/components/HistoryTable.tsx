@@ -4,7 +4,7 @@ import { formatDate, formatGrade } from '../../../shared/lib/utils';
 import { authFetch } from '../../auth/lib/api';
 import { fetchAcademicGraph } from '../lib/academic-api';
 import { SubjectStatus } from '../../../shared/types/academic';
-import { Search, ArrowUpDown, Edit2, Trash2, X, AlertTriangle, Upload } from 'lucide-react';
+import { Search, ArrowUpDown, Edit2, Trash2, X, AlertTriangle, Upload, Calendar } from 'lucide-react';
 import { cn } from '../../../shared/lib/utils';
 import { uploadHistoriaPdf, batchSaveHistory } from '../lib/academic-api';
 import type { ParsedAcademicRecord, BatchAcademicRecordPayload } from '../lib/academic-api';
@@ -19,7 +19,7 @@ const STATUS_OPTIONS = [
   { label: 'Recursada', value: SubjectStatus.RECURSADA },
 ];
 
-type SortKey = 'date' | 'name' | 'grade' | 'act';
+type SortKey = 'date' | 'name' | 'grade' | 'planCode' | 'year';
 type SortDirection = 'asc' | 'desc';
 
 export const HistoryTable = () => {
@@ -347,12 +347,36 @@ export const HistoryTable = () => {
 
           <label className="flex flex-col gap-2 text-sm text-muted">
             Fecha
-            <input
-              type="date"
-              className="bg-surface border border-app rounded-lg px-3 py-2 text-app"
-              value={statusDate}
-              onChange={(event) => setStatusDate(event.target.value)}
-            />
+            <div className="relative flex items-center">
+              <input
+                type="text"
+                maxLength={10}
+                className="w-full bg-surface border border-app rounded-lg pl-3 pr-10 py-2 text-app focus:ring-1 focus:ring-unlam-500 outline-none transition-all placeholder:text-muted/50 font-mono text-sm"
+                value={statusDate}
+                onChange={(event) => {
+                  let val = event.target.value.replace(/[^\d-]/g, '');
+                  setStatusDate(val);
+                }}
+                placeholder="YYYY-MM-DD"
+              />
+              <button
+                type="button"
+                className="absolute right-2 p-1 text-muted hover:text-unlam-500 transition-colors cursor-pointer bg-surface rounded"
+                onClick={(e) => {
+                  const dateInput = e.currentTarget.nextElementSibling as HTMLInputElement;
+                  if (dateInput && dateInput.showPicker) {
+                    try { dateInput.showPicker(); } catch (err) { }
+                  }
+                }}
+              >
+                <Calendar size={16} />
+              </button>
+              <input
+                type="date"
+                className="absolute right-4 bottom-0 top-0 w-0 h-0 opacity-0 pointer-events-none"
+                onChange={(e) => setStatusDate(e.target.value)}
+              />
+            </div>
           </label>
 
           <label className="flex flex-col gap-2 text-sm text-muted md:col-span-3 lg:col-span-1">
@@ -448,8 +472,18 @@ export const HistoryTable = () => {
                 >
                   <div className="flex items-center gap-1">Fecha {sortConfig.key === 'date' && <ArrowUpDown size={12} className="text-unlam-500" />}</div>
                 </th>
-                <th className="py-3 px-4 font-medium w-20">Código</th>
-                <th className="py-3 px-4 font-medium w-16 text-center">Año</th>
+                <th
+                  className="py-3 px-4 font-medium cursor-pointer hover:text-app transition-colors select-none group w-20 text-center"
+                  onClick={() => handleSort('planCode')}
+                >
+                  <div className="flex items-center gap-1">Código {sortConfig.key === 'planCode' && <ArrowUpDown size={12} className="text-unlam-500" />}</div>
+                </th>
+                <th
+                  className="py-3 px-4 font-medium cursor-pointer hover:text-app transition-colors select-none group w-16 text-center"
+                  onClick={() => handleSort('year')}
+                >
+                  <div className="flex items-center gap-1">Año {sortConfig.key === 'year' && <ArrowUpDown size={12} className="text-unlam-500" />}</div>
+                </th>
                 <th
                   className="py-3 px-4 font-medium cursor-pointer hover:text-app transition-colors select-none group"
                   onClick={() => handleSort('name')}

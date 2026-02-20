@@ -40,10 +40,17 @@ Para aportar valor al estudiante, la recomendación se divide en 2 motores:
 
 ## 3. Rangos de Evaluación y Cursada
 
-### Notas Aprobatorias y Referencias
+### 3.1 Notas Aprobatorias y Referencias
 - El rango de la nota final válida es un número entero/decimal acotado `[1, 10]`.
 - Nota probatoria de Cursada: Mayor o igual a `4`. (La materia entra en `REGULARIZADA` o a veces `FINAL_PENDIENTE`).
 - Promociones directas: Normalmente requieren notas `≥ 7` o `≥ 8` (dependiendo el estatuto reflejado en el calculador).
+
+### 3.2 Equivalencias
+- **Estado EQUIVALENCIA:** Las materias aprobadas por equivalencia (identificadas en el PDF de Historia Académica bajo la columna "Origen") se consideran aprobadas para avanzar correlativas, pero **no poseen nota numérica**.
+- **Impacto en Métricas:** Las materias en este estado se **excluyen** del cálculo del promedio general para no sesgarlo.
+
+### 3.3 Materias Optativas
+- **Taller de Integración (u Optativas):** Estas asignaturas tienen reglas especiales. Solo impactan los cálculos totales del Dashboard (materias pendientes, en curso, etc.) si el alumno las tiene activas (APROBADA, REGULARIZADA, EN_CURSO). De lo contrario, no engrosan artificialmente la currícula de materias obligatorias.
 
 ### 4. Sistema de Gamificación (Trofeos)
 

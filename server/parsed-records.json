@@ -1,0 +1,524 @@
+[
+  {
+    "planCode": "1025",
+    "name": "SISTEMAS DE REPRESENTACION Y DIBUJO TECNICO",
+    "date": "29/08/2020",
+    "grade": 9,
+    "acta": "39002020"
+  },
+  {
+    "planCode": "1026",
+    "name": "TECNOLOGIA INGENIERIA Y SOCIEDAD",
+    "date": "29/08/2020",
+    "grade": 8,
+    "acta": "38992020"
+  },
+  {
+    "planCode": "1027",
+    "name": "ALGEBRA Y GEOMETRIA ANALITICA I",
+    "date": "29/08/2020",
+    "grade": 9,
+    "acta": "38982020"
+  },
+  {
+    "planCode": "1024",
+    "name": "ELEMENTOS DE PROGRAMACION",
+    "date": "19/12/2020",
+    "grade": 8,
+    "acta": "65562020"
+  },
+  {
+    "planCode": "1029",
+    "name": "QUIMICA GENERAL",
+    "date": "19/12/2020",
+    "grade": 10,
+    "acta": "64812020"
+  },
+  {
+    "planCode": "911",
+    "name": "COMPUTACION NIVEL I",
+    "date": "24/07/2021",
+    "grade": 9,
+    "acta": "19062021"
+  },
+  {
+    "planCode": "1023",
+    "name": "ANALISIS MATEMATICO I",
+    "date": "24/07/2021",
+    "grade": 9,
+    "acta": "14802021"
+  },
+  {
+    "planCode": "1028",
+    "name": "MATEMATICA DISCRETA",
+    "date": "24/07/2021",
+    "grade": 10,
+    "acta": "15842021"
+  },
+  {
+    "planCode": "1030",
+    "name": "FUNDAMENTOS DE TIC'S",
+    "date": "24/07/2021",
+    "grade": 10,
+    "acta": "16152021"
+  },
+  {
+    "planCode": "901",
+    "name": "INGLES NIVEL I",
+    "date": "11/08/2021",
+    "grade": null,
+    "acta": "0372/2021",
+    "status": "EQUIVALENCIA"
+  },
+  {
+    "planCode": "902",
+    "name": "INGLES NIVEL II",
+    "date": "11/08/2021",
+    "grade": null,
+    "acta": "0372/2021",
+    "status": "EQUIVALENCIA"
+  },
+  {
+    "planCode": "903",
+    "name": "INGLES NIVEL III",
+    "date": "11/08/2021",
+    "grade": null,
+    "acta": "0372/2021",
+    "status": "EQUIVALENCIA"
+  },
+  {
+    "planCode": "904",
+    "name": "INGLES NIVEL IV",
+    "date": "11/08/2021",
+    "grade": null,
+    "acta": "0372/2021",
+    "status": "EQUIVALENCIA"
+  },
+  {
+    "planCode": "1033",
+    "name": "ANALISIS MATEMATICO II",
+    "date": "11/12/2021",
+    "grade": 8,
+    "acta": "37812021"
+  },
+  {
+    "planCode": "1108",
+    "name": "REQUERIMIENTOS PARA LA INGENIERIA",
+    "date": "11/12/2021",
+    "grade": 9,
+    "acta": "37132021"
+  },
+  {
+    "planCode": "1032",
+    "name": "ALGEBRA Y GEOMETRIA ANALITICA II",
+    "date": "05/03/2022",
+    "grade": 9,
+    "acta": "52792021"
+  },
+  {
+    "planCode": "1031",
+    "name": "FISICA I",
+    "date": "16/07/2022",
+    "grade": 9,
+    "acta": "12512022"
+  },
+  {
+    "planCode": "1110",
+    "name": "PROGRAMACION - Incluye TCP",
+    "date": "16/07/2022",
+    "grade": 10,
+    "acta": "15442022"
+  },
+  {
+    "planCode": "1117",
+    "name": "CALCULO NUMERICO",
+    "date": "16/07/2022",
+    "grade": 10,
+    "acta": "15282022"
+  },
+  {
+    "planCode": "1035",
+    "name": "FISICA II",
+    "date": "03/12/2022",
+    "grade": 8,
+    "acta": "39862022"
+  },
+  {
+    "planCode": "1109",
+    "name": "ARQUITECTURA DE COMPUTADORAS",
+    "date": "03/12/2022",
+    "grade": 10,
+    "acta": "40772022"
+  },
+  {
+    "planCode": "1111",
+    "name": "PROBABILIDAD Y ESTADISTICA",
+    "date": "03/12/2022",
+    "grade": 8,
+    "acta": "40932022"
+  },
+  {
+    "planCode": "3621",
+    "name": "MATEMATICA DISCRETA",
+    "date": "21/12/2022",
+    "grade": 10,
+    "acta": "0431/2022",
+    "status": "EQUIVALENCIA"
+  },
+  {
+    "planCode": "3622",
+    "name": "ANALISIS MATEMATICO I",
+    "date": "21/12/2022",
+    "grade": 9,
+    "acta": "0431/2022",
+    "status": "EQUIVALENCIA"
+  },
+  {
+    "planCode": "3623",
+    "name": "PROGRAMACION INICIAL",
+    "date": "21/12/2022",
+    "grade": 8,
+    "acta": "0431/2022",
+    "status": "EQUIVALENCIA"
+  },
+  {
+    "planCode": "3624",
+    "name": "INTRODUCCION A LOS SISTEMAS DE INFORMACION",
+    "date": "21/12/2022",
+    "grade": 9,
+    "acta": "0431/2022",
+    "status": "EQUIVALENCIA"
+  },
+  {
+    "planCode": "3625",
+    "name": "SISTEMAS DE NUMERACION",
+    "date": "21/12/2022",
+    "grade": 10,
+    "acta": "0431/2022",
+    "status": "EQUIVALENCIA"
+  },
+  {
+    "planCode": "3627",
+    "name": "ALGEBRA Y GEOMETRIA ANALITICA I",
+    "date": "21/12/2022",
+    "grade": 9,
+    "acta": "0431/2022",
+    "status": "EQUIVALENCIA"
+  },
+  {
+    "planCode": "3628",
+    "name": "FISICA I",
+    "date": "21/12/2022",
+    "grade": 9,
+    "acta": "0431/2022",
+    "status": "EQUIVALENCIA"
+  },
+  {
+    "planCode": "3629",
+    "name": "PROGRAMACION ESTRUCTURADA BASICA",
+    "date": "21/12/2022",
+    "grade": 8,
+    "acta": "0431/2022",
+    "status": "EQUIVALENCIA"
+  },
+  {
+    "planCode": "3631",
+    "name": "FUNDAMENTOS DE SISTEMAS EMBEBIDOS",
+    "date": "21/12/2022",
+    "grade": 10,
+    "acta": "0431/2022",
+    "status": "EQUIVALENCIA"
+  },
+  {
+    "planCode": "3632",
+    "name": "INTRODUCCION A LOS PROYECTOS INFORMATICOS",
+    "date": "21/12/2022",
+    "grade": 8,
+    "acta": "0431/2022",
+    "status": "EQUIVALENCIA"
+  },
+  {
+    "planCode": "3633",
+    "name": "ANALISIS MATEMATICO II",
+    "date": "21/12/2022",
+    "grade": 9,
+    "acta": "0431/2022",
+    "status": "EQUIVALENCIA"
+  },
+  {
+    "planCode": "3634",
+    "name": "FISICA II",
+    "date": "21/12/2022",
+    "grade": 8,
+    "acta": "0431/2022",
+    "status": "EQUIVALENCIA"
+  },
+  {
+    "planCode": "3635",
+    "name": "TOPICOS DE PROGRAMACION",
+    "date": "21/12/2022",
+    "grade": 10,
+    "acta": "0431/2022",
+    "status": "EQUIVALENCIA"
+  },
+  {
+    "planCode": "3638",
+    "name": "ARQUITECTURA DE COMPUTADORAS",
+    "date": "21/12/2022",
+    "grade": 10,
+    "acta": "0431/2022",
+    "status": "EQUIVALENCIA"
+  },
+  {
+    "planCode": "3639",
+    "name": "ANALISIS MATEMATICO III",
+    "date": "21/12/2022",
+    "grade": 8,
+    "acta": "0431/2022",
+    "status": "EQUIVALENCIA"
+  },
+  {
+    "planCode": "3645",
+    "name": "ALGEBRA Y GEOMETRIA ANALITICA II",
+    "date": "21/12/2022",
+    "grade": 9,
+    "acta": "0431/2022",
+    "status": "EQUIVALENCIA"
+  },
+  {
+    "planCode": "3650",
+    "name": "SEGURIDAD DE LA INFORMACION",
+    "date": "21/12/2022",
+    "grade": 9,
+    "acta": "0431/2022",
+    "status": "EQUIVALENCIA"
+  },
+  {
+    "planCode": "3651",
+    "name": "PROBABILIDAD Y ESTADISTICA",
+    "date": "21/12/2022",
+    "grade": 8,
+    "acta": "0431/2022",
+    "status": "EQUIVALENCIA"
+  },
+  {
+    "planCode": "3655",
+    "name": "AUDITORIA Y LEGISLACION",
+    "date": "21/12/2022",
+    "grade": 9,
+    "acta": "0431/2022",
+    "status": "EQUIVALENCIA"
+  },
+  {
+    "planCode": "3656",
+    "name": "ESTADISTICA APLICADA",
+    "date": "21/12/2022",
+    "grade": 8,
+    "acta": "0431/2022",
+    "status": "EQUIVALENCIA"
+  },
+  {
+    "planCode": "1112",
+    "name": "AUDITORIA Y SEGURIDAD INFORMATICA",
+    "date": "07/03/2023",
+    "grade": 9,
+    "acta": "51952022"
+  },
+  {
+    "planCode": "912",
+    "name": "COMPUTACION  NIVEL II",
+    "date": "17/07/2023",
+    "grade": 9,
+    "acta": "18692023"
+  },
+  {
+    "planCode": "3630",
+    "name": "INTRODUCCION A LA GESTION DE REQUISITOS",
+    "date": "17/07/2023",
+    "grade": 9,
+    "acta": "15422023"
+  },
+  {
+    "planCode": "3643",
+    "name": "REDES DE COMPUTADORAS",
+    "date": "17/07/2023",
+    "grade": 9,
+    "acta": "15792023"
+  },
+  {
+    "planCode": "3646",
+    "name": "PARADIGMAS DE PROGRAMACION",
+    "date": "17/07/2023",
+    "grade": 10,
+    "acta": "15852023"
+  },
+  {
+    "planCode": "3649",
+    "name": "SISTEMAS OPERATIVOS",
+    "date": "17/07/2023",
+    "grade": 9,
+    "acta": "15892023"
+  },
+  {
+    "planCode": "3626",
+    "name": "PRINCIPIOS DE CALIDAD DE SOFTWARE",
+    "date": "26/07/2023",
+    "grade": 7,
+    "acta": "10812023"
+  },
+  {
+    "planCode": "3636",
+    "name": "BASES DE DATOS",
+    "date": "02/12/2023",
+    "grade": 9,
+    "acta": "48652023"
+  },
+  {
+    "planCode": "3637",
+    "name": "ANALISIS DE SISTEMAS",
+    "date": "02/12/2023",
+    "grade": 8,
+    "acta": "43052023"
+  },
+  {
+    "planCode": "3644",
+    "name": "GESTION DE LAS ORGANIZACIONES",
+    "date": "02/12/2023",
+    "grade": 10,
+    "acta": "47922023"
+  },
+  {
+    "planCode": "3654",
+    "name": "VIRTUALIZACION DE HARDWARE",
+    "date": "02/12/2023",
+    "grade": 8,
+    "acta": "48002023"
+  },
+  {
+    "planCode": "3664",
+    "name": "INTELIGENCIA ARTIFICIAL",
+    "date": "02/12/2023",
+    "grade": 9,
+    "acta": "43972023"
+  },
+  {
+    "planCode": "3642",
+    "name": "PRINCIPIOS DE DISEÑO DE SISTEMAS",
+    "date": "02/03/2024",
+    "grade": 8,
+    "acta": "54112023"
+  },
+  {
+    "planCode": "3641",
+    "name": "BASES DE DATOS APLICADAS",
+    "date": "13/07/2024",
+    "grade": 9,
+    "acta": "15952024"
+  },
+  {
+    "planCode": "3647",
+    "name": "REQUISITOS AVANZADOS",
+    "date": "13/07/2024",
+    "grade": 9,
+    "acta": "15472024"
+  },
+  {
+    "planCode": "3648",
+    "name": "DISEÑO DE SOFTWARE",
+    "date": "13/07/2024",
+    "grade": 7,
+    "acta": "13972024"
+  },
+  {
+    "planCode": "3668",
+    "name": "INTELIGENCIA ARTIFICIAL APLICADA",
+    "date": "13/07/2024",
+    "grade": 9,
+    "acta": "14472024"
+  },
+  {
+    "planCode": "3676",
+    "name": "RESPONSABILIDAD SOCIAL UNIVERSITARIA",
+    "date": "13/07/2024",
+    "grade": 9,
+    "acta": "12732024"
+  },
+  {
+    "planCode": "3652",
+    "name": "PROGRAMACION AVANZADA",
+    "date": "30/11/2024",
+    "grade": 8,
+    "acta": "41372024"
+  },
+  {
+    "planCode": "3653",
+    "name": "ARQUITECTURA DE SISTEMAS SOFTWARE",
+    "date": "30/11/2024",
+    "grade": 9,
+    "acta": "39402024"
+  },
+  {
+    "planCode": "3658",
+    "name": "PROGRAMACION CONCURRENTE",
+    "date": "30/11/2024",
+    "grade": 8,
+    "acta": "41162024"
+  },
+  {
+    "planCode": "3661",
+    "name": "GESTION DE PROYECTOS",
+    "date": "30/11/2024",
+    "grade": 9,
+    "acta": "41632024"
+  },
+  {
+    "planCode": "3662",
+    "name": "MATEMATICA APLICADA",
+    "date": "20/12/2024",
+    "grade": 10,
+    "acta": "58/2024",
+    "status": "EQUIVALENCIA"
+  },
+  {
+    "planCode": "3657",
+    "name": "AUTOMATAS Y GRAMATICAS",
+    "date": "19/07/2025",
+    "grade": 10,
+    "acta": "13062025"
+  },
+  {
+    "planCode": "3659",
+    "name": "GESTION APLICADA AL DESARROLLO DE SOFTWARE I",
+    "date": "19/07/2025",
+    "grade": 10,
+    "acta": "15282025"
+  },
+  {
+    "planCode": "3660",
+    "name": "SISTEMAS OPERATIVOS AVANZADOS",
+    "date": "19/07/2025",
+    "grade": 10,
+    "acta": "16302025"
+  },
+  {
+    "planCode": "3670",
+    "name": "CIENCIA DE DATOS",
+    "date": "19/07/2025",
+    "grade": 9,
+    "acta": "14552025"
+  },
+  {
+    "planCode": "3663",
+    "name": "LENGUAJES Y COMPILADORES",
+    "date": "06/12/2025",
+    "grade": 9,
+    "acta": "40582025"
+  },
+  {
+    "planCode": "3665",
+    "name": "GESTION APLICADA AL DESARROLLO DE SOFTWARE II",
+    "date": "06/12/2025",
+    "grade": 10,
+    "acta": "41582025"
+  }
+]

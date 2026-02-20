@@ -4,7 +4,7 @@ import { buildEdges, getRecommendationsWithReasons } from '../../shared/lib/grap
 import { fetchAcademicGraph } from '../academic/lib/academic-api';
 import { Lock, Unlock, RotateCcw, Calendar, List, Wand2, Upload, CheckCircle, AlertTriangle } from 'lucide-react';
 import { UnifiedSchedulePlanner } from '../schedule/components/UnifiedSchedulePlanner';
-import { fetchTimetables, createTimetable, deleteTimetable, uploadOfertaPdf } from '../schedule/lib/schedule-api';
+import { fetchTimetables, uploadOfertaPdf } from '../schedule/lib/schedule-api';
 import type { TimetableDto, TimePeriod, DayOfWeek, ParsedTimetableOffer } from '../schedule/lib/schedule-api';
 
 const DEFAULT_COUNT = 4;
@@ -55,7 +55,19 @@ export const RecommendationsPage = () => {
         if (!active) return;
 
         if (subjects.length === 0) setSubjects(results[0]);
-        setTimetables(subjects.length === 0 ? results[1] : results[0]);
+
+        // Load timetables from local storage
+        const storedTimetables = localStorage.getItem('user_timetables');
+        if (storedTimetables) {
+          try {
+            setTimetables(JSON.parse(storedTimetables));
+          } catch (e) {
+            console.error("Failed to parse timetables", e);
+            setTimetables(subjects.length === 0 ? results[1] : results[0]);
+          }
+        } else {
+          setTimetables(subjects.length === 0 ? results[1] : results[0]);
+        }
 
         // Load availability from local storage
         const storedAvail = localStorage.getItem('user_availability');
@@ -102,27 +114,34 @@ export const RecommendationsPage = () => {
   };
 
   // Schedule Actions
+  const saveTimetablesLocal = (updated: TimetableDto[]) => {
+    setTimetables(updated);
+    localStorage.setItem('user_timetables', JSON.stringify(updated));
+  };
+
   const handleAddTimetable = async (data: { subjectId: string; day: DayOfWeek; period: TimePeriod }) => {
-    try {
-      const newTimetable = await createTimetable({
-        subjectId: data.subjectId,
-        dayOfWeek: data.day,
-        period: data.period,
-      });
-      setTimetables(prev => [...prev, newTimetable]);
-    } catch (err) {
-      alert("Error al guardar horario. Verifica si ya existe.");
+    if (timetables.some(t => t.dayOfWeek === data.day && t.period === data.period)) {
+      alert("Error al guardar horario. Ya existe una materia asignada en este turno.");
+      return;
     }
+
+    const subject = subjects.find(s => s.id === data.subjectId);
+    const newTimetable: TimetableDto = {
+      id: Math.random().toString(36).substring(7),
+      subjectId: data.subjectId,
+      dayOfWeek: data.day,
+      dayLabel: data.day,
+      period: data.period,
+      subjectName: subject?.name || 'Materia Desconocida',
+      planCode: subject?.planCode || '',
+    };
+
+    saveTimetablesLocal([...timetables, newTimetable]);
   };
 
   const handleRemoveTimetable = async (subjectId: string) => {
     if (!confirm('¿Eliminar esta materia del horario?')) return;
-    try {
-      await deleteTimetable(subjectId);
-      setTimetables(prev => prev.filter(t => t.subjectId !== subjectId));
-    } catch (err) {
-      alert("Error al eliminar horario.");
-    }
+    saveTimetablesLocal(timetables.filter(t => t.subjectId !== subjectId));
   };
 
   // Recommendations Logic
@@ -220,23 +239,26 @@ export const RecommendationsPage = () => {
       return;
     }
 
+    const newTimetables = [...timetables];
     let addedCount = 0;
     for (const rec of unassignedRecommendations) {
       if (emptySlots.length === 0) break; // no more space
       const slot = emptySlots.shift()!; // take first empty slot
-      try {
-        const newTimetable = await createTimetable({
-          subjectId: rec.subject.id,
-          dayOfWeek: slot.day,
-          period: slot.period,
-        });
-        setTimetables(prev => [...prev, newTimetable]);
-        addedCount++;
-      } catch (err) {
-        console.error("Auto-complete failed for subject", rec.subject.name, err);
-      }
+      const subject = subjects.find(s => s.id === rec.subject.id);
+      newTimetables.push({
+        id: Math.random().toString(36).substring(7),
+        subjectId: rec.subject.id,
+        dayOfWeek: slot.day,
+        dayLabel: slot.day,
+        period: slot.period,
+        subjectName: subject?.name || 'Materia',
+        planCode: subject?.planCode || '',
+      });
+      addedCount++;
     }
+
     if (addedCount > 0) {
+      saveTimetablesLocal(newTimetables);
       alert(`Auto-completado exitoso: se asignaron ${addedCount} materias a slots vacíos.`);
     }
   };
@@ -366,8 +388,8 @@ export const RecommendationsPage = () => {
         </div>
       </div>
 
-      <div className={`grid gap-8 ${viewMode === 'CALENDAR' ? 'lg:grid-cols-[1.5fr_2fr]' : 'lg:grid-cols-1 max-w-3xl mx-auto'}`}>
-        {/* Left Column: Recommendations */}
+      <div className="flex flex-col gap-8 w-full mx-auto">
+        {/* Top/Left Section: Recommendations (always visible) */}
         <div className="space-y-4">
           <div className="flex items-center justify-between border-b border-app pb-2">
             <h3 className="text-xl font-bold text-app uppercase tracking-wide">
@@ -393,7 +415,7 @@ export const RecommendationsPage = () => {
               <p className="text-muted">No hay recomendaciones disponibles para tu estado actual.</p>
             </div>
           ) : (
-            <div className={`grid gap-4 ${viewMode === 'LIST' ? 'sm:grid-cols-2' : 'grid-cols-1'}`}>
+            <div className={`grid gap-4 sm:grid-cols-2 ${viewMode === 'LIST' ? 'lg:grid-cols-3' : 'lg:grid-cols-4'}`}>
               {recommendations.map((rec, index) => {
                 const isLocked = lockedIds.has(rec.subject.id);
                 const isExcluded = excludedIds.has(rec.subject.id);
@@ -402,7 +424,7 @@ export const RecommendationsPage = () => {
                 return (
                   <div
                     key={rec.subject.id}
-                    className={`rounded-xl border border-app p-4 transition-all shadow-subtle relative overflow-hidden group ${isLocked
+                    className={`flex flex-col h-full rounded-xl border border-app p-4 transition-all shadow-subtle relative overflow-hidden group ${isLocked
                       ? 'border-unlam-500 bg-unlam-500/5'
                       : isExcluded
                         ? 'border-red-500/30 bg-red-500/5 opacity-50 grayscale hover:grayscale-0'
@@ -485,10 +507,10 @@ export const RecommendationsPage = () => {
               <button
                 onClick={handleAutoComplete}
                 className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-500/10 border border-blue-500 text-blue-400 hover:bg-blue-500/20 transition-all font-bold text-xs shadow-subtle group"
-                title="Completar los huecos disponibles con las materias sugeridas"
+                title="Completar los huecos disponibles con las materias sugeridas de la lista automáticamente"
               >
                 <Wand2 size={14} className="group-hover:rotate-12 transition-transform" />
-                Auto-Completar
+                Auto-Completar Horario
               </button>
             </div>
 

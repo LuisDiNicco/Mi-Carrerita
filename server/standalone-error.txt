@@ -1,0 +1,16 @@
+TypeError: pdfParse is not a function
+    at Object.<anonymous> (C:\Users\luisd\Desktop\Proyectos\Mi-Carrerita\server\src\standalone.spec.ts:8:32)
+    at Promise.finally.completed (C:\Users\luisd\Desktop\Proyectos\Mi-Carrerita\server\node_modules\jest-circus\build\jestAdapterInit.js:1557:28)
+    at new Promise (<anonymous>)
+    at callAsyncCircusFn (C:\Users\luisd\Desktop\Proyectos\Mi-Carrerita\server\node_modules\jest-circus\build\jestAdapterInit.js:1497:10)
+    at _callCircusTest (C:\Users\luisd\Desktop\Proyectos\Mi-Carrerita\server\node_modules\jest-circus\build\jestAdapterInit.js:1007:40)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at _runTest (C:\Users\luisd\Desktop\Proyectos\Mi-Carrerita\server\node_modules\jest-circus\build\jestAdapterInit.js:947:3)
+    at C:\Users\luisd\Desktop\Proyectos\Mi-Carrerita\server\node_modules\jest-circus\build\jestAdapterInit.js:849:7
+    at _runTestsForDescribeBlock (C:\Users\luisd\Desktop\Proyectos\Mi-Carrerita\server\node_modules\jest-circus\build\jestAdapterInit.js:862:11)
+    at _runTestsForDescribeBlock (C:\Users\luisd\Desktop\Proyectos\Mi-Carrerita\server\node_modules\jest-circus\build\jestAdapterInit.js:857:11)
+    at run (C:\Users\luisd\Desktop\Proyectos\Mi-Carrerita\server\node_modules\jest-circus\build\jestAdapterInit.js:761:3)
+    at runAndTransformResultsToJestFormat (C:\Users\luisd\Desktop\Proyectos\Mi-Carrerita\server\node_modules\jest-circus\build\jestAdapterInit.js:1918:21)
+    at jestAdapter (C:\Users\luisd\Desktop\Proyectos\Mi-Carrerita\server\node_modules\jest-circus\build\runner.js:101:19)
+    at runTestInternal (C:\Users\luisd\Desktop\Proyectos\Mi-Carrerita\server\node_modules\jest-runner\build\index.js:275:16)
+    at runTest (C:\Users\luisd\Desktop\Proyectos\Mi-Carrerita\server\node_modules\jest-runner\build\index.js:343:7)

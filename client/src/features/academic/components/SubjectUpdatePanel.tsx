@@ -35,6 +35,7 @@ export const SubjectUpdatePanel = ({ subject, isOpen, onClose, onSave }: Subject
     { label: 'Recursada', value: SubjectStatus.RECURSADA },
     { label: 'Regularizada', value: SubjectStatus.REGULARIZADA },
     { label: 'Aprobada', value: SubjectStatus.APROBADA },
+    { label: 'Equivalencia', value: SubjectStatus.EQUIVALENCIA },
   ];
 
   useEffect(() => {

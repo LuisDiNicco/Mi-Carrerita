@@ -90,6 +90,7 @@ export interface ParsedAcademicRecord {
   date: string; // DD/MM/YYYY
   grade: number | null;
   acta: string;
+  status?: string;
 }
 
 /** Upload a Historia Académica PDF and receive parsed records for preview */

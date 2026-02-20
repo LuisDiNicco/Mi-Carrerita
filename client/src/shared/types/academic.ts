@@ -5,6 +5,7 @@ export const SubjectStatus = {
   REGULARIZADA: "REGULARIZADA",
   APROBADA: "APROBADA",
   RECURSADA: "RECURSADA",
+  EQUIVALENCIA: "EQUIVALENCIA",
 } as const;
 
 export type SubjectStatus = (typeof SubjectStatus)[keyof typeof SubjectStatus];

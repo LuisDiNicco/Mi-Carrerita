@@ -199,6 +199,7 @@ export const CareerGraph = ({ progress, stats }: CareerGraphProps) => {
                       [SubjectStatus.DISPONIBLE]: '#F7E8A3',
                       [SubjectStatus.PENDIENTE]: '#8A9B8A',
                       [SubjectStatus.RECURSADA]: '#E57373',
+                      [SubjectStatus.EQUIVALENCIA]: '#10B981',
                     };
                     return colorMap[status] || '#6B7280';
                   }

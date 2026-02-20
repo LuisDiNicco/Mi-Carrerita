@@ -1,5 +1,6 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
+import { SubjectStatus } from '../../../common/constants/academic-enums';
 import {
   DashboardDataDto,
   PerformanceChartDto,
@@ -32,7 +33,7 @@ export class DashboardService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly logger: Logger,
-  ) {}
+  ) { }
 
   /**
    * Get complete dashboard data with all charts and summary
@@ -66,8 +67,19 @@ export class DashboardService {
     // Cast to correct type for helper functions
     const typedRecords = records as unknown as AcademicRecordWithSubject[];
 
+    // Filter out Equivalencies and inactive Optional subjects to not skew metrics
+    const filteredRecords = typedRecords.filter(r => {
+      if (r.status === SubjectStatus.EQUIVALENCIA) return false;
+
+      if (r.subject.isOptional) {
+        const isActive = [SubjectStatus.APROBADA, SubjectStatus.REGULARIZADA, SubjectStatus.EN_CURSO].includes(r.status as SubjectStatus);
+        if (!isActive) return false;
+      }
+      return true;
+    });
+
     // Group by semester
-    const semesters = groupBySemester(typedRecords);
+    const semesters = groupBySemester(filteredRecords);
 
     // Build semester data points sorted chronologically
     const semesterDataPoints: SemesterDataPoint[] = Array.from(
@@ -86,15 +98,15 @@ export class DashboardService {
     const performanceChart = this.buildPerformanceChart(semesterDataPoints);
     const efficacyChart = this.buildEfficacyChart(semesterDataPoints);
     const academicLoadChart = this.buildAcademicLoadChart(semesterDataPoints);
-    const subjectVolumeChart = this.buildSubjectVolumeChart(typedRecords);
+    const subjectVolumeChart = this.buildSubjectVolumeChart(filteredRecords);
     const difficultyScatterChart =
-      this.buildDifficultyScatterChart(typedRecords);
-    const burnUpChart = this.buildBurnUpChart(semesters, typedRecords.length);
-    const subjectRankingsChart = this.buildSubjectRankingsChart(typedRecords);
+      this.buildDifficultyScatterChart(filteredRecords);
+    const burnUpChart = this.buildBurnUpChart(semesters, filteredRecords.length);
+    const subjectRankingsChart = this.buildSubjectRankingsChart(filteredRecords);
 
     // Build summary
     const summary = this.buildDashboardSummary(
-      typedRecords,
+      filteredRecords,
       semesterDataPoints,
     );
 

@@ -20,6 +20,12 @@ const STATUS_STYLES: Record<SubjectStatus, {
   emoji: string;
   border: string;
 }> = {
+  [SubjectStatus.EQUIVALENCIA]: {
+    container: 'bg-[#B084CC] text-[#291736]',
+    badge: 'bg-[#8F66A8] border-[#6D4284] text-white',
+    emoji: '🤝',
+    border: 'border-[#6D4284]',
+  },
   [SubjectStatus.PENDIENTE]: {
     container: 'bg-[#353C35] text-[#C5D2C5]',
     badge: 'bg-[#3E4A3E] border-[#2A342A] text-[#E8F2E8]',
@@ -111,6 +117,7 @@ const SubjectNodeComponent = ({ data, selected }: NodeProps<SubjectNodeType>) =>
           subject.status === SubjectStatus.PENDIENTE && 'opacity-60',
           subject.status === SubjectStatus.DISPONIBLE && 'ring-2 ring-yellow-300/40',
           subject.status === SubjectStatus.APROBADA && 'ring-2 ring-green-300/40',
+          subject.status === SubjectStatus.EQUIVALENCIA && 'ring-2 ring-purple-300/40',
           isRecentlyUpdated && 'subject-update-flash subject-update-fill'
         )}
       >
@@ -133,7 +140,8 @@ const SubjectNodeComponent = ({ data, selected }: NodeProps<SubjectNodeType>) =>
           TITLE_CLASS,
           'mb-3 min-h-[56px]',
           'flex items-center justify-center',
-          subject.status === SubjectStatus.APROBADA && 'text-[#0B2A14]'
+          subject.status === SubjectStatus.APROBADA && 'text-[#0B2A14]',
+          subject.status === SubjectStatus.EQUIVALENCIA && 'text-[#291736]'
         )}>
           {truncateSubjectName(subject.name, SUBJECT_NAME_MAX)}
         </h3>
@@ -209,6 +217,7 @@ function getTooltipText(subject: Subject): string {
     [SubjectStatus.REGULARIZADA]: 'Materia regularizada',
     [SubjectStatus.APROBADA]: '¡Materia aprobada!',
     [SubjectStatus.RECURSADA]: 'Tendrás que recursar esta materia',
+    [SubjectStatus.EQUIVALENCIA]: 'Materia concedida por equivalencia',
   };
 
   return statusMessages[subject.status as keyof typeof statusMessages] || subject.name;
