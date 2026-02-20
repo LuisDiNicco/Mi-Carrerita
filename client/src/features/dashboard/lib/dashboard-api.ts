@@ -87,6 +87,17 @@ export interface DashboardSummaryDto {
     currentStreak?: number;
 }
 
+export interface ProgressByYearPoint {
+    year: number;
+    completed: number;
+    total: number;
+    percentage: number;
+}
+
+export interface ProgressByYearChartDto {
+    data: ProgressByYearPoint[];
+}
+
 export interface DashboardDataDto {
     performanceChart: PerformanceChartDto;
     efficacyChart: EfficacyChartDto;
@@ -94,6 +105,7 @@ export interface DashboardDataDto {
     subjectVolumeChart: SubjectVolumeChartDto;
     difficultyScatterChart: DifficultyScatterChartDto;
     burnUpChart: BurnUpChartDto;
+    progressByYearChart: ProgressByYearChartDto;
     subjectRankingsChart: SubjectRankingsChartDto;
     summary: DashboardSummaryDto;
 }

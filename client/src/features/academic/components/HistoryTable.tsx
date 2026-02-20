@@ -53,12 +53,13 @@ export const HistoryTable = () => {
   // Derived Data
   const filteredAndSortedRows = useMemo(() => {
     let data = subjects
-      .filter((subject) => subject.statusDate || subject.grade !== null || subject.notes || subject.status !== SubjectStatus.PENDIENTE) // Show all non-pending or modified
+      .filter((subject) => subject.statusDate || subject.grade !== null || subject.notes || (subject.status !== SubjectStatus.PENDIENTE && subject.status !== SubjectStatus.DISPONIBLE))
       .map((subject) => ({
         id: subject.id,
         date: subject.statusDate ?? '',
         name: subject.name,
         planCode: subject.planCode,
+        year: subject.year,
         grade: subject.grade,
         status: subject.status,
         notes: subject.notes ?? '',
@@ -356,21 +357,25 @@ export const HistoryTable = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <div className="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
-          {['ALL', SubjectStatus.APROBADA, SubjectStatus.EN_CURSO, SubjectStatus.REGULARIZADA].map((st) => (
-            <button
-              key={st}
-              onClick={() => setFilterStatus(st)}
-              className={cn(
-                "px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-colors border",
-                filterStatus === st
-                  ? "bg-app-text text-app-bg border-app-text"
-                  : "bg-surface text-muted border-app hover:border-app-text"
-              )}
-            >
-              {st === 'ALL' ? 'Todos' : STATUS_OPTIONS.find(o => o.value === st)?.label || st}
-            </button>
-          ))}
+        <div className="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0 scrollbar-hide flex-nowrap">
+          {['ALL', SubjectStatus.APROBADA, SubjectStatus.EN_CURSO, SubjectStatus.REGULARIZADA, SubjectStatus.RECURSADA].map((st) => {
+            const label = st === 'ALL' ? 'Todos' : STATUS_OPTIONS.find(o => o.value === st)?.label || st;
+
+            return (
+              <button
+                key={st}
+                onClick={() => setFilterStatus(st)}
+                className={cn(
+                  "px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition-all border-2 shadow-subtle min-w-[max-content]",
+                  filterStatus === st
+                    ? "bg-unlam-500 text-app-accent-ink border-unlam-500"
+                    : "bg-surface text-muted border-app hover:border-unlam-500/50 hover:text-app"
+                )}
+              >
+                {label}
+              </button>
+            )
+          })}
         </div>
       </div>
 
@@ -386,6 +391,8 @@ export const HistoryTable = () => {
                 >
                   <div className="flex items-center gap-1">Fecha {sortConfig.key === 'date' && <ArrowUpDown size={12} className="text-unlam-500" />}</div>
                 </th>
+                <th className="py-3 px-4 font-medium w-20">Código</th>
+                <th className="py-3 px-4 font-medium w-16 text-center">Año</th>
                 <th
                   className="py-3 px-4 font-medium cursor-pointer hover:text-app transition-colors select-none group"
                   onClick={() => handleSort('name')}
@@ -394,10 +401,10 @@ export const HistoryTable = () => {
                 </th>
                 <th className="py-3 px-4 font-medium">Estado</th>
                 <th
-                  className="py-3 px-4 font-medium cursor-pointer hover:text-app transition-colors select-none group"
+                  className="py-3 px-4 font-medium cursor-pointer hover:text-app transition-colors select-none group w-20 text-center"
                   onClick={() => handleSort('grade')}
                 >
-                  <div className="flex items-center gap-1">Nota {sortConfig.key === 'grade' && <ArrowUpDown size={12} className="text-unlam-500" />}</div>
+                  <div className="flex items-center justify-center gap-1">Nota {sortConfig.key === 'grade' && <ArrowUpDown size={12} className="text-unlam-500" />}</div>
                 </th>
                 <th className="py-3 px-4 font-medium">Comentario</th>
                 <th className="py-3 px-4 font-medium text-right">Acciones</th>
@@ -406,33 +413,40 @@ export const HistoryTable = () => {
             <tbody className="divide-y divide-app/10">
               {filteredAndSortedRows.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-12 text-center text-muted">
+                  <td colSpan={8} className="py-12 text-center text-muted">
                     No se encontraron registros.
                   </td>
                 </tr>
               ) : (
                 filteredAndSortedRows.map((row) => (
-                  <tr key={row.id} className="hover:bg-app-text/5 transition-colors group">
+                  <tr key={row.id} className="hover:bg-unlam-500/5 transition-colors group">
                     <td className="py-3 px-4 text-app font-mono text-xs">{formatDate(row.date) || '-'}</td>
-                    <td className="py-3 px-4 text-app font-medium">
-                      {row.name}
-                      <span className="block text-[10px] text-muted">{row.planCode}</span>
-                    </td>
+                    <td className="py-3 px-4 text-muted font-mono text-xs">{row.planCode}</td>
+                    <td className="py-3 px-4 text-muted font-mono text-xs text-center">{row.year}º</td>
+                    <td className="py-3 px-4 text-app font-bold">{row.name}</td>
                     <td className="py-3 px-4">
                       <span className={cn(
-                        "inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide",
-                        row.status === SubjectStatus.APROBADA ? "bg-green-500/20 text-green-500" :
-                          row.status === SubjectStatus.REGULARIZADA ? "bg-yellow-500/20 text-yellow-500" :
-                            row.status === SubjectStatus.EN_CURSO ? "bg-blue-500/20 text-blue-500" :
-                              row.status === SubjectStatus.RECURSADA ? "bg-red-500/20 text-red-500" :
-                                "bg-gray-500/20 text-gray-400"
+                        "inline-flex items-center px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wide border",
+                        row.status === SubjectStatus.APROBADA ? "bg-green-500/10 text-green-500 border-green-500/30" :
+                          row.status === SubjectStatus.REGULARIZADA ? "bg-yellow-500/10 text-yellow-500 border-yellow-500/30" :
+                            row.status === SubjectStatus.EN_CURSO ? "bg-blue-500/10 text-blue-500 border-blue-500/30" :
+                              row.status === SubjectStatus.RECURSADA ? "bg-red-500/10 text-red-500 border-red-500/30" :
+                                "bg-gray-500/10 text-gray-400 border-gray-500/30"
                       )}>
                         {STATUS_OPTIONS.find(o => o.value === row.status)?.label || row.status}
                       </span>
                     </td>
-                    <td className="py-3 px-4 text-app font-bold font-mono">{formatGrade(row.grade)}</td>
-                    <td className="py-3 px-4 text-muted text-xs max-w-[200px] truncate" title={row.notes}>
-                      {row.notes || '—'}
+                    <td className="py-3 px-4 text-app font-bold font-mono text-center">{formatGrade(row.grade)}</td>
+                    <td className="py-3 px-4 relative max-w-[200px] group/tooltip">
+                      <div className="truncate text-xs text-muted">
+                        {row.notes || '—'}
+                      </div>
+                      {/* Hover Preview Tooltip */}
+                      {row.notes && (
+                        <div className="absolute left-0 bottom-full mb-1 w-max max-w-[250px] p-3 rounded-lg bg-surface border border-unlam-500 shadow-retro text-xs text-app opacity-0 group-hover/tooltip:opacity-100 pointer-events-none transition-opacity z-10 whitespace-normal">
+                          {row.notes}
+                        </div>
+                      )}
                     </td>
                     <td className="py-3 px-4 text-right">
                       <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">

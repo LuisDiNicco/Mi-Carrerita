@@ -1,8 +1,8 @@
-// server/src/app.module.ts
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import * as Joi from 'joi';
-import { PrismaModule } from './prisma/prisma.module'; // <--- Importar archivo
+import { PrismaModule } from './prisma/prisma.module';
 import { AcademicCareerModule } from './modules/academic-career/academic-career.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
@@ -27,7 +27,8 @@ import { TrophyModule } from './modules/trophy/trophy.module';
         HASH_SALT: Joi.number().integer().min(1).default(10),
       }),
     }),
-    PrismaModule, // <--- Agregar al array de imports
+    EventEmitterModule.forRoot(),
+    PrismaModule,
     AcademicCareerModule,
     AuthModule,
     DashboardModule,

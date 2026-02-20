@@ -16,7 +16,7 @@ import { TimetableWithSubject } from '../../../shared/types/database.types';
 
 @Injectable()
 export class ScheduleService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   /**
    * Create or update a timetable entry for a subject
@@ -141,7 +141,9 @@ export class ScheduleService {
         });
 
         if (!subject) {
-          throw new NotFoundException(`Materia no encontrada: ${dto.subjectId}`);
+          throw new NotFoundException(
+            `Materia no encontrada: ${dto.subjectId}`,
+          );
         }
 
         const validation = isValidTimetable({

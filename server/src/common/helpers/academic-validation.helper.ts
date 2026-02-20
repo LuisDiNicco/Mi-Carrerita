@@ -47,17 +47,20 @@ export function parseIsolatedDate(dateInput: string | Date): Date {
  * Validates consistency of academic record data.
  * Throws BadRequestException if validation fails.
  */
-export function validateAcademicRecord(payload: AcademicRecordValidationPayload): void {
+export function validateAcademicRecord(
+  payload: AcademicRecordValidationPayload,
+): void {
   if (payload.status === SubjectStatus.DISPONIBLE) {
     throw new BadRequestException(
       'El estado DISPONIBLE se calcula automaticamente.',
     );
   }
 
-  if (payload.status === SubjectStatus.APROBADA && (payload.grade === null || payload.grade === undefined)) {
-    throw new BadRequestException(
-      'Una materia aprobada requiere nota final.',
-    );
+  if (
+    payload.status === SubjectStatus.APROBADA &&
+    (payload.grade === null || payload.grade === undefined)
+  ) {
+    throw new BadRequestException('Una materia aprobada requiere nota final.');
   }
 
   if (

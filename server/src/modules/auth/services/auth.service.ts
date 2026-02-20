@@ -140,7 +140,7 @@ export class AuthService {
     try {
       const payload = this.jwtService.verify(refreshToken, {
         secret: this.jwtRefreshSecret,
-      }) as JwtPayload;
+      });
       await this.prisma.user.update({
         where: { id: payload.sub },
         data: { refreshTokenHash: null },

@@ -1,4 +1,11 @@
-import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus, Logger } from '@nestjs/common';
+import {
+  ExceptionFilter,
+  Catch,
+  ArgumentsHost,
+  HttpException,
+  HttpStatus,
+  Logger,
+} from '@nestjs/common';
 import { Request, Response } from 'express';
 
 @Catch()
@@ -22,8 +29,8 @@ export class GlobalExceptionFilter implements ExceptionFilter {
 
     // Logueamos el error real en el servidor para debugging
     this.logger.error(
-      `Error en ${request.method} ${request.url}`, 
-      exception instanceof Error ? exception.stack : exception
+      `Error en ${request.method} ${request.url}`,
+      exception instanceof Error ? exception.stack : exception,
     );
 
     response.status(status).json({

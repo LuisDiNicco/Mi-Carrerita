@@ -180,6 +180,32 @@ export function calculateDashboardData(
         data: difficultyData,
     };
 
+    // 7. Progress by Year of Plan
+    const progressByYearMap = new Map<number, { completed: number; total: number }>();
+    scopedSubjects.forEach((s) => {
+        if (!progressByYearMap.has(s.year)) {
+            progressByYearMap.set(s.year, { completed: 0, total: 0 });
+        }
+        const data = progressByYearMap.get(s.year)!;
+        data.total += 1;
+        if (s.status === SubjectStatus.APROBADA) {
+            data.completed += 1;
+        }
+    });
+
+    const progressByYearData = Array.from(progressByYearMap.entries())
+        .map(([year, data]) => ({
+            year,
+            completed: data.completed,
+            total: data.total,
+            percentage: data.total > 0 ? Math.round((data.completed / data.total) * 100) : 0,
+        }))
+        .sort((a, b) => a.year - b.year);
+
+    const progressByYearChart = {
+        data: progressByYearData,
+    };
+
     // Dummy Ranking (not requested to be perfect yet, just placeholder structure)
     const subjectRankingsChart = {
         mataPromedios: [],
@@ -198,6 +224,7 @@ export function calculateDashboardData(
         academicLoadChart,
         difficultyScatterChart,
         burnUpChart,
+        progressByYearChart,
         subjectRankingsChart,
     };
 }

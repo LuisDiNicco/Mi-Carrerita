@@ -1,10 +1,14 @@
-import { validateAcademicRecord, parseIsolatedDate } from '../../../common/helpers/academic-validation.helper';
+import {
+  validateAcademicRecord,
+  parseIsolatedDate,
+} from '../../../common/helpers/academic-validation.helper';
 import {
   BadRequestException,
   Injectable,
   Logger,
   NotFoundException,
 } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { SubjectNodeDto } from '../dto/subject-node.dto';
 import { SubjectStatus } from '../../../common/constants/academic-enums';
@@ -18,7 +22,8 @@ export class AcademicCareerService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly logger: Logger,
-  ) { }
+    private readonly eventEmitter: EventEmitter2,
+  ) {}
 
   async getCareerGraph(userEmail: string): Promise<SubjectNodeDto[]> {
     const user = await this.prisma.user.findUnique({
@@ -128,7 +133,7 @@ export class AcademicCareerService {
       ? parseIsolatedDate(payload.statusDate)
       : null;
 
-    return this.prisma.academicRecord.upsert({
+    const record = await this.prisma.academicRecord.upsert({
       where: {
         userId_subjectId: {
           userId: user.id,
@@ -152,5 +157,10 @@ export class AcademicCareerService {
         notes: payload.notes ?? null,
       },
     });
+
+    // Trigger trophy evaluation
+    this.eventEmitter.emit('subject.status.updated', { userEmail });
+
+    return record;
   }
 }

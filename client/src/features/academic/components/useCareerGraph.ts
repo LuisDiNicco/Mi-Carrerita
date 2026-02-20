@@ -247,8 +247,8 @@ export const useCareerGraph = () => {
   }, [criticalPath.edgeIds, subjectById, setEdges]);
 
   const yearSeparatorNodes = useMemo(
-    () => buildYearSeparatorNodes(subjects, nodes),
-    [nodes, subjects],
+    () => buildYearSeparatorNodes(subjects, []),
+    [subjects],
   );
 
   const containerClass = isFullscreen

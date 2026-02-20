@@ -45,13 +45,28 @@ export async function fetchTimetables(): Promise<TimetableDto[]> {
     return response.json();
 }
 
+const DAY_TO_NUM: Record<DayOfWeek, number> = {
+    'MONDAY': 1,
+    'TUESDAY': 2,
+    'WEDNESDAY': 3,
+    'THURSDAY': 4,
+    'FRIDAY': 5,
+    'SATURDAY': 6
+};
+
 export async function createTimetable(dto: CreateTimetableDto): Promise<TimetableDto> {
+    const payload = {
+        subjectId: dto.subjectId,
+        period: dto.period,
+        dayOfWeek: DAY_TO_NUM[dto.dayOfWeek]
+    };
+
     const response = await authFetch(`${API_URL}/schedule/timetable`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify(dto),
+        body: JSON.stringify(payload),
     });
     if (!response.ok) throw new Error("Error creating timetable");
     return response.json();

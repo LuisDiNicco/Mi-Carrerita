@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import type { Subject } from '../../../shared/types/academic';
 import { SubjectStatus } from '../../../shared/types/academic';
 import { RetroButton } from '../../../shared/ui/RetroButton';
+import { Calendar } from 'lucide-react';
 
 interface SubjectUpdatePanelProps {
   subject: Subject | null;
@@ -252,13 +253,40 @@ export const SubjectUpdatePanel = ({ subject, isOpen, onClose, onSave }: Subject
 
               <label className="flex flex-col gap-2 text-sm text-muted">
                 <span className="font-bold">Fecha de Aprobación/Regularidad</span>
-                <input
-                  type="date"
-                  max="2099-12-31"
-                  className="w-full bg-elevated border-2 border-app-border rounded-lg px-3 py-2.5 text-app focus:border-unlam-500 focus:ring-2 focus:ring-unlam-500/20 outline-none transition-all [color-scheme:dark]"
-                  value={statusDate}
-                  onChange={(event) => setStatusDate(event.target.value)}
-                />
+                <div className="relative flex items-center">
+                  <input
+                    type="text"
+                    maxLength={10}
+                    className="w-full bg-elevated border-2 border-app-border rounded-lg pl-3 pr-10 py-2.5 text-app focus:border-unlam-500 focus:ring-2 focus:ring-unlam-500/20 outline-none transition-all placeholder:text-muted/50 font-mono text-sm"
+                    value={statusDate}
+                    onChange={(event) => {
+                      // Allow manual typing of YYYY-MM-DD
+                      let val = event.target.value.replace(/[^\d-]/g, '');
+                      setStatusDate(val);
+                    }}
+                    placeholder="YYYY-MM-DD"
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-2 p-1.5 text-muted hover:text-unlam-500 transition-colors cursor-pointer bg-elevated rounded"
+                    onClick={(e) => {
+                      const dateInput = e.currentTarget.nextElementSibling as HTMLInputElement;
+                      if (dateInput && dateInput.showPicker) {
+                        try {
+                          dateInput.showPicker();
+                        } catch (err) { }
+                      }
+                    }}
+                    title="Abrir calendario"
+                  >
+                    <Calendar size={18} />
+                  </button>
+                  <input
+                    type="date"
+                    className="absolute right-4 bottom-0 top-0 w-0 h-0 opacity-0 pointer-events-none"
+                    onChange={(e) => setStatusDate(e.target.value)}
+                  />
+                </div>
               </label>
 
               <label className="flex flex-col gap-2 text-sm text-muted flex-1">
