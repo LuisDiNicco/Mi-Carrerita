@@ -1,6 +1,0 @@
-TypeError: Cannot read properties of undefined (reading '0')
-    at C:\Users\luisd\Desktop\Proyectos\Mi-Carrerita\server\dist\modules\academic-career\helpers\approval-sets.helper.js:9:39
-    at Array.forEach (<anonymous>)
-    at buildApprovalSets (C:\Users\luisd\Desktop\Proyectos\Mi-Carrerita\server\dist\modules\academic-career\helpers\approval-sets.helper.js:8:14)
-    at AcademicCareerService.getCareerGraph (C:\Users\luisd\Desktop\Proyectos\Mi-Carrerita\server\dist\modules\academic-career\services\academic-career.service.js:69:90)
-    at async run (C:\Users\luisd\Desktop\Proyectos\Mi-Carrerita\server\debug-e2e.js:30:21)

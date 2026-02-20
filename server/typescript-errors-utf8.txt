@@ -1,1 +1,0 @@
-﻿src/modules/academic-career/services/academic-career.service.ts(163,12): error TS2304: Cannot find name 'result'.
