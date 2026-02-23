@@ -19,7 +19,7 @@ export function buildApprovalSets(
     const record = subject.records[0];
     if (!record || !isSubjectStatus(record.status)) return;
 
-    if (record.status === SubjectStatus.APROBADA) {
+    if (record.status === SubjectStatus.APROBADA || record.status === SubjectStatus.EQUIVALENCIA) {
       finalApprovedIds.add(subject.id);
       regularApprovedIds.add(subject.id);
       return;

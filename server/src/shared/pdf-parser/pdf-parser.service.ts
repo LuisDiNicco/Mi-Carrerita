@@ -20,6 +20,36 @@ export interface ParsedTimetableOffer {
     location: string;
 }
 
+/**
+ * Parses the concatenated tail of a Historia Académica record.
+ * 
+ * Real PDF format (no spaces between fields):
+ *   {Acta}{Date DD/MM/YYYY}{Grade?}
+ * 
+ * The acta can be:
+ *   - Pure digits: e.g. "39002020"
+ *   - Digits+slash+digits: e.g. "0431/2022", "58/2024"
+ * 
+ * Strategy: find the date (DD/MM/YYYY) pattern which is unambiguous.
+ * Everything before the date is the acta. Everything after is the grade (optional).
+ */
+function parseTail(tail: string): { acta: string; date: string; grade: number | null } | null {
+    // Date is always DD/MM/YYYY
+    const dateMatch = tail.match(/(\d{2}\/\d{2}\/\d{4})/);
+    if (!dateMatch) return null;
+
+    const dateIndex = tail.indexOf(dateMatch[1]);
+    const acta = tail.substring(0, dateIndex).trim();
+    const after = tail.substring(dateIndex + dateMatch[1].length).trim();
+    const grade = after ? parseInt(after, 10) : null;
+
+    return {
+        acta,
+        date: dateMatch[1],
+        grade: isNaN(grade as number) ? null : grade,
+    };
+}
+
 @Injectable()
 export class PdfParserService {
     private readonly logger = new Logger(PdfParserService.name);
@@ -28,55 +58,164 @@ export class PdfParserService {
         try {
             const data = await pdfParse(buffer);
             const text = data.text;
-            const lines = text.split('\n');
-            const records: any[] = [];
-            let currentRecord: any = null;
+            const lines = text.split('\n').map((l: string) => l.trim()).filter((l: string) => l.length > 0);
 
-            for (let i = 0; i < lines.length; i++) {
-                const line = lines[i].trim();
-                if (!line) continue;
+            // Filter out header/footer lines
+            const contentLines = lines.filter((line: string) => {
+                if (/^p[aá]gina\s+\d+\s+de\s+\d+/i.test(line)) return false;
+                if (/^ingenier[ií]a\s+en/i.test(line)) return false;
+                if (/^alumno:/i.test(line)) return false;
+                if (/^nro\s+documento/i.test(line)) return false;
+                if (/^n[º°]origenC[oó]digo/i.test(line)) return false;
+                if (/^acta\s*\//i.test(line)) return false;
+                if (/^resoluci[oó]n/i.test(line)) return false;
+                if (/^fechanota/i.test(line)) return false;
+                return true;
+            });
 
-                // Strip page footer/header lines that would corrupt the rawBuffer
-                // e.g. "Página 1 de 2", "Historia Académica - UTN"
-                if (/^p[aá]gina\s+\d+\s+de\s+\d+/i.test(line)) continue;
-                if (/^historia\s+acad[eé]mica/i.test(line)) continue;
+            /*
+             * RECORD STRUCTURE IN THE PDF (no spaces between fields):
+             *
+             * Case A — single line:
+             *   "{Nro}{Origen}{PlanCode5digits}{Name}{Acta}{DD/MM/YYYY}{Grade?}"
+             *   Example: "2Promocion01026TECNOLOGIA INGENIERIA Y SOCIEDAD3899202029/08/20208"
+             *
+             * Case B — multi-line (long name or special char wraps):
+             *   Line 1: "{Nro}{Origen}{PlanCode5digits}"
+             *   Line 2..N: name continuation lines
+             *   Last line: "{Acta}{DD/MM/YYYY}{Grade?}"
+             *
+             * Plan codes are always exactly 5 digits (e.g. 01025, 03621).
+             *
+             * The START of a record is identified by:
+             *   /^\d+(Promocion|Equivalencia|Examen|Aprobado|Regular)\d{5}/i
+             *
+             * The END of a record (the tail line) is identified by:
+             *   Contains a DD/MM/YYYY date pattern
+             */
 
-                const startMatch = line.match(/^(\d+)(Promocion|Equivalencia|Examen|Aprobado|Regular)(0?\d{4})(.*)$/i);
+            // Regex to detect start of a new record
+            const RECORD_START = /^(\d+)(Promocion|Equivalencia|Examen|Aprobado|Regular)(\d{5})(.*)$/i;
+
+            // Regex to detect a "tail" line — contains the date
+            const TAIL_PATTERN = /\d{2}\/\d{2}\/\d{4}/;
+
+            interface RawRecord {
+                nro: string;
+                origen: string;
+                planCode: string;
+                nameLines: string[];
+                tail: string;
+            }
+
+            const rawRecords: RawRecord[] = [];
+            let current: RawRecord | null = null;
+
+            for (const line of contentLines) {
+                const startMatch = line.match(RECORD_START);
+
                 if (startMatch) {
-                    if (currentRecord) records.push(currentRecord);
+                    // Push previous record before starting new one
+                    if (current) rawRecords.push(current);
 
-                    currentRecord = {
-                        nro: startMatch[1],
-                        origen: startMatch[2],
-                        planCode: startMatch[3].replace(/^0+/, ''),
-                        rawBuffer: startMatch[4]
-                    };
-                } else if (currentRecord) {
-                    currentRecord.rawBuffer += (currentRecord.rawBuffer ? ' ' : '') + line;
+                    const remainder = startMatch[4]; // everything after the 5-digit planCode
+
+                    if (TAIL_PATTERN.test(remainder)) {
+                        // The record is fully contained in one line
+                        // remainder = "{Name}{Acta}{Date}{Grade}"
+                        // We need to split name from tail
+                        // The tail starts at the date minus the acta length
+                        // Strategy: find the date in remainder
+                        const dateInRemainder = remainder.match(/(\d{2}\/\d{2}\/\d{4})/);
+                        if (dateInRemainder) {
+                            const dateIdx = remainder.indexOf(dateInRemainder[1]);
+                            // Everything before the date contains name+acta
+                            // The acta is the digits (optionally with /) immediately before the date
+                            const beforeDate = remainder.substring(0, dateIdx);
+                            // Separate name from acta: acta = trailing digits/slash block
+                            const actaMatch = beforeDate.match(/^(.*?)([0-9][0-9\/]*)$/);
+                            if (actaMatch) {
+                                current = {
+                                    nro: startMatch[1],
+                                    origen: startMatch[2],
+                                    planCode: startMatch[3].replace(/^0+/, ''),
+                                    nameLines: [actaMatch[1].trim()],
+                                    tail: actaMatch[2] + dateInRemainder[1] + remainder.substring(dateIdx + dateInRemainder[1].length),
+                                };
+                            } else {
+                                current = {
+                                    nro: startMatch[1],
+                                    origen: startMatch[2],
+                                    planCode: startMatch[3].replace(/^0+/, ''),
+                                    nameLines: [beforeDate.trim()],
+                                    tail: remainder.substring(dateIdx),
+                                };
+                            }
+                        } else {
+                            current = {
+                                nro: startMatch[1],
+                                origen: startMatch[2],
+                                planCode: startMatch[3].replace(/^0+/, ''),
+                                nameLines: [remainder.trim()],
+                                tail: '',
+                            };
+                        }
+                    } else {
+                        // No date in this line yet — name and tail come next
+                        current = {
+                            nro: startMatch[1],
+                            origen: startMatch[2],
+                            planCode: startMatch[3].replace(/^0+/, ''),
+                            nameLines: remainder.trim() ? [remainder.trim()] : [],
+                            tail: '',
+                        };
+                    }
+                } else if (current) {
+                    if (TAIL_PATTERN.test(line)) {
+                        // This line is the tail (acta+date+grade)
+                        current.tail = line;
+                        rawRecords.push(current);
+                        current = null;
+                    } else {
+                        // Still accumulating name lines
+                        current.nameLines.push(line);
+                    }
                 }
             }
-            if (currentRecord) records.push(currentRecord);
 
+            // Push any trailing record
+            if (current) rawRecords.push(current);
+
+            // Now parse each raw record into the final structure
             const parsedRecords: ParsedAcademicRecord[] = [];
-            for (const r of records) {
-                const endMatch = r.rawBuffer.match(/^(.*?)\s*([0-9][a-zA-Z0-9\/-]*?)\s*(\d{2}\/\d{2}\/\d{4})\s*(\d+)?$/);
-                if (endMatch) {
-                    const isEquivalencia = r.origen.toLowerCase() === 'equivalencia';
-                    parsedRecords.push({
-                        planCode: r.planCode,
-                        name: endMatch[1].trim(),
-                        date: endMatch[3],
-                        grade: endMatch[4] ? parseInt(endMatch[4], 10) : null,
-                        acta: endMatch[2].trim(),
-                        // Will map status in the frontend/backend service where appropriate.
-                        status: isEquivalencia ? 'EQUIVALENCIA' : undefined
-                    });
+
+            for (const r of rawRecords) {
+                if (!r.tail) {
+                    // No tail found — skip malformed record
+                    this.logger.warn(`Skipping record ${r.nro} (${r.planCode}): no tail line found`);
+                    continue;
                 }
+
+                const parsed = parseTail(r.tail);
+                if (!parsed) {
+                    this.logger.warn(`Skipping record ${r.nro} (${r.planCode}): could not parse tail "${r.tail}"`);
+                    continue;
+                }
+
+                const isEquivalencia = r.origen.toLowerCase() === 'equivalencia';
+
+                parsedRecords.push({
+                    planCode: r.planCode,
+                    name: r.nameLines.join(' ').trim(),
+                    date: parsed.date,
+                    grade: parsed.grade,
+                    acta: parsed.acta,
+                    status: isEquivalencia ? 'EQUIVALENCIA' : undefined,
+                });
             }
 
             return parsedRecords;
         } catch (error: any) {
-            require('fs').writeFileSync('pdf-error-debug.txt', error instanceof Error ? (error.message + '\n' + error.stack) : String(error));
             this.logger.error('Error parsing Historia Académica', error);
             throw new BadRequestException('No se pudo procesar el archivo. Asegúrese de que sea un PDF válido de Historia Académica.');
         }
