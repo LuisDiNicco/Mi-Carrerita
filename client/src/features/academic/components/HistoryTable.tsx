@@ -50,6 +50,9 @@ export const HistoryTable = () => {
     key: 'date',
     direction: 'desc',
   });
+  // Inline delete confirmation state
+  const [pendingDelete, setPendingDelete] = useState<{ id: string; name: string } | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   useEffect(() => {
     // Only set default subject if NOT editing and no subject selected
@@ -141,13 +144,15 @@ export const HistoryTable = () => {
   };
 
   const handleDelete = async (id: string, name: string) => {
-    if (!confirm(`¿Estás seguro de que deseas eliminar el historial de "${name}"? \nEsto restablecerá la materia a PENDIENTE.`)) return;
+    setPendingDelete({ id, name });
+    setDeleteError(null);
+  };
 
+  const confirmDelete = async () => {
+    if (!pendingDelete) return;
+    const { id } = pendingDelete;
+    setPendingDelete(null);
     try {
-      // Logic to reset subject. Could be a specific endpoint or just update to PENDIENTE with nulls.
-      // Assuming PATCH supports resetting or we have to manually set nulls.
-      // Usually "Delete history" means reset to initial state.
-
       const response = await authFetch(`${API_URL}/academic-career/subjects/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -170,12 +175,10 @@ export const HistoryTable = () => {
         notes: null
       });
 
-      // Refresh graph to be safe
       const graphData = await fetchAcademicGraph();
       setSubjects(graphData);
-
     } catch (err) {
-      alert("No se pudo eliminar el registro.");
+      setDeleteError('No se pudo eliminar el registro. Intentá de nuevo.');
     }
   };
 
@@ -269,6 +272,44 @@ export const HistoryTable = () => {
 
   return (
     <div className="space-y-6 pb-20">
+
+      {/* Inline Delete Confirmation */}
+      {pendingDelete && (
+        <div className="rounded-xl border border-red-500/50 bg-red-500/10 px-5 py-4 flex flex-col sm:flex-row gap-3 sm:items-center justify-between shadow-subtle animate-in fade-in duration-200">
+          <div className="flex items-start gap-3">
+            <AlertTriangle size={18} className="text-red-400 shrink-0 mt-0.5" />
+            <div>
+              <p className="font-bold text-app text-sm">¿Eliminar historial?</p>
+              <p className="text-xs text-muted mt-0.5">
+                Se borrará el registro de <strong className="text-app">{pendingDelete.name}</strong> y la materia volverá a estado <strong className="text-app">PENDIENTE</strong>.
+              </p>
+            </div>
+          </div>
+          <div className="flex gap-2 shrink-0">
+            <button
+              onClick={() => setPendingDelete(null)}
+              className="px-4 py-1.5 rounded-lg border border-app text-app text-xs font-bold hover:bg-elevated transition-colors"
+            >
+              Cancelar
+            </button>
+            <button
+              onClick={confirmDelete}
+              className="px-4 py-1.5 rounded-lg bg-red-500 text-white text-xs font-bold hover:bg-red-600 transition-colors"
+            >
+              Confirmar Eliminación
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Inline Delete Error */}
+      {deleteError && (
+        <div className="flex items-center gap-2 px-4 py-3 rounded-xl border border-red-500/30 bg-red-500/10 text-red-400 text-sm font-bold">
+          <AlertTriangle size={16} />
+          {deleteError}
+          <button onClick={() => setDeleteError(null)} className="ml-auto text-muted hover:text-app">×</button>
+        </div>
+      )}
 
       {/* Editor Form */}
       <div className={cn(

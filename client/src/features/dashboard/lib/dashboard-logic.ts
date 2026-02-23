@@ -11,22 +11,26 @@ import type {
 
 export type DashboardScope = 'TOTAL' | 'INTERMEDIATE';
 
-export const TOTAL_CAREER_SUBJECTS = 63; // Hardcoded goal
+// 62 materias obligatorias. "Taller de Integración" es la única optativa
+// y no se cuenta aquí — si fue cursada, el total sube a 63 naturalmente
+// por la lógica de filteredSubjects en calculateDashboardData.
+export const TOTAL_CAREER_SUBJECTS = 62; // 62 obligatorias (sin Taller de Integración)
 
 /**
  * Returns the academic quarter (1, 2 or 3) for a given month (0-indexed, JS convention).
- * 
- * Academic year has 3 quarters:
- *   Q1 (1er cuatrimestre): March–July   → months 2–6
- *   Q2 (2do cuatrimestre): Aug–December → months 7–11
- *   Q3 (cuatrimestre de verano): Jan–Feb → months 0–1
- * 
- * Note: Q3 belongs to the *same* calendar year as when it ends (e.g. Feb 2022 = 3C2022).
+ *
+ * UNLAM academic calendar — actas are passed at end of each quarter:
+ *   Q3 (Verano):           Jan–Mar  → months 0–2  (actas en feb/marzo)
+ *   Q1 (1er cuatrimestre): Apr–Aug  → months 3–7  (actas en julio/agosto)
+ *   Q2 (2do cuatrimestre): Sep–Dec  → months 8–11 (actas en nov/diciembre)
+ *
+ * Note: Q3 of year Y is the summer between 2C(Y-1) and 1C(Y).
+ * E.g. 05/03/2022 → Q3 → label "3C2022".
  */
 function getQuarter(month: number): 1 | 2 | 3 {
-    if (month >= 2 && month <= 6) return 1;  // March–July
-    if (month >= 7 && month <= 11) return 2; // August–December
-    return 3; // January–February (summer)
+    if (month >= 0 && month <= 2) return 3;  // Jan–Mar (Verano / 3er cuatrimestre)
+    if (month >= 3 && month <= 7) return 1;  // Apr–Aug (1er cuatrimestre)
+    return 2;                                // Sep–Dec (2do cuatrimestre)
 }
 
 /** Builds the quarter label in format `1C2025` */

@@ -2,12 +2,29 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useAcademicStore } from '../academic/store/academic-store';
 import { buildEdges, getRecommendationsWithReasons } from '../../shared/lib/graph';
 import { fetchAcademicGraph } from '../academic/lib/academic-api';
-import { Lock, Unlock, RotateCcw, Calendar, List, Wand2, Upload, CheckCircle, AlertTriangle } from 'lucide-react';
+import { Lock, Unlock, RotateCcw, Calendar, List, Wand2, Upload, CheckCircle, AlertTriangle, Info, Plus, Trash2 } from 'lucide-react';
 import { UnifiedSchedulePlanner } from '../schedule/components/UnifiedSchedulePlanner';
 import { fetchTimetables, uploadOfertaPdf } from '../schedule/lib/schedule-api';
 import type { TimetableDto, TimePeriod, DayOfWeek, ParsedTimetableOffer } from '../schedule/lib/schedule-api';
+import { SubjectStatus } from '../../shared/types/academic';
 
 const DEFAULT_COUNT = 4;
+const MAX_COUNT = 15;
+
+const DAYS_FOR_MANUAL: { key: DayOfWeek; label: string }[] = [
+  { key: 'MONDAY', label: 'Lunes' },
+  { key: 'TUESDAY', label: 'Martes' },
+  { key: 'WEDNESDAY', label: 'Miércoles' },
+  { key: 'THURSDAY', label: 'Jueves' },
+  { key: 'FRIDAY', label: 'Viernes' },
+  { key: 'SATURDAY', label: 'Sábado' },
+];
+
+const PERIODS_FOR_MANUAL: { key: TimePeriod; label: string }[] = [
+  { key: 'M1', label: 'Mañana (08:00 - 12:00)' },
+  { key: 'T1', label: 'Tarde (14:00 - 18:00)' },
+  { key: 'N1', label: 'Noche (19:00 - 23:00)' },
+];
 
 type ViewMode = 'CALENDAR' | 'LIST';
 
@@ -22,8 +39,15 @@ export const RecommendationsPage = () => {
   const [excludedIds, setExcludedIds] = useState<Set<string>>(new Set());
   const [isLoading, setIsLoading] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [inlineMessage, setInlineMessage] = useState<{ text: string; type: 'success' | 'error' | 'info' } | null>(null);
+  const [scoreInfoOpen, setScoreInfoOpen] = useState(false);
 
   const [viewMode, setViewMode] = useState<ViewMode>('CALENDAR');
+
+  // Manual schedule state
+  const [manualSubjectId, setManualSubjectId] = useState('');
+  const [manualDay, setManualDay] = useState<DayOfWeek>('MONDAY');
+  const [manualPeriod, setManualPeriod] = useState<TimePeriod>('M1');
 
   if (loadError) console.error("Page Load Error:", loadError);
 
@@ -121,7 +145,7 @@ export const RecommendationsPage = () => {
 
   const handleAddTimetable = async (data: { subjectId: string; day: DayOfWeek; period: TimePeriod }) => {
     if (timetables.some(t => t.dayOfWeek === data.day && t.period === data.period)) {
-      alert("Error al guardar horario. Ya existe una materia asignada en este turno.");
+      setInlineMessage({ text: 'Ya existe una materia asignada en ese turno.', type: 'error' });
       return;
     }
 
@@ -140,7 +164,6 @@ export const RecommendationsPage = () => {
   };
 
   const handleRemoveTimetable = async (subjectId: string) => {
-    if (!confirm('¿Eliminar esta materia del horario?')) return;
     saveTimetablesLocal(timetables.filter(t => t.subjectId !== subjectId));
   };
 
@@ -151,19 +174,42 @@ export const RecommendationsPage = () => {
       subjects,
       edges,
       desiredCount,
-      Array.from(excludedIds)
+      Array.from(excludedIds),
+      timetables,
     );
-  }, [subjects, desiredCount, excludedIds]);
+  }, [subjects, desiredCount, excludedIds, timetables]);
 
   const recommendedIds = useMemo(() => new Set(recommendations.map(r => r.subject.id)), [recommendations]);
 
   const handleGeneratePlan = () => {
     const count = parseInt(inputValue, 10);
-    if (!isNaN(count) && count > 0 && count <= 10) {
+    if (!isNaN(count) && count > 0 && count <= MAX_COUNT) {
       setDesiredCount(count);
       setLockedIds(new Set());
       setExcludedIds(new Set());
     }
+  };
+
+  const handleAddManualTimetable = () => {
+    if (!manualSubjectId) return;
+    if (timetables.some(t => t.dayOfWeek === manualDay && t.period === manualPeriod)) {
+      setInlineMessage({ text: 'Ya existe una materia asignada en ese turno.', type: 'error' });
+      return;
+    }
+    const subject = subjects.find(s => s.id === manualSubjectId);
+    const newTimetable: TimetableDto = {
+      id: Math.random().toString(36).substring(7),
+      subjectId: manualSubjectId,
+      dayOfWeek: manualDay,
+      dayLabel: DAYS_FOR_MANUAL.find(d => d.key === manualDay)?.label ?? manualDay,
+      period: manualPeriod,
+      subjectName: subject?.name || 'Materia Desconocida',
+      planCode: subject?.planCode || '',
+    };
+    saveTimetablesLocal([...timetables, newTimetable]);
+    setManualSubjectId('');
+    setInlineMessage({ text: `Horario agregado: ${subject?.name}`, type: 'success' });
+    setTimeout(() => setInlineMessage(null), 3000);
   };
 
   const handleToggleLock = (subjectId: string) => {
@@ -226,7 +272,7 @@ export const RecommendationsPage = () => {
     );
 
     if (emptySlots.length === 0) {
-      alert("No hay horarios disponibles configurados en la pestaña 'Definir Disponibilidad' que estén vacíos.");
+      setInlineMessage({ text: "No hay slots disponibles vacíos. Configurá tu disponibilidad en la grilla primero.", type: 'info' });
       return;
     }
 
@@ -235,21 +281,21 @@ export const RecommendationsPage = () => {
     );
 
     if (unassignedRecommendations.length === 0) {
-      alert("Todas las materias clave ya están asignadas.");
+      setInlineMessage({ text: "Todas las materias recomendadas ya están en el horario.", type: 'info' });
       return;
     }
 
     const newTimetables = [...timetables];
     let addedCount = 0;
     for (const rec of unassignedRecommendations) {
-      if (emptySlots.length === 0) break; // no more space
-      const slot = emptySlots.shift()!; // take first empty slot
+      if (emptySlots.length === 0) break;
+      const slot = emptySlots.shift()!;
       const subject = subjects.find(s => s.id === rec.subject.id);
       newTimetables.push({
         id: Math.random().toString(36).substring(7),
         subjectId: rec.subject.id,
         dayOfWeek: slot.day,
-        dayLabel: slot.day,
+        dayLabel: DAYS_FOR_MANUAL.find(d => d.key === slot.day)?.label ?? slot.day,
         period: slot.period,
         subjectName: subject?.name || 'Materia',
         planCode: subject?.planCode || '',
@@ -259,7 +305,8 @@ export const RecommendationsPage = () => {
 
     if (addedCount > 0) {
       saveTimetablesLocal(newTimetables);
-      alert(`Auto-completado exitoso: se asignaron ${addedCount} materias a slots vacíos.`);
+      setInlineMessage({ text: `Auto-completado: se asignaron ${addedCount} materia${addedCount > 1 ? 's' : ''} a slots vacíos.`, type: 'success' });
+      setTimeout(() => setInlineMessage(null), 4000);
     }
   };
 
@@ -365,15 +412,39 @@ export const RecommendationsPage = () => {
 
       {/* Input Section */}
       <div className="rounded-xl border border-app bg-surface p-5 shadow-subtle">
-        <label htmlFor="count-input" className="block text-xs font-bold text-muted mb-2 uppercase tracking-wider">
-          ¿Cuántas materias querés cursar?
-        </label>
+        <div className="flex items-start justify-between mb-2 gap-2">
+          <label htmlFor="count-input" className="block text-xs font-bold text-muted uppercase tracking-wider">
+            ¿Cuántas materias querés cursar?
+          </label>
+          <button
+            onClick={() => setScoreInfoOpen(v => !v)}
+            className="flex items-center gap-1 text-[10px] font-bold text-muted hover:text-unlam-500 transition-colors border border-app px-2 py-1 rounded-lg"
+          >
+            <Info size={12} /> ¿Cómo se calcula el score?
+          </button>
+        </div>
+
+        {scoreInfoOpen && (
+          <div className="mb-3 rounded-lg bg-app-bg border border-app px-4 py-3 text-xs space-y-1.5 text-muted">
+            <p className="font-bold text-app text-[11px] uppercase tracking-wider mb-2">Cómo se calcula el score</p>
+            <div className="grid gap-1">
+              <p><span className="text-unlam-500 font-bold">+200</span> — ⭐ Es "Proyecto Final" (cuando todas las disponibles tienen score 0)</p>
+              <p><span className="text-unlam-500 font-bold">+100</span> — 📌 Pertenece al Título Intermedio</p>
+              <p><span className="text-unlam-500 font-bold">+80</span>  — 🎯 Desbloquea directamente el Proyecto Final</p>
+              <p><span className="text-unlam-500 font-bold">+50</span>  — 🔥 Está en el Camino Crítico de la carrera</p>
+              <p><span className="text-unlam-500 font-bold">+10</span>  — 🔓 Por cada materia que desbloquea</p>
+              <p><span className="text-unlam-500 font-bold">+10</span>  — 📅 Tiene horario asignado (solo cuando todas llevan score 0)</p>
+              <p className="pt-1 border-t border-app-border/30">Desempate: distancia a las materias finales de la carrera.</p>
+            </div>
+          </div>
+        )}
+
         <div className="flex gap-3 max-w-sm">
           <input
             id="count-input"
             type="number"
             min="1"
-            max="10"
+            max={MAX_COUNT}
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             className="flex-1 px-4 py-2.5 rounded-lg border-2 border-app bg-app-bg text-app font-mono text-lg focus:outline-none focus:ring-2 focus:ring-unlam-500/50 transition-all text-center"
@@ -493,6 +564,114 @@ export const RecommendationsPage = () => {
             </div>
           )}
         </div>
+
+        {/* ── Manual Schedule Loading ── */}
+        {viewMode === 'CALENDAR' && (
+          <div className="space-y-3">
+            <div className="border-b border-app pb-2">
+              <h3 className="text-xl font-bold text-app uppercase tracking-wide">Cargar Horarios Manualmente</h3>
+              <p className="text-xs text-muted mt-1">Alternativa a subir el PDF de oferta. Agrega horarios uno por uno.</p>
+            </div>
+
+            {/* Inline message */}
+            {inlineMessage && (
+              <div className={`flex items-center gap-2 px-4 py-2.5 rounded-lg border text-sm font-bold transition-all ${inlineMessage.type === 'success' ? 'bg-green-500/10 border-green-500/30 text-green-400'
+                  : inlineMessage.type === 'error' ? 'bg-red-500/10 border-red-500/30 text-red-400'
+                    : 'bg-blue-500/10 border-blue-500/30 text-blue-400'
+                }`}>
+                {inlineMessage.type === 'success' ? <CheckCircle size={14} /> : <AlertTriangle size={14} />}
+                {inlineMessage.text}
+                <button onClick={() => setInlineMessage(null)} className="ml-auto text-muted hover:text-app">×</button>
+              </div>
+            )}
+
+            <div className="rounded-xl border border-app bg-surface p-4 shadow-subtle">
+              <div className="grid gap-3 sm:grid-cols-3 items-end">
+                {/* Materia */}
+                <label className="flex flex-col gap-1 text-xs font-bold text-muted uppercase tracking-wider">
+                  Materia
+                  <select
+                    className="bg-app-bg border border-app rounded-lg px-3 py-2 text-app text-sm"
+                    value={manualSubjectId}
+                    onChange={e => setManualSubjectId(e.target.value)}
+                  >
+                    <option value="">— Seleccionar —</option>
+                    {subjects
+                      .filter(s => s.status === SubjectStatus.DISPONIBLE || s.status === SubjectStatus.RECURSADA)
+                      .sort((a, b) => a.name.localeCompare(b.name))
+                      .map(s => (
+                        <option key={s.id} value={s.id}>{s.name}</option>
+                      ))}
+                  </select>
+                </label>
+
+                {/* Día */}
+                <label className="flex flex-col gap-1 text-xs font-bold text-muted uppercase tracking-wider">
+                  Día
+                  <select
+                    className="bg-app-bg border border-app rounded-lg px-3 py-2 text-app text-sm"
+                    value={manualDay}
+                    onChange={e => setManualDay(e.target.value as DayOfWeek)}
+                  >
+                    {DAYS_FOR_MANUAL.map(d => (
+                      <option key={d.key} value={d.key}>{d.label}</option>
+                    ))}
+                  </select>
+                </label>
+
+                {/* Turno */}
+                <label className="flex flex-col gap-1 text-xs font-bold text-muted uppercase tracking-wider">
+                  Turno
+                  <select
+                    className="bg-app-bg border border-app rounded-lg px-3 py-2 text-app text-sm"
+                    value={manualPeriod}
+                    onChange={e => setManualPeriod(e.target.value as TimePeriod)}
+                  >
+                    {PERIODS_FOR_MANUAL.map(p => (
+                      <option key={p.key} value={p.key}>{p.label}</option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+
+              <div className="mt-3 flex justify-end">
+                <button
+                  onClick={handleAddManualTimetable}
+                  disabled={!manualSubjectId}
+                  className="flex items-center gap-2 px-5 py-2 rounded-lg bg-unlam-500 text-black font-bold text-sm disabled:opacity-50 hover:bg-unlam-600 transition-all"
+                >
+                  <Plus size={14} /> Agregar Horario
+                </button>
+              </div>
+
+              {/* List of current manual / loaded timetables */}
+              {timetables.length > 0 && (
+                <div className="mt-4 border-t border-app-border/30 pt-3">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-muted mb-2">Horarios cargados ({timetables.length})</p>
+                  <div className="space-y-1.5 max-h-40 overflow-y-auto">
+                    {timetables.map(t => (
+                      <div key={t.id} className="flex items-center justify-between px-3 py-1.5 bg-app-bg rounded-lg border border-app/30 text-xs">
+                        <span className="font-bold text-app truncate max-w-[60%]">{t.subjectName}</span>
+                        <span className="text-muted font-mono">
+                          {DAYS_FOR_MANUAL.find(d => d.key === t.dayOfWeek)?.label ?? t.dayOfWeek}
+                          {' — '}
+                          {PERIODS_FOR_MANUAL.find(p => p.key === t.period)?.label ?? t.period}
+                        </span>
+                        <button
+                          onClick={() => handleRemoveTimetable(t.subjectId)}
+                          className="ml-2 text-red-400 hover:text-red-500 transition-colors"
+                          title="Eliminar"
+                        >
+                          <Trash2 size={12} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Right Column: Unified Scheduler (Only visible in CALENDAR mode) */}
         {viewMode === 'CALENDAR' && (

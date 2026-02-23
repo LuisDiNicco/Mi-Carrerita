@@ -123,7 +123,8 @@ export const UnifiedSchedulePlanner = ({
             setIsModalOpen(false);
         } catch (error) {
             console.error("Conflict checking / saving error:", error);
-            alert("No se pudo guardar la materia o ya existe un conflicto en este horario.");
+            // Close modal and let parent handle error display via onAddTimetable's error path
+            setIsModalOpen(false);
         }
     };
 

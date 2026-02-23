@@ -66,8 +66,17 @@ function App() {
   }, []);
 
   const stats = useMemo(() => {
-    const total = subjects.length;
-    const approved = subjects.filter((s) => s.status === SubjectStatus.APROBADA).length;
+    // Exclude optional subjects that have no activity (PENDIENTE or DISPONIBLE)
+    // "Taller de Integración" is the only optional — it only counts in the total if it has been started/approved.
+    const inactiveOptionalStatuses: string[] = [SubjectStatus.PENDIENTE, SubjectStatus.DISPONIBLE];
+    const countableSubjects = subjects.filter(
+      (s) => !s.isOptional || !inactiveOptionalStatuses.includes(s.status)
+    );
+    const total = countableSubjects.length;
+    // EQUIVALENCIA counts as approved (same as APROBADA)
+    const approved = countableSubjects.filter(
+      (s) => s.status === SubjectStatus.APROBADA || s.status === SubjectStatus.EQUIVALENCIA
+    ).length;
     const inProgress = subjects.filter((s) => s.status === SubjectStatus.EN_CURSO).length;
     const available = subjects.filter((s) => s.status === SubjectStatus.DISPONIBLE).length;
     return { total, approved, inProgress, available };
