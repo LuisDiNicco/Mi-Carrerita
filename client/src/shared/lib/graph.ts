@@ -304,6 +304,12 @@ export function getRecommendationsWithReasons(
     const distance = distanceToSink.get(subject.id) ?? 0;
     score += distance * 0.1;
 
+    // Penalización: materias optativas tienen prioridad mínima
+    if (subject.isOptional) {
+      score -= 1000;
+      reasons.push('⚠️ Materia Optativa (baja prioridad)');
+    }
+
     return {
       subject,
       reasons,

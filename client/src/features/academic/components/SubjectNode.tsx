@@ -10,6 +10,11 @@ type SubjectNodeData = {
   isCritical?: boolean;
   isRecentlyUpdated?: boolean;
   isFocused?: boolean;
+  // Hover highlighting flags
+  isPrerequisite?: boolean;   // ancestor of hovered node — orange
+  isFullUnlock?: boolean;     // this node fully unlocked by hovered — green
+  isPartialUnlock?: boolean;  // partially unlocked by hovered — yellow
+  isHoveredNode?: boolean;    // the node being hovered — white/bright ring
 };
 
 export type SubjectNodeType = Node<SubjectNodeData, 'subject'>;
@@ -83,6 +88,11 @@ const SubjectNodeComponent = ({ data, selected }: NodeProps<SubjectNodeType>) =>
   const isCritical = Boolean(data.isCritical);
   const isRecentlyUpdated = Boolean(data.isRecentlyUpdated);
   const isFocused = Boolean(data.isFocused);
+  const isPrerequisite = Boolean((data as any).isPrerequisite);
+  const isFullUnlock = Boolean((data as any).isFullUnlock);
+  const isPartialUnlock = Boolean((data as any).isPartialUnlock);
+  const isHoveredNode = Boolean((data as any).isHoveredNode);
+  const isHighlighted = isPrerequisite || isFullUnlock || isPartialUnlock || isHoveredNode;
 
   // The tooltip scale scales naturally with the node.
 
@@ -114,11 +124,16 @@ const SubjectNodeComponent = ({ data, selected }: NodeProps<SubjectNodeType>) =>
           statusConfig.border,
           isCritical && 'border-red-400 critical-glow',
           isFocused && 'ring-4 ring-red-400/60',
-          subject.status === SubjectStatus.PENDIENTE && 'opacity-60',
+          subject.status === SubjectStatus.PENDIENTE && !isHighlighted && 'opacity-60',
           subject.status === SubjectStatus.DISPONIBLE && 'ring-2 ring-yellow-300/40',
           subject.status === SubjectStatus.APROBADA && 'ring-2 ring-green-300/40',
           subject.status === SubjectStatus.EQUIVALENCIA && 'ring-2 ring-purple-300/40',
-          isRecentlyUpdated && 'subject-update-flash subject-update-fill'
+          isRecentlyUpdated && 'subject-update-flash subject-update-fill',
+          // Hover highlights override all other rings
+          isHoveredNode && 'ring-4 ring-white/80 scale-105 z-50 shadow-lg',
+          isPrerequisite && '!ring-4 !ring-orange-400/90 opacity-100',
+          isFullUnlock && '!ring-4 !ring-green-400/90 opacity-100',
+          isPartialUnlock && '!ring-4 !ring-yellow-300/90 opacity-90',
         )}
       >
         <div className="flex items-center justify-between mb-2">
@@ -205,7 +220,11 @@ export const SubjectNode = memo(SubjectNodeComponent, (prevProps, nextProps) => 
     prevProps.data.isRecentlyUpdated === nextProps.data.isRecentlyUpdated &&
     prevProps.data.isFocused === nextProps.data.isFocused &&
     prevProps.data.subject.status === nextProps.data.subject.status &&
-    prevProps.data.subject.grade === nextProps.data.subject.grade
+    prevProps.data.subject.grade === nextProps.data.subject.grade &&
+    (prevProps.data as any).isPrerequisite === (nextProps.data as any).isPrerequisite &&
+    (prevProps.data as any).isFullUnlock === (nextProps.data as any).isFullUnlock &&
+    (prevProps.data as any).isPartialUnlock === (nextProps.data as any).isPartialUnlock &&
+    (prevProps.data as any).isHoveredNode === (nextProps.data as any).isHoveredNode
   );
 });
 

@@ -84,11 +84,36 @@ export function formatGrade(grade: number | null): string {
 }
 
 /**
- * Formatear fecha YYYY-MM-DD a formato legible
+ * Formatear fecha YYYY-MM-DD a formato legible DD/MM/YYYY
  */
 export function formatDate(date: string | null | undefined): string {
-  if (!date) return "—";
-  return new Date(date + "T00:00:00").toLocaleDateString("es-AR");
+  if (!date) return '—';
+  return new Date(date + 'T00:00:00').toLocaleDateString('es-AR');
+}
+
+/**
+ * Convert a DD/MM/YYYY user input string to ISO format YYYY-MM-DD for the API.
+ * Returns empty string if the input is invalid.
+ */
+export function toISODate(ddmmyyyy: string): string {
+  if (!ddmmyyyy) return '';
+  const parts = ddmmyyyy.split('/');
+  if (parts.length !== 3) return '';
+  const [dd, mm, yyyy] = parts;
+  if (!dd || !mm || !yyyy || yyyy.length < 4) return '';
+  return `${yyyy}-${mm.padStart(2, '0')}-${dd.padStart(2, '0')}`;
+}
+
+/**
+ * Convert an ISO date string YYYY-MM-DD to DD/MM/YYYY for display in inputs.
+ * Returns empty string if the input is falsy.
+ */
+export function fromISODate(iso: string | null | undefined): string {
+  if (!iso) return '';
+  const parts = iso.split('-');
+  if (parts.length !== 3) return iso;
+  const [yyyy, mm, dd] = parts;
+  return `${dd}/${mm}/${yyyy}`;
 }
 
 /**

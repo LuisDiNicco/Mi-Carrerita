@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useAcademicStore } from '../store/academic-store';
-import { formatDate, formatGrade } from '../../../shared/lib/utils';
+import { formatDate, formatGrade, fromISODate, toISODate } from '../../../shared/lib/utils';
 import { authFetch } from '../../auth/lib/api';
 import { fetchAcademicGraph } from '../lib/academic-api';
 import { SubjectStatus } from '../../../shared/types/academic';
 import { Search, ArrowUpDown, Edit2, Trash2, X, AlertTriangle, Upload, Calendar } from 'lucide-react';
 import { cn } from '../../../shared/lib/utils';
+import { RetroCalendar } from '../../../shared/ui';
 import { uploadHistoriaPdf, batchSaveHistory } from '../lib/academic-api';
 import type { ParsedAcademicRecord, BatchAcademicRecordPayload } from '../lib/academic-api';
 import { PdfPreviewModal } from './PdfPreviewModal';
@@ -19,7 +20,7 @@ const STATUS_OPTIONS = [
   { label: 'Recursada', value: SubjectStatus.RECURSADA },
 ];
 
-type SortKey = 'date' | 'name' | 'grade' | 'planCode' | 'year';
+type SortKey = 'date' | 'name' | 'grade' | 'planCode' | 'year' | 'difficulty';
 type SortDirection = 'asc' | 'desc';
 
 export const HistoryTable = () => {
@@ -37,6 +38,7 @@ export const HistoryTable = () => {
   const [notes, setNotes] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
   // PDF Upload State
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -72,6 +74,7 @@ export const HistoryTable = () => {
         planCode: subject.planCode,
         year: subject.year,
         grade: subject.grade,
+        difficulty: subject.difficulty ?? null,
         status: subject.status,
         notes: subject.notes ?? '',
         rawSubject: subject,
@@ -133,9 +136,9 @@ export const HistoryTable = () => {
     setSubjectId(s.id);
     setStatus(s.status);
     setGrade(s.grade !== null ? String(s.grade) : '');
-    setDifficulty(s.difficulty !== null ? String(s.difficulty) : '');
-    // Ensure date format YYYY-MM-DD
-    const dateStr = s.statusDate ? new Date(s.statusDate).toISOString().split('T')[0] : '';
+    setDifficulty(s.difficulty !== null && s.difficulty !== undefined ? String(s.difficulty) : '');
+    // Convert ISO date to DD/MM/YYYY for the input
+    const dateStr = s.statusDate ? fromISODate(new Date(s.statusDate).toISOString().split('T')[0]) : '';
     setStatusDate(dateStr);
     setNotes(s.notes || '');
 
@@ -187,24 +190,42 @@ export const HistoryTable = () => {
     setIsSaving(true);
     setError(null);
     try {
+      // === Validations (same as SubjectUpdatePanel) ===
+      if (status === SubjectStatus.APROBADA && grade.trim() === '') {
+        setError('La nota es obligatoria para materias Aprobadas.');
+        setIsSaving(false);
+        return;
+      }
+      if (grade.trim() !== '') {
+        const g = Number(grade);
+        if (Number.isNaN(g) || g < 1 || g > 10) {
+          setError('La nota debe ser un número entre 1 y 10.');
+          setIsSaving(false);
+          return;
+        }
+      }
+      if (difficulty.trim() !== '') {
+        const d = Number(difficulty);
+        if (Number.isNaN(d) || d < 1 || d > 100) {
+          setError('La dificultad debe ser un número entre 1 y 100.');
+          setIsSaving(false);
+          return;
+        }
+      }
+      // =============================================
+
       const gradeValue = grade.trim() === '' ? null : Number(grade);
       const normalizedGrade = Number.isNaN(gradeValue ?? NaN) ? null : gradeValue;
-      // Validate Grade vs Status
-      if (status === SubjectStatus.APROBADA && normalizedGrade === null) {
-        // Allow it, but maybe warn? Or strict?
-        // Let's allow flexibility but generally Approved should have grade.
-      }
-
       const difficultyValue = difficulty.trim() === '' ? null : Number(difficulty);
       const normalizedDifficulty = Number.isNaN(difficultyValue ?? NaN) ? null : difficultyValue;
-      const statusDateValue = statusDate.trim() === '' ? null : statusDate;
+      // Convert DD/MM/YYYY → ISO for API
+      const isoDate = statusDate.trim() === '' ? null : toISODate(statusDate);
+      const statusDateValue = isoDate || null;
       const notesValue = notes.trim() === '' ? null : notes.trim();
 
       const response = await authFetch(`${API_URL}/academic-career/subjects/${subjectId}`, {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           status,
           grade: normalizedGrade,
@@ -215,7 +236,8 @@ export const HistoryTable = () => {
       });
 
       if (!response.ok) {
-        throw new Error('No se pudo guardar el registro.');
+        const body = await response.json().catch(() => null);
+        throw new Error(body?.message || 'No se pudo guardar el registro.');
       }
 
       updateSubject(subjectId, {
@@ -387,7 +409,7 @@ export const HistoryTable = () => {
           </label>
 
           <label className="flex flex-col gap-2 text-sm text-muted">
-            Fecha
+            Fecha (DD/MM/YYYY)
             <div className="relative flex items-center">
               <input
                 type="text"
@@ -395,28 +417,28 @@ export const HistoryTable = () => {
                 className="w-full bg-surface border border-app rounded-lg pl-3 pr-10 py-2 text-app focus:ring-1 focus:ring-unlam-500 outline-none transition-all placeholder:text-muted/50 font-mono text-sm"
                 value={statusDate}
                 onChange={(event) => {
-                  let val = event.target.value.replace(/[^\d-]/g, '');
-                  setStatusDate(val);
+                  let val = event.target.value.replace(/[^\d]/g, '');
+                  if (val.length > 2) val = val.slice(0, 2) + '/' + val.slice(2);
+                  if (val.length > 5) val = val.slice(0, 5) + '/' + val.slice(5);
+                  setStatusDate(val.slice(0, 10));
                 }}
-                placeholder="YYYY-MM-DD"
+                placeholder="DD/MM/YYYY"
               />
               <button
                 type="button"
+                onClick={() => setIsCalendarOpen(!isCalendarOpen)}
                 className="absolute right-2 p-1 text-muted hover:text-unlam-500 transition-colors cursor-pointer bg-surface rounded"
-                onClick={(e) => {
-                  const dateInput = e.currentTarget.nextElementSibling as HTMLInputElement;
-                  if (dateInput && dateInput.showPicker) {
-                    try { dateInput.showPicker(); } catch (err) { }
-                  }
-                }}
+                title="Abrir calendario"
               >
                 <Calendar size={16} />
               </button>
-              <input
-                type="date"
-                className="absolute right-4 bottom-0 top-0 w-0 h-0 opacity-0 pointer-events-none"
-                onChange={(e) => setStatusDate(e.target.value)}
-              />
+              {isCalendarOpen && (
+                <RetroCalendar
+                  value={statusDate}
+                  onChange={setStatusDate}
+                  onClose={() => setIsCalendarOpen(false)}
+                />
+              )}
             </div>
           </label>
 
@@ -538,6 +560,12 @@ export const HistoryTable = () => {
                 >
                   <div className="flex items-center justify-center gap-1">Nota {sortConfig.key === 'grade' && <ArrowUpDown size={12} className="text-unlam-500" />}</div>
                 </th>
+                <th
+                  className="py-3 px-4 font-medium cursor-pointer hover:text-app transition-colors select-none group w-20 text-center"
+                  onClick={() => handleSort('difficulty')}
+                >
+                  <div className="flex items-center justify-center gap-1">Dific. {sortConfig.key === 'difficulty' && <ArrowUpDown size={12} className="text-unlam-500" />}</div>
+                </th>
                 <th className="py-3 px-4 font-medium">Comentario</th>
                 <th className="py-3 px-4 font-medium text-right">Acciones</th>
               </tr>
@@ -545,7 +573,7 @@ export const HistoryTable = () => {
             <tbody className="divide-y divide-app/10">
               {filteredAndSortedRows.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="py-12 text-center text-muted">
+                  <td colSpan={9} className="py-12 text-center text-muted">
                     No se encontraron registros.
                   </td>
                 </tr>
@@ -569,6 +597,16 @@ export const HistoryTable = () => {
                       </span>
                     </td>
                     <td className="py-3 px-4 text-app font-bold font-mono text-center">{formatGrade(row.grade)}</td>
+                    <td className="py-3 px-4 text-center">
+                      {row.difficulty !== null && row.difficulty !== undefined ? (
+                        <span className={cn(
+                          'inline-block px-2 py-0.5 rounded text-[10px] font-bold font-mono',
+                          row.difficulty >= 67 ? 'bg-red-500/10 text-red-400' :
+                            row.difficulty >= 34 ? 'bg-yellow-500/10 text-yellow-400' :
+                              'bg-green-500/10 text-green-400'
+                        )}>{row.difficulty}</span>
+                      ) : <span className="text-muted">—</span>}
+                    </td>
                     <td className="py-3 px-4 relative max-w-[200px] group/tooltip">
                       <div className="truncate text-xs text-muted">
                         {row.notes || '—'}

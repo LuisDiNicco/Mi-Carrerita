@@ -69,6 +69,8 @@ export const CareerGraph = ({ progress, stats }: CareerGraphProps) => {
     handleSaveSubject,
     yearSeparatorNodes,
     refetch,
+    hoveredSubjectId,
+    handleNodeHover,
   } = useCareerGraph();
 
   const graphNodes = useMemo(
@@ -163,6 +165,11 @@ export const CareerGraph = ({ progress, stats }: CareerGraphProps) => {
                 setIsPanelOpen(true);
               }
             }}
+            onNodeMouseEnter={(_, node) => {
+              const subject = (node.data as { subject?: Subject }).subject;
+              if (subject) handleNodeHover(subject.id);
+            }}
+            onNodeMouseLeave={() => handleNodeHover(null)}
           >
             <Background
               color={BACKGROUND_CONFIG.color}
@@ -179,6 +186,27 @@ export const CareerGraph = ({ progress, stats }: CareerGraphProps) => {
                      !font-retro"
               showInteractive={false}
             />
+
+            {/* Hover Legend */}
+            {hoveredSubjectId && (
+              <Panel position="bottom-left">
+                <div className="bg-surface/95 border border-app rounded-xl px-4 py-3 shadow-retro text-xs font-retro space-y-1.5 backdrop-blur-sm">
+                  <p className="text-muted uppercase tracking-wider text-[10px] font-bold mb-2">Leyenda de hover</p>
+                  <div className="flex items-center gap-2">
+                    <span className="inline-block w-3 h-3 rounded-full ring-2 ring-orange-400 bg-transparent"></span>
+                    <span className="text-app">Prerequisito (necesario)</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="inline-block w-3 h-3 rounded-full ring-2 ring-green-400 bg-transparent"></span>
+                    <span className="text-app">Desbloqueo total</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="inline-block w-3 h-3 rounded-full ring-2 ring-yellow-300 bg-transparent"></span>
+                    <span className="text-app">Desbloqueo parcial</span>
+                  </div>
+                </div>
+              </Panel>
+            )}
 
             {showMinimap && (
               <MiniMap

@@ -335,56 +335,53 @@ export class TrophyService implements OnModuleInit {
 
     // Define criteria evaluation
     // Notas van de 0 a 10 (no de 0 a 100). Thresholds ajustados correctamente.
+    const passedRecords = records.filter(
+      (r) => r.status === SubjectStatus.APROBADA || r.status === SubjectStatus.EQUIVALENCIA,
+    );
+
     const criteriaMap: Record<string, boolean> = {
+      // BRONZE
       FIRST_SUBJECT_COMPLETED: completedSubjects.length >= 1,
-      THREE_SUBJECT_STREAK: completedSubjects.length >= 3,
-      PERFECT_SCORE_100: records.some((r) => r.finalGrade === 10), // nota máxima = 10
+      PERFECT_SCORE_10: records.some((r) => r.finalGrade === 10),        // nota máxima = 10
+      TEN_SUBJECTS_PASSED: passedRecords.length >= 10,
       YEAR_1_COMPLETION: this.checkYearCompletion(records, 1),
-      DIFFICULT_SUBJECT_PASSED: completedSubjects.some(
-        (r) => r.difficulty! >= 8,
-      ),
-      ALL_OPTIONALS_COMPLETED: this.checkAllOptionalsCompleted(records),
-      SEMESTER_AVERAGE_90: this.checkSemesterAverage90(records),
-      YEAR_NO_FAILURES: this.checkYearNoFailures(records),
-      TEN_SUBJECTS_PASSED: completedSubjects.length >= 10,
-      EARLY_BIRD: this.checkEarlyBird(records),
-      CONSISTENCY_BRONZE: this.checkConsistency(records, 5),
-      AVERAGE_80_OVERALL: this.checkOverallAverage(records, 8),   // 8/10
-      MIXED_STATUS_PASS: this.checkMixedStatus(records),
       YEAR_2_COMPLETION: this.checkYearCompletion(records, 2),
+      DIFFICULT_SUBJECT_PASSED: passedRecords.some((r) => (r.difficulty ?? 0) >= 80),
       HOURS_100_COMPLETED: this.checkHoursCompleted(records, 100),
+      CONSISTENCY_BRONZE: this.checkConsistency(records, 4),
+      AVERAGE_80_OVERALL: this.checkOverallAverage(records, 8),          // 8/10
+      SEMESTER_AVERAGE_NINE: this.checkSemesterAverageThreshold(records, 9), // 9/10
+      MIXED_STATUS_PASS: this.checkMixedStatus(records),
+      SUMMER_WARRIOR: this.checkSummerWarrior(records),
+      DIFFICULTY_RESEARCHER: records.filter((r) => r.difficulty !== null && r.difficulty !== undefined).length >= 5,
+      DIVERSIFIED_YEARS: this.checkDiversifiedYears(passedRecords),
+      ALL_OPTIONALS_COMPLETED: this.checkAllOptionalsCompleted(records),
 
       // SILVER
       HALFWAY_COMPLETION: completionPercentage >= 50,
-      TWO_SEMESTERS_CLEAN: this.checkConsecutiveCleanSemesters(records, 2),
-      MASTER_OF_BALANCE: this.checkOverallAverage(records, 8),    // 8/10
       INTERMEDIATE_DEGREE: this.checkIntermediateDegree(records),
       CONSISTENCY_SILVER: this.checkConsistency(records, 8),
-      PERFECT_SEMESTER: this.checkPerfectSemester(records),
-      HIGH_DIFFICULTY_MASTERY:
-        completedSubjects.filter((r) => r.difficulty! >= 7).length >= 5,
+      HIGH_DIFFICULTY_MASTERY: passedRecords.filter((r) => (r.difficulty ?? 0) >= 70).length >= 5,
       QUICK_PROGRESS: this.checkQuickProgress(records),
-      EXCELLENCE_85_PLUS: this.checkOverallAverage(records, 8.5), // 8.5/10
-      STRATEGIC_PLANNING: completedSubjects.length >= 20,
+      EXCELLENCE_85_PLUS: this.checkOverallAverage(records, 8.5),        // 8.5/10
+      YEAR_3_COMPLETION: this.checkYearCompletion(records, 3),
+      GROWING_AVERAGE: this.checkGrowingAverage(records, 3),
+      HOURS_200_COMPLETED: this.checkHoursCompleted(records, 200),
+      ALL_ENGLISH_COMPLETED: this.checkAllEnglishCompleted(records),
 
       // GOLD
-      CAREER_COMPLETION: completionPercentage >= 100,
-      PERFECT_AVERAGE: this.checkOverallAverage(records, 9),      // 9/10
-      SPEED_RUNNER: this.checkSpeedRunner(records, completionPercentage),
-      FLAWLESS_EXECUTION:
-        completedSubjects.length >= context.totalSubjects * 0.9,
+      YEAR_4_COMPLETION: this.checkYearCompletion(records, 4),
+      PERFECT_AVERAGE: this.checkOverallAverage(records, 9),             // 9/10
       CONSISTENT_EXCELLENCE: this.checkConsistentExcellence(records),
-      CHALLENGE_ACCEPTED: this.checkChallengeAccepted(records),
-      MARATHON_CHAMPION: this.checkHoursCompleted(records, 200),
+      CHALLENGE_ACCEPTED: passedRecords.filter((r) => (r.difficulty ?? 0) >= 70).length >= 10,
+      MARATHON_CHAMPION: this.checkHoursCompleted(records, 350),
+      CONSISTENCY_GOLD: this.checkConsistency(records, 12),
+      CAREER_COMPLETION: completionPercentage >= 100,
 
       // PLATINUM
       LEGEND:
         completionPercentage >= 100 &&
-        this.checkOverallAverage(records, 9) && // 9/10
-        records.filter((r) =>
-          r.status !== SubjectStatus.APROBADA &&
-          r.status !== SubjectStatus.EQUIVALENCIA
-        ).length === 0,
+        this.checkOverallAverage(records, 9),                            // 9/10, no retake requirement
     };
 
     return criteriaMap[code] ?? false;
@@ -445,8 +442,12 @@ export class TrophyService implements OnModuleInit {
     );
   }
 
-  private checkSemesterAverage90(
+  /**
+   * Check if any semester average reaches the given threshold (1-10 scale)
+   */
+  private checkSemesterAverageThreshold(
     records: AcademicRecordWithSubject[],
+    threshold: number,
   ): boolean {
     const semesterGroups = this.groupBySemester(records);
     for (const semesterRecords of semesterGroups.values()) {
@@ -454,24 +455,14 @@ export class TrophyService implements OnModuleInit {
         .map((r) => r.finalGrade)
         .filter((grade): grade is number => typeof grade === 'number');
       if (grades.length === 0) continue;
-      const average =
-        grades.reduce((sum, grade) => sum + grade, 0) / grades.length;
-      if (average >= 9) { // 9/10 (notas van de 0 a 10)
-        return true;
-      }
+      const average = grades.reduce((sum, grade) => sum + grade, 0) / grades.length;
+      if (average >= threshold) return true;
     }
     return false;
   }
 
+  /** @deprecated No failure tracking available. Left as stub for backward compat. */
   private checkYearNoFailures(records: AcademicRecordWithSubject[]): boolean {
-    const yearGroups = this.groupByYear(records);
-    for (const yearRecords of yearGroups.values()) {
-      if (yearRecords.length === 0) continue;
-      const allPassed = yearRecords.every((r) => this.isPassed(r));
-      if (allPassed) {
-        return true;
-      }
-    }
     return false;
   }
 
@@ -712,14 +703,65 @@ export class TrophyService implements OnModuleInit {
   }
 
   /**
-   * Check Challenge Accepted: Pass 3+ hard subjects (difficulty >= 8)
+   * Check SUMMER_WARRIOR: ≥1 subject approved in a summer semester (Q3)
    */
-  private checkChallengeAccepted(
+  private checkSummerWarrior(records: AcademicRecordWithSubject[]): boolean {
+    return records.some((r) => {
+      if (!this.isPassed(r) || !r.statusDate) return false;
+      const month = new Date(r.statusDate).getMonth() + 1; // 1-12
+      // December/January/February → summer in southern hemisphere
+      return month === 12 || month === 1 || month === 2;
+    });
+  }
+
+  /**
+   * Check DIVERSIFIED_YEARS: approvals across 4+ different plan years
+   */
+  private checkDiversifiedYears(passedRecords: AcademicRecordWithSubject[]): boolean {
+    const years = new Set(passedRecords.map((r) => r.subject.year));
+    return years.size >= 4;
+  }
+
+  /**
+   * Check GROWING_AVERAGE: rising semester average for N consecutive semesters
+   */
+  private checkGrowingAverage(
     records: AcademicRecordWithSubject[],
+    minConsecutive: number,
   ): boolean {
-    const hardSubjects = records.filter((r) => (r.difficulty ?? 0) >= 8);
-    return (
-      hardSubjects.length >= 3 && hardSubjects.every((r) => this.isPassed(r))
+    const semesterGroups = this.groupBySemester(records);
+    const sorted = Array.from(semesterGroups.entries())
+      .map(([key, recs]) => ({
+        index: this.semesterIndex(key),
+        avg: (() => {
+          const grades = recs
+            .map((r) => r.finalGrade)
+            .filter((g): g is number => typeof g === 'number' && g > 0);
+          return grades.length > 0 ? grades.reduce((a, b) => a + b, 0) / grades.length : null;
+        })(),
+      }))
+      .filter((s) => s.avg !== null)
+      .sort((a, b) => a.index - b.index);
+
+    let streak = 1;
+    for (let i = 1; i < sorted.length; i++) {
+      if (sorted[i].avg! > sorted[i - 1].avg!) {
+        streak++;
+        if (streak >= minConsecutive) return true;
+      } else {
+        streak = 1;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Check ALL_ENGLISH_COMPLETED: all 4 English Transversal subjects approved
+   */
+  private checkAllEnglishCompleted(records: AcademicRecordWithSubject[]): boolean {
+    const ENGLISH_CODES = ['901', '902', '903', '904'];
+    return ENGLISH_CODES.every((code) =>
+      records.some((r) => r.subject.planCode === code && this.isPassed(r)),
     );
   }
 

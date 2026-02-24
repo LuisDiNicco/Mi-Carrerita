@@ -29,6 +29,8 @@ export const useAuthStore = create<AuthState>((set) => ({
     localStorage.removeItem(STORAGE_KEY);
     localStorage.setItem(GUEST_KEY, "true");
     set({ user: null, isGuest: true });
+    // Emit event for global cleanup (e.g., academic store)
+    window.dispatchEvent(new Event('auth:logout'));
   },
   continueAsGuest: () => {
     localStorage.removeItem(STORAGE_KEY);

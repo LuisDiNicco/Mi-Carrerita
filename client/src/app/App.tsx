@@ -43,6 +43,17 @@ function App() {
     hydrateAuth();
   }, [hydrateAuth]);
 
+  // Listen for logout event to clean up academic store
+  useEffect(() => {
+    const handleLogout = () => {
+      const { clearSubjects } = useAcademicStore.getState();
+      clearSubjects();
+    };
+
+    window.addEventListener('auth:logout', handleLogout);
+    return () => window.removeEventListener('auth:logout', handleLogout);
+  }, []);
+
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const accessToken = params.get('access_token');
@@ -66,11 +77,11 @@ function App() {
   }, []);
 
   const stats = useMemo(() => {
-    // Exclude optional subjects that have no activity (PENDIENTE or DISPONIBLE)
-    // "Taller de Integración" is the only optional — it only counts in the total if it has been started/approved.
-    const inactiveOptionalStatuses: string[] = [SubjectStatus.PENDIENTE, SubjectStatus.DISPONIBLE];
+    // Only count non-optional subjects (62 mandatory: 59 + 3 electivas).
+    // Taller de Integración is optional (isOptional:true) and only counts when active.
+    const inactiveStatuses: string[] = [SubjectStatus.PENDIENTE, SubjectStatus.DISPONIBLE];
     const countableSubjects = subjects.filter(
-      (s) => !s.isOptional || !inactiveOptionalStatuses.includes(s.status)
+      (s) => !s.isOptional || !inactiveStatuses.includes(s.status)
     );
     const total = countableSubjects.length;
     // EQUIVALENCIA counts as approved (same as APROBADA)

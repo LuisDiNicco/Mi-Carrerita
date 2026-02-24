@@ -108,7 +108,7 @@ export const AppHeader = ({
                   <span className={`transition-transform ${menuOpen ? 'rotate-180' : ''}`}>▾</span>
                 </button>
                 {menuOpen && (
-                  <div className="absolute right-0 mt-2 w-60 rounded-lg border-2 border-app-border bg-app-bg p-4 shadow-retro">
+                  <div className="absolute right-0 mt-2 w-60 rounded-lg border-2 border-app-border bg-elevated p-4 shadow-retro">
                     <p className="text-xs uppercase tracking-wider text-muted">Sesión activa</p>
                     <p className="mt-2 text-sm font-medium text-app">{userName}</p>
                     <div className="mt-4 space-y-2">
@@ -214,7 +214,7 @@ export const AppHeader = ({
                     Cambiar cuenta
                   </button>
                   <button
-                    className="w-full rounded-lg border-2 border-app-border bg-app-bg px-4 py-2 text-sm font-medium text-app"
+                    className="w-full rounded-lg border-2 border-app-border bg-elevated px-4 py-2 text-sm font-medium text-app"
                     onClick={() => {
                       onLogout();
                       setMobileMenuOpen(false);

@@ -5,6 +5,27 @@ const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 const REFRESH_ENDPOINT = `${API_URL}/auth/refresh`;
 let refreshPromise: Promise<string | null> | null = null;
 
+function extractApiMessage(payload: unknown, fallback: string): string {
+  if (typeof payload === 'string' && payload.trim().length > 0) {
+    return payload;
+  }
+
+  if (Array.isArray(payload)) {
+    const messages = payload
+      .map((item) => (typeof item === 'string' ? item : ''))
+      .filter(Boolean);
+    if (messages.length > 0) {
+      return messages.join(' ');
+    }
+  }
+
+  if (payload && typeof payload === 'object' && 'message' in payload) {
+    return extractApiMessage((payload as { message?: unknown }).message, fallback);
+  }
+
+  return fallback;
+}
+
 async function refreshAccessToken(): Promise<string | null> {
   try {
     const response = await fetch(REFRESH_ENDPOINT, {
@@ -72,4 +93,66 @@ export async function authFetch(
     headers: retryHeaders,
     credentials: "include",
   });
+}
+/**
+ * Register a new user with email and password
+ */
+export async function registerUser(dto: {
+  email: string;
+  password: string;
+  name?: string;
+}): Promise<{ accessToken: string; user: { id: string; email: string; name?: string | null; avatarUrl?: string | null } }> {
+  const response = await fetch(`${API_URL}/auth/register`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(dto),
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => null);
+    throw new Error(
+      extractApiMessage(
+        errorData,
+        'No se pudo crear la cuenta. Revisá los datos e intentá nuevamente.',
+      ),
+    );
+  }
+
+  const data = await response.json();
+  setAccessToken(data.accessToken);
+  return data;
+}
+
+/**
+ * Login user with email and password
+ */
+export async function loginUser(dto: {
+  email: string;
+  password: string;
+}): Promise<{ accessToken: string; user: { id: string; email: string; name?: string | null; avatarUrl?: string | null } }> {
+  const response = await fetch(`${API_URL}/auth/login`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(dto),
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => null);
+    throw new Error(
+      extractApiMessage(
+        errorData,
+        'No se pudo iniciar sesión. Verificá tu correo y contraseña.',
+      ),
+    );
+  }
+
+  const data = await response.json();
+  setAccessToken(data.accessToken);
+  return data;
 }

@@ -5,6 +5,7 @@ interface AcademicState {
   subjects: Subject[];
   setSubjects: (subjects: Subject[]) => void;
   updateSubject: (subjectId: string, patch: Partial<Subject>) => void;
+  clearSubjects: () => void;
 }
 
 export const useAcademicStore = create<AcademicState>((set) => ({
@@ -16,4 +17,5 @@ export const useAcademicStore = create<AcademicState>((set) => ({
         subject.id === subjectId ? { ...subject, ...patch } : subject,
       ),
     })),
+  clearSubjects: () => set({ subjects: [] }),
 }));

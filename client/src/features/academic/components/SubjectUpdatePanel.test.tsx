@@ -141,7 +141,7 @@ describe('SubjectUpdatePanel', () => {
         expect(mockOnSave).not.toHaveBeenCalled();
     });
 
-    it('debería guardar la fecha limpiando el timezone', async () => {
+    it('debería mostrar fecha en formato DD/MM/YYYY y guardar en ISO', async () => {
         render(
             <SubjectUpdatePanel
                 subject={mockApprovedSubject}
@@ -151,18 +151,113 @@ describe('SubjectUpdatePanel', () => {
             />
         );
 
-        // mockApprovedSubject entered with 2023-12-10T00:00:00.000Z
-        // Status Date input is the input[maxLength="10"]
+        // The input should now show DD/MM/YYYY (the new user-facing format)
+        // mockApprovedSubject has statusDate: '2023-12-10T00:00:00.000Z'
+        // fromISODate('2023-12-10') → '10/12/2023'
         const inputs = screen.getAllByRole('textbox');
         const dateInput = inputs.find(i => (i as HTMLInputElement).maxLength === 10) as HTMLInputElement;
-        expect(dateInput.value).toBe('2023-12-10');
+        expect(dateInput.value).toBe('10/12/2023');
 
         fireEvent.click(screen.getByText('Guardar Cambios'));
 
+        // The API call should receive ISO format '2023-12-10'
         await waitFor(() => {
             expect(mockOnSave).toHaveBeenCalledWith(expect.objectContaining({
                 statusDate: '2023-12-10',
             }));
         });
+    });
+
+    it('debería cerrar la confirmación al hacer clic en Regresar', async () => {
+        render(
+            <SubjectUpdatePanel
+                subject={mockPendingSubject}
+                isOpen={true}
+                onClose={mockOnClose}
+                onSave={mockOnSave}
+            />
+        );
+
+        const select = screen.getByRole('combobox');
+        fireEvent.change(select, { target: { value: SubjectStatus.EN_CURSO } });
+
+        const saveButton = screen.getByText('Guardar Cambios');
+        fireEvent.click(saveButton);
+
+        // Confirm dialog is open
+        expect(await screen.findByText('¿Forzar Cambio?')).toBeInTheDocument();
+
+        // Click Regresar
+        const regresoButton = screen.getByText('Regresar');
+        fireEvent.click(regresoButton);
+
+        // Dialog should close, showing the form again
+        await waitFor(() => {
+            expect(screen.queryByText('¿Forzar Cambio?')).not.toBeInTheDocument();
+        });
+        expect(mockOnSave).not.toHaveBeenCalled();
+    });
+
+    it('debería arrojar error si la nota ingresada no es un número válido', async () => {
+        render(
+            <SubjectUpdatePanel
+                subject={mockApprovedSubject}
+                isOpen={true}
+                onClose={mockOnClose}
+                onSave={mockOnSave}
+            />
+        );
+
+        // Change grade to invalid value via textbox
+        const inputs = screen.getAllByRole('textbox');
+        const gradeInput = inputs[0] as HTMLInputElement;
+        fireEvent.change(gradeInput, { target: { value: '15' } }); // out of 1-10
+
+        fireEvent.click(screen.getByText('Guardar Cambios'));
+
+        expect(await screen.findByText(/La nota debe ser un número entre 1 y 10/)).toBeInTheDocument();
+        expect(mockOnSave).not.toHaveBeenCalled();
+    });
+
+    it('debería arrojar error si la dificultad está fuera de rango', async () => {
+        render(
+            <SubjectUpdatePanel
+                subject={mockApprovedSubject}
+                isOpen={true}
+                onClose={mockOnClose}
+                onSave={mockOnSave}
+            />
+        );
+
+        // Set valid grade (required) and invalid difficulty
+        const inputs = screen.getAllByRole('textbox');
+        const gradeInput = inputs[0];
+        fireEvent.change(gradeInput, { target: { value: '8' } });
+
+        const difficultyInput = screen.getByRole('spinbutton');
+        fireEvent.change(difficultyInput, { target: { value: '150' } });
+
+        fireEvent.click(screen.getByText('Guardar Cambios'));
+
+        expect(await screen.findByText(/La dificultad debe ser un número entre 1 y 100/)).toBeInTheDocument();
+        expect(mockOnSave).not.toHaveBeenCalled();
+    });
+
+    it('debería mostrar error si onSave lanza una excepción', async () => {
+        const errorMessage = 'Error de red al guardar';
+        mockOnSave.mockRejectedValueOnce(new Error(errorMessage));
+
+        render(
+            <SubjectUpdatePanel
+                subject={mockApprovedSubject}
+                isOpen={true}
+                onClose={mockOnClose}
+                onSave={mockOnSave}
+            />
+        );
+
+        fireEvent.click(screen.getByText('Guardar Cambios'));
+
+        expect(await screen.findByText(errorMessage)).toBeInTheDocument();
     });
 });

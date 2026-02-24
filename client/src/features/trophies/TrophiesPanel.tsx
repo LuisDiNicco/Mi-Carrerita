@@ -145,8 +145,8 @@ export const TrophiesPanel = () => {
 
       {trophyMessage && (
         <div className={`flex items-center gap-2 px-4 py-3 rounded-xl border text-sm font-bold ${trophyMessage.type === 'success' ? 'bg-green-500/10 border-green-500/30 text-green-400'
-            : trophyMessage.type === 'error' ? 'bg-red-500/10 border-red-500/30 text-red-400'
-              : 'bg-blue-500/10 border-blue-500/30 text-blue-400'
+          : trophyMessage.type === 'error' ? 'bg-red-500/10 border-red-500/30 text-red-400'
+            : 'bg-blue-500/10 border-blue-500/30 text-blue-400'
           }`}>
           {trophyMessage.type === 'success' ? <CheckCircle size={16} /> : trophyMessage.type === 'error' ? <AlertTriangle size={16} /> : <Trophy size={16} />}
           {trophyMessage.text}
@@ -182,7 +182,7 @@ export const TrophiesPanel = () => {
                     </div>
                     <div className="flex-1 min-w-0">
                       <h5 className="font-bold text-app text-sm mb-1 truncate pr-2 font-retro">{trophy.name}</h5>
-                      <p className="text-xs text-muted mb-2 line-clamp-2 leading-relaxed h-8" title={trophy.description}>
+                      <p className="text-xs text-muted mb-2 leading-relaxed" title={trophy.description}>
                         {trophy.description}
                       </p>
 

@@ -187,7 +187,7 @@ export const UnifiedSchedulePlanner = ({
                         <tr>
                             <th className="p-3 border-b border-r border-app bg-surface text-center min-w-[70px] text-muted font-bold font-retro">Turno</th>
                             {DAYS.map(day => (
-                                <th key={day.key} className="p-3 border-b border-app bg-surface text-center min-w-[130px] text-app font-bold uppercase tracking-wider">
+                                <th key={day.key} className="p-3 border-b border-app bg-surface text-center min-w-[180px] text-app font-bold uppercase tracking-wider">
                                     {day.label}
                                 </th>
                             ))}
@@ -208,7 +208,7 @@ export const UnifiedSchedulePlanner = ({
                                         <td
                                             key={key}
                                             className={cn(
-                                                "p-0 border-b border-r border-app/30 align-top h-14 relative transition-colors duration-200",
+                                                "p-0 border-b border-r border-app/30 align-top min-h-[70px] relative transition-colors duration-200",
                                                 mode === 'AVAILABILITY' && "cursor-pointer hover:bg-white/5",
                                                 mode === 'AVAILABILITY' && isAvailable && "bg-green-500/20 hover:bg-green-500/30",
                                                 mode === 'SCHEDULE' && !isAvailable && "bg-app-bg",
