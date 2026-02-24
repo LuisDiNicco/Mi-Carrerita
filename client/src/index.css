@@ -35,15 +35,15 @@
   }
 
   [data-theme="light"] {
-    --app-bg: #F8F9F6;
-    --app-surface: #FFFFFF;
-    --app-elevated: #EEF2EA;
-    --app-text: #050D08;
-    --app-muted: #2A3528;
-    --app-border: #A8B8A0;
-    --app-accent: #6BA86F;
-    --app-accent-strong: #4FA159;
-    --app-accent-ink: #0B2A14;
+    --app-bg: #FFFFFF;
+    --app-surface: #F5F5F5;
+    --app-elevated: #E8E8E8;
+    --app-text: #1A1A1A;
+    --app-muted: #2D2D2D;
+    --app-border: #4A4A4A;
+    --app-accent: #228B22;
+    --app-accent-strong: #006400;
+    --app-accent-ink: #000000;
   }
 
   * {

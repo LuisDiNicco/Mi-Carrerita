@@ -1,11 +1,15 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useAcademicStore } from '../store/academic-store';
-import { formatDate, formatGrade } from '../../../shared/lib/utils';
+import { formatDate, formatGrade, fromISODate, toISODate } from '../../../shared/lib/utils';
 import { authFetch } from '../../auth/lib/api';
 import { fetchAcademicGraph } from '../lib/academic-api';
 import { SubjectStatus } from '../../../shared/types/academic';
-import { Search, ArrowUpDown, Edit2, Trash2, X, AlertTriangle } from 'lucide-react';
+import { Search, ArrowUpDown, Edit2, Trash2, X, AlertTriangle, Upload, Calendar } from 'lucide-react';
 import { cn } from '../../../shared/lib/utils';
+import { RetroCalendar } from '../../../shared/ui';
+import { uploadHistoriaPdf, batchSaveHistory } from '../lib/academic-api';
+import type { ParsedAcademicRecord, BatchAcademicRecordPayload } from '../lib/academic-api';
+import { PdfPreviewModal } from './PdfPreviewModal';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 const STATUS_OPTIONS = [
@@ -16,7 +20,7 @@ const STATUS_OPTIONS = [
   { label: 'Recursada', value: SubjectStatus.RECURSADA },
 ];
 
-type SortKey = 'date' | 'name' | 'grade' | 'act';
+type SortKey = 'date' | 'name' | 'grade' | 'planCode' | 'year' | 'difficulty';
 type SortDirection = 'asc' | 'desc';
 
 export const HistoryTable = () => {
@@ -34,6 +38,12 @@ export const HistoryTable = () => {
   const [notes, setNotes] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+
+  // PDF Upload State
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [parsedRecords, setParsedRecords] = useState<ParsedAcademicRecord[] | null>(null);
 
   // Filter & Sort State
   const [searchTerm, setSearchTerm] = useState('');
@@ -42,6 +52,9 @@ export const HistoryTable = () => {
     key: 'date',
     direction: 'desc',
   });
+  // Inline delete confirmation state
+  const [pendingDelete, setPendingDelete] = useState<{ id: string; name: string } | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   useEffect(() => {
     // Only set default subject if NOT editing and no subject selected
@@ -61,6 +74,7 @@ export const HistoryTable = () => {
         planCode: subject.planCode,
         year: subject.year,
         grade: subject.grade,
+        difficulty: subject.difficulty ?? null,
         status: subject.status,
         notes: subject.notes ?? '',
         rawSubject: subject,
@@ -122,9 +136,9 @@ export const HistoryTable = () => {
     setSubjectId(s.id);
     setStatus(s.status);
     setGrade(s.grade !== null ? String(s.grade) : '');
-    setDifficulty(s.difficulty !== null ? String(s.difficulty) : '');
-    // Ensure date format YYYY-MM-DD
-    const dateStr = s.statusDate ? new Date(s.statusDate).toISOString().split('T')[0] : '';
+    setDifficulty(s.difficulty !== null && s.difficulty !== undefined ? String(s.difficulty) : '');
+    // Convert ISO date to DD/MM/YYYY for the input
+    const dateStr = s.statusDate ? fromISODate(new Date(s.statusDate).toISOString().split('T')[0]) : '';
     setStatusDate(dateStr);
     setNotes(s.notes || '');
 
@@ -133,13 +147,15 @@ export const HistoryTable = () => {
   };
 
   const handleDelete = async (id: string, name: string) => {
-    if (!confirm(`¿Estás seguro de que deseas eliminar el historial de "${name}"? \nEsto restablecerá la materia a PENDIENTE.`)) return;
+    setPendingDelete({ id, name });
+    setDeleteError(null);
+  };
 
+  const confirmDelete = async () => {
+    if (!pendingDelete) return;
+    const { id } = pendingDelete;
+    setPendingDelete(null);
     try {
-      // Logic to reset subject. Could be a specific endpoint or just update to PENDIENTE with nulls.
-      // Assuming PATCH supports resetting or we have to manually set nulls.
-      // Usually "Delete history" means reset to initial state.
-
       const response = await authFetch(`${API_URL}/academic-career/subjects/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -162,12 +178,10 @@ export const HistoryTable = () => {
         notes: null
       });
 
-      // Refresh graph to be safe
       const graphData = await fetchAcademicGraph();
       setSubjects(graphData);
-
     } catch (err) {
-      alert("No se pudo eliminar el registro.");
+      setDeleteError('No se pudo eliminar el registro. Intentá de nuevo.');
     }
   };
 
@@ -176,24 +190,42 @@ export const HistoryTable = () => {
     setIsSaving(true);
     setError(null);
     try {
+      // === Validations (same as SubjectUpdatePanel) ===
+      if (status === SubjectStatus.APROBADA && grade.trim() === '') {
+        setError('La nota es obligatoria para materias Aprobadas.');
+        setIsSaving(false);
+        return;
+      }
+      if (grade.trim() !== '') {
+        const g = Number(grade);
+        if (Number.isNaN(g) || g < 1 || g > 10) {
+          setError('La nota debe ser un número entre 1 y 10.');
+          setIsSaving(false);
+          return;
+        }
+      }
+      if (difficulty.trim() !== '') {
+        const d = Number(difficulty);
+        if (Number.isNaN(d) || d < 1 || d > 100) {
+          setError('La dificultad debe ser un número entre 1 y 100.');
+          setIsSaving(false);
+          return;
+        }
+      }
+      // =============================================
+
       const gradeValue = grade.trim() === '' ? null : Number(grade);
       const normalizedGrade = Number.isNaN(gradeValue ?? NaN) ? null : gradeValue;
-      // Validate Grade vs Status
-      if (status === SubjectStatus.APROBADA && normalizedGrade === null) {
-        // Allow it, but maybe warn? Or strict?
-        // Let's allow flexibility but generally Approved should have grade.
-      }
-
       const difficultyValue = difficulty.trim() === '' ? null : Number(difficulty);
       const normalizedDifficulty = Number.isNaN(difficultyValue ?? NaN) ? null : difficultyValue;
-      const statusDateValue = statusDate.trim() === '' ? null : statusDate;
+      // Convert DD/MM/YYYY → ISO for API
+      const isoDate = statusDate.trim() === '' ? null : toISODate(statusDate);
+      const statusDateValue = isoDate || null;
       const notesValue = notes.trim() === '' ? null : notes.trim();
 
       const response = await authFetch(`${API_URL}/academic-career/subjects/${subjectId}`, {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           status,
           grade: normalizedGrade,
@@ -204,7 +236,8 @@ export const HistoryTable = () => {
       });
 
       if (!response.ok) {
-        throw new Error('No se pudo guardar el registro.');
+        const body = await response.json().catch(() => null);
+        throw new Error(body?.message || 'No se pudo guardar el registro.');
       }
 
       updateSubject(subjectId, {
@@ -227,8 +260,78 @@ export const HistoryTable = () => {
     }
   };
 
+  // PDF Upload Handlers
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    // Reset input so re-uploading the same file works
+    e.target.value = '';
+
+    setIsUploading(true);
+    setError(null);
+    try {
+      const result = await uploadHistoriaPdf(file);
+      if (result.data.length === 0) {
+        setError('No se encontraron registros en el PDF. Verificá que sea un PDF válido de Historia Académica.');
+        return;
+      }
+      setParsedRecords(result.data);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Error al procesar el PDF.';
+      setError(message);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleBatchConfirm = async (records: BatchAcademicRecordPayload[]) => {
+    await batchSaveHistory(records);
+    setParsedRecords(null);
+    // Refresh the graph after batch save
+    const graphData = await fetchAcademicGraph();
+    setSubjects(graphData);
+  };
+
   return (
     <div className="space-y-6 pb-20">
+
+      {/* Inline Delete Confirmation */}
+      {pendingDelete && (
+        <div className="rounded-xl border border-red-500/50 bg-red-500/10 px-5 py-4 flex flex-col sm:flex-row gap-3 sm:items-center justify-between shadow-subtle animate-in fade-in duration-200">
+          <div className="flex items-start gap-3">
+            <AlertTriangle size={18} className="text-red-400 shrink-0 mt-0.5" />
+            <div>
+              <p className="font-bold text-app text-sm">¿Eliminar historial?</p>
+              <p className="text-xs text-muted mt-0.5">
+                Se borrará el registro de <strong className="text-app">{pendingDelete.name}</strong> y la materia volverá a estado <strong className="text-app">PENDIENTE</strong>.
+              </p>
+            </div>
+          </div>
+          <div className="flex gap-2 shrink-0">
+            <button
+              onClick={() => setPendingDelete(null)}
+              className="px-4 py-1.5 rounded-lg border border-app text-app text-xs font-bold hover:bg-elevated transition-colors"
+            >
+              Cancelar
+            </button>
+            <button
+              onClick={confirmDelete}
+              className="px-4 py-1.5 rounded-lg bg-red-500 text-white text-xs font-bold hover:bg-red-600 transition-colors"
+            >
+              Confirmar Eliminación
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Inline Delete Error */}
+      {deleteError && (
+        <div className="flex items-center gap-2 px-4 py-3 rounded-xl border border-red-500/30 bg-red-500/10 text-red-400 text-sm font-bold">
+          <AlertTriangle size={16} />
+          {deleteError}
+          <button onClick={() => setDeleteError(null)} className="ml-auto text-muted hover:text-app">×</button>
+        </div>
+      )}
 
       {/* Editor Form */}
       <div className={cn(
@@ -306,13 +409,37 @@ export const HistoryTable = () => {
           </label>
 
           <label className="flex flex-col gap-2 text-sm text-muted">
-            Fecha
-            <input
-              type="date"
-              className="bg-surface border border-app rounded-lg px-3 py-2 text-app"
-              value={statusDate}
-              onChange={(event) => setStatusDate(event.target.value)}
-            />
+            Fecha (DD/MM/YYYY)
+            <div className="relative flex items-center">
+              <input
+                type="text"
+                maxLength={10}
+                className="w-full bg-surface border border-app rounded-lg pl-3 pr-10 py-2 text-app focus:ring-1 focus:ring-unlam-500 outline-none transition-all placeholder:text-muted/50 font-mono text-sm"
+                value={statusDate}
+                onChange={(event) => {
+                  let val = event.target.value.replace(/[^\d]/g, '');
+                  if (val.length > 2) val = val.slice(0, 2) + '/' + val.slice(2);
+                  if (val.length > 5) val = val.slice(0, 5) + '/' + val.slice(5);
+                  setStatusDate(val.slice(0, 10));
+                }}
+                placeholder="DD/MM/YYYY"
+              />
+              <button
+                type="button"
+                onClick={() => setIsCalendarOpen(!isCalendarOpen)}
+                className="absolute right-2 p-1 text-muted hover:text-unlam-500 transition-colors cursor-pointer bg-surface rounded"
+                title="Abrir calendario"
+              >
+                <Calendar size={16} />
+              </button>
+              {isCalendarOpen && (
+                <RetroCalendar
+                  value={statusDate}
+                  onChange={setStatusDate}
+                  onClose={() => setIsCalendarOpen(false)}
+                />
+              )}
+            </div>
           </label>
 
           <label className="flex flex-col gap-2 text-sm text-muted md:col-span-3 lg:col-span-1">
@@ -347,15 +474,32 @@ export const HistoryTable = () => {
 
       {/* Toolbar */}
       <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-elevated/50 p-4 rounded-xl border border-app">
-        <div className="relative w-full md:w-64">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" size={16} />
+        <div className="flex items-center gap-3 w-full md:w-auto">
+          <div className="relative flex-1 md:w-64">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" size={16} />
+            <input
+              type="text"
+              placeholder="Buscar materia..."
+              className="w-full pl-9 pr-4 py-2 bg-surface border border-app rounded-lg text-sm focus:ring-1 focus:ring-unlam-500 outline-none"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
           <input
-            type="text"
-            placeholder="Buscar materia..."
-            className="w-full pl-9 pr-4 py-2 bg-surface border border-app rounded-lg text-sm focus:ring-1 focus:ring-unlam-500 outline-none"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            ref={fileInputRef}
+            type="file"
+            accept=".pdf"
+            className="hidden"
+            onChange={handleFileSelect}
           />
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isUploading}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg border-2 border-dashed border-unlam-500/50 text-unlam-500 hover:bg-unlam-500/10 hover:border-unlam-500 transition-all font-bold text-sm whitespace-nowrap disabled:opacity-50"
+          >
+            <Upload size={16} />
+            {isUploading ? 'Procesando...' : 'Subir PDF'}
+          </button>
         </div>
         <div className="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0 scrollbar-hide flex-nowrap">
           {['ALL', SubjectStatus.APROBADA, SubjectStatus.EN_CURSO, SubjectStatus.REGULARIZADA, SubjectStatus.RECURSADA].map((st) => {
@@ -391,8 +535,18 @@ export const HistoryTable = () => {
                 >
                   <div className="flex items-center gap-1">Fecha {sortConfig.key === 'date' && <ArrowUpDown size={12} className="text-unlam-500" />}</div>
                 </th>
-                <th className="py-3 px-4 font-medium w-20">Código</th>
-                <th className="py-3 px-4 font-medium w-16 text-center">Año</th>
+                <th
+                  className="py-3 px-4 font-medium cursor-pointer hover:text-app transition-colors select-none group w-20 text-center"
+                  onClick={() => handleSort('planCode')}
+                >
+                  <div className="flex items-center gap-1">Código {sortConfig.key === 'planCode' && <ArrowUpDown size={12} className="text-unlam-500" />}</div>
+                </th>
+                <th
+                  className="py-3 px-4 font-medium cursor-pointer hover:text-app transition-colors select-none group w-16 text-center"
+                  onClick={() => handleSort('year')}
+                >
+                  <div className="flex items-center gap-1">Año {sortConfig.key === 'year' && <ArrowUpDown size={12} className="text-unlam-500" />}</div>
+                </th>
                 <th
                   className="py-3 px-4 font-medium cursor-pointer hover:text-app transition-colors select-none group"
                   onClick={() => handleSort('name')}
@@ -406,6 +560,12 @@ export const HistoryTable = () => {
                 >
                   <div className="flex items-center justify-center gap-1">Nota {sortConfig.key === 'grade' && <ArrowUpDown size={12} className="text-unlam-500" />}</div>
                 </th>
+                <th
+                  className="py-3 px-4 font-medium cursor-pointer hover:text-app transition-colors select-none group w-20 text-center"
+                  onClick={() => handleSort('difficulty')}
+                >
+                  <div className="flex items-center justify-center gap-1">Dific. {sortConfig.key === 'difficulty' && <ArrowUpDown size={12} className="text-unlam-500" />}</div>
+                </th>
                 <th className="py-3 px-4 font-medium">Comentario</th>
                 <th className="py-3 px-4 font-medium text-right">Acciones</th>
               </tr>
@@ -413,7 +573,7 @@ export const HistoryTable = () => {
             <tbody className="divide-y divide-app/10">
               {filteredAndSortedRows.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="py-12 text-center text-muted">
+                  <td colSpan={9} className="py-12 text-center text-muted">
                     No se encontraron registros.
                   </td>
                 </tr>
@@ -437,6 +597,16 @@ export const HistoryTable = () => {
                       </span>
                     </td>
                     <td className="py-3 px-4 text-app font-bold font-mono text-center">{formatGrade(row.grade)}</td>
+                    <td className="py-3 px-4 text-center">
+                      {row.difficulty !== null && row.difficulty !== undefined ? (
+                        <span className={cn(
+                          'inline-block px-2 py-0.5 rounded text-[10px] font-bold font-mono',
+                          row.difficulty >= 67 ? 'bg-red-500/10 text-red-400' :
+                            row.difficulty >= 34 ? 'bg-yellow-500/10 text-yellow-400' :
+                              'bg-green-500/10 text-green-400'
+                        )}>{row.difficulty}</span>
+                      ) : <span className="text-muted">—</span>}
+                    </td>
                     <td className="py-3 px-4 relative max-w-[200px] group/tooltip">
                       <div className="truncate text-xs text-muted">
                         {row.notes || '—'}
@@ -473,6 +643,15 @@ export const HistoryTable = () => {
           </table>
         </div>
       </div>
+
+      {/* PDF Preview Modal */}
+      {parsedRecords && (
+        <PdfPreviewModal
+          records={parsedRecords}
+          onConfirm={handleBatchConfirm}
+          onClose={() => setParsedRecords(null)}
+        />
+      )}
     </div>
   );
 };

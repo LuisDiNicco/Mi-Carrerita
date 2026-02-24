@@ -8,6 +8,7 @@ export enum SubjectStatus {
   RECURSADA = 'RECURSADA',
   REGULARIZADA = 'REGULARIZADA',
   APROBADA = 'APROBADA',
+  EQUIVALENCIA = 'EQUIVALENCIA',
 }
 
 export enum CorrelativityCondition {

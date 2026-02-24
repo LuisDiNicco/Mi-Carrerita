@@ -254,7 +254,7 @@ export const PLAN_2023: SubjectData[] = [
     name: 'Taller de Integración',
     year: 2,
     hours: 4,
-    isOptional: false,
+    isOptional: true,
     correlatives: ['3626', '3630', '3632', '3638', '3635', '3636'],
   },
   {
@@ -514,7 +514,7 @@ export const PLAN_2023: SubjectData[] = [
     name: 'Electiva I',
     year: 5,
     hours: 4,
-    isOptional: true,
+    isOptional: false,
     correlatives: ['3652', '3653', '3661'],
   },
   {
@@ -522,7 +522,7 @@ export const PLAN_2023: SubjectData[] = [
     name: 'Electiva II',
     year: 5,
     hours: 4,
-    isOptional: true,
+    isOptional: false,
     correlatives: ['3652', '3653', '3661'],
   },
   {
@@ -530,7 +530,7 @@ export const PLAN_2023: SubjectData[] = [
     name: 'Electiva III',
     year: 5,
     hours: 4,
-    isOptional: true,
+    isOptional: false,
     correlatives: ['3652', '3653', '3661'],
   },
 ];

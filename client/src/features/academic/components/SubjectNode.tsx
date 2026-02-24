@@ -10,6 +10,11 @@ type SubjectNodeData = {
   isCritical?: boolean;
   isRecentlyUpdated?: boolean;
   isFocused?: boolean;
+  // Hover highlighting flags
+  isPrerequisite?: boolean;   // ancestor of hovered node — orange
+  isFullUnlock?: boolean;     // this node fully unlocked by hovered — green
+  isPartialUnlock?: boolean;  // partially unlocked by hovered — yellow
+  isHoveredNode?: boolean;    // the node being hovered — white/bright ring
 };
 
 export type SubjectNodeType = Node<SubjectNodeData, 'subject'>;
@@ -20,6 +25,12 @@ const STATUS_STYLES: Record<SubjectStatus, {
   emoji: string;
   border: string;
 }> = {
+  [SubjectStatus.EQUIVALENCIA]: {
+    container: 'bg-[#B084CC] text-[#291736]',
+    badge: 'bg-[#8F66A8] border-[#6D4284] text-white',
+    emoji: '🤝',
+    border: 'border-[#6D4284]',
+  },
   [SubjectStatus.PENDIENTE]: {
     container: 'bg-[#353C35] text-[#C5D2C5]',
     badge: 'bg-[#3E4A3E] border-[#2A342A] text-[#E8F2E8]',
@@ -77,6 +88,11 @@ const SubjectNodeComponent = ({ data, selected }: NodeProps<SubjectNodeType>) =>
   const isCritical = Boolean(data.isCritical);
   const isRecentlyUpdated = Boolean(data.isRecentlyUpdated);
   const isFocused = Boolean(data.isFocused);
+  const isPrerequisite = Boolean((data as any).isPrerequisite);
+  const isFullUnlock = Boolean((data as any).isFullUnlock);
+  const isPartialUnlock = Boolean((data as any).isPartialUnlock);
+  const isHoveredNode = Boolean((data as any).isHoveredNode);
+  const isHighlighted = isPrerequisite || isFullUnlock || isPartialUnlock || isHoveredNode;
 
   // The tooltip scale scales naturally with the node.
 
@@ -108,10 +124,16 @@ const SubjectNodeComponent = ({ data, selected }: NodeProps<SubjectNodeType>) =>
           statusConfig.border,
           isCritical && 'border-red-400 critical-glow',
           isFocused && 'ring-4 ring-red-400/60',
-          subject.status === SubjectStatus.PENDIENTE && 'opacity-60',
+          subject.status === SubjectStatus.PENDIENTE && !isHighlighted && 'opacity-60',
           subject.status === SubjectStatus.DISPONIBLE && 'ring-2 ring-yellow-300/40',
           subject.status === SubjectStatus.APROBADA && 'ring-2 ring-green-300/40',
-          isRecentlyUpdated && 'subject-update-flash subject-update-fill'
+          subject.status === SubjectStatus.EQUIVALENCIA && 'ring-2 ring-purple-300/40',
+          isRecentlyUpdated && 'subject-update-flash subject-update-fill',
+          // Hover highlights override all other rings
+          isHoveredNode && 'ring-4 ring-white/80 scale-105 z-50 shadow-lg',
+          isPrerequisite && '!ring-4 !ring-orange-400/90 opacity-100',
+          isFullUnlock && '!ring-4 !ring-green-400/90 opacity-100',
+          isPartialUnlock && '!ring-4 !ring-yellow-300/90 opacity-90',
         )}
       >
         <div className="flex items-center justify-between mb-2">
@@ -133,7 +155,8 @@ const SubjectNodeComponent = ({ data, selected }: NodeProps<SubjectNodeType>) =>
           TITLE_CLASS,
           'mb-3 min-h-[56px]',
           'flex items-center justify-center',
-          subject.status === SubjectStatus.APROBADA && 'text-[#0B2A14]'
+          subject.status === SubjectStatus.APROBADA && 'text-[#0B2A14]',
+          subject.status === SubjectStatus.EQUIVALENCIA && 'text-[#291736]'
         )}>
           {truncateSubjectName(subject.name, SUBJECT_NAME_MAX)}
         </h3>
@@ -197,7 +220,11 @@ export const SubjectNode = memo(SubjectNodeComponent, (prevProps, nextProps) => 
     prevProps.data.isRecentlyUpdated === nextProps.data.isRecentlyUpdated &&
     prevProps.data.isFocused === nextProps.data.isFocused &&
     prevProps.data.subject.status === nextProps.data.subject.status &&
-    prevProps.data.subject.grade === nextProps.data.subject.grade
+    prevProps.data.subject.grade === nextProps.data.subject.grade &&
+    (prevProps.data as any).isPrerequisite === (nextProps.data as any).isPrerequisite &&
+    (prevProps.data as any).isFullUnlock === (nextProps.data as any).isFullUnlock &&
+    (prevProps.data as any).isPartialUnlock === (nextProps.data as any).isPartialUnlock &&
+    (prevProps.data as any).isHoveredNode === (nextProps.data as any).isHoveredNode
   );
 });
 
@@ -209,6 +236,7 @@ function getTooltipText(subject: Subject): string {
     [SubjectStatus.REGULARIZADA]: 'Materia regularizada',
     [SubjectStatus.APROBADA]: '¡Materia aprobada!',
     [SubjectStatus.RECURSADA]: 'Tendrás que recursar esta materia',
+    [SubjectStatus.EQUIVALENCIA]: 'Materia concedida por equivalencia',
   };
 
   return statusMessages[subject.status as keyof typeof statusMessages] || subject.name;

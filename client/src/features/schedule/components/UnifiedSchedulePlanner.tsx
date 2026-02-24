@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { cn } from '../../../shared/lib/utils';
 import type { DayOfWeek, TimePeriod, TimetableDto } from '../lib/schedule-api';
-import { Trash2, Plus, Grid2X2, Grid3X3 } from 'lucide-react';
+import { Trash2, Plus } from 'lucide-react';
 import type { Subject } from '../../../shared/types/academic';
 import { SubjectStatus } from '../../../shared/types/academic';
 
@@ -24,15 +24,7 @@ const DAYS: { key: DayOfWeek; label: string }[] = [
     { key: 'SATURDAY', label: 'Sáb' },
 ];
 
-const PERIODS_2H = [
-    { key: 'M1', label: '08:00 - 10:00' },
-    { key: 'M3', label: '10:00 - 12:00' },
-    { key: 'T1', label: '14:00 - 16:00' },
-    { key: 'T3', label: '16:00 - 18:00' },
-    { key: 'N1', label: '19:00 - 21:00' },
-    { key: 'N3', label: '21:00 - 23:00' },
-];
-
+// Only use 4 hour periods since offerings are 4-hour shifts
 const PERIODS_4H = [
     { key: 'M1', label: '08:00 - 12:00 (Mañana)' },
     { key: 'T1', label: '14:00 - 18:00 (Tarde)' },
@@ -49,10 +41,9 @@ export const UnifiedSchedulePlanner = ({
     recommendedIds
 }: UnifiedSchedulePlannerProps) => {
     const [mode, setMode] = useState<'AVAILABILITY' | 'SCHEDULE'>('AVAILABILITY');
-    const [gridStep, setGridStep] = useState<2 | 4>(4);
     const [hoveredCell, setHoveredCell] = useState<string | null>(null);
 
-    const activePeriods = gridStep === 4 ? PERIODS_4H : PERIODS_2H;
+    const activePeriods = PERIODS_4H;
 
     // Availability dragging state
     const isDragging = useRef(false);
@@ -62,21 +53,13 @@ export const UnifiedSchedulePlanner = ({
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [targetCell, setTargetCell] = useState<{ day: DayOfWeek, period: TimePeriod } | null>(null);
     const [selectedSubjectId, setSelectedSubjectId] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');
 
-    // Normalize periods map
-    const normalizePeriod = (period: string, step: 2 | 4) => {
-        if (step === 4) {
-            if (period.startsWith('M')) return 'M1';
-            if (period.startsWith('T')) return 'T1';
-            if (period.startsWith('N')) return 'N1';
-        } else {
-            if (period === 'M1' || period === 'M2') return 'M1';
-            if (period === 'M3' || period === 'M4' || period === 'M5' || period === 'M6') return 'M3';
-            if (period === 'T1' || period === 'T2') return 'T1';
-            if (period === 'T3' || period === 'T4' || period === 'T5' || period === 'T6') return 'T3';
-            if (period === 'N1' || period === 'N2') return 'N1';
-            if (period === 'N3' || period === 'N4' || period === 'N5' || period === 'N6') return 'N3';
-        }
+    // Normalize periods map for 4h chunks
+    const normalizePeriod = (period: string) => {
+        if (period.startsWith('M')) return 'M1';
+        if (period.startsWith('T')) return 'T1';
+        if (period.startsWith('N')) return 'N1';
         return period;
     };
 
@@ -140,13 +123,14 @@ export const UnifiedSchedulePlanner = ({
             setIsModalOpen(false);
         } catch (error) {
             console.error("Conflict checking / saving error:", error);
-            alert("No se pudo guardar la materia o ya existe un conflicto en este horario.");
+            // Close modal and let parent handle error display via onAddTimetable's error path
+            setIsModalOpen(false);
         }
     };
 
     // Helper
     const getCellContent = (day: DayOfWeek, periodKey: string) => {
-        return timetables.find(t => t.dayOfWeek === day && normalizePeriod(t.period, gridStep) === periodKey);
+        return timetables.find(t => t.dayOfWeek === day && normalizePeriod(t.period) === periodKey);
     };
 
     // Filtered & Sorted subjects: Only Disponible or Recursada
@@ -161,6 +145,11 @@ export const UnifiedSchedulePlanner = ({
         if (!aRec && bRec) return 1;
         return a.name.localeCompare(b.name);
     });
+
+    const filteredModalSubjects = sortedSubjects.filter(s =>
+        s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        s.planCode.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
     return (
         <div className="space-y-4">
@@ -190,27 +179,6 @@ export const UnifiedSchedulePlanner = ({
                         2. Armar Horario
                     </button>
                 </div>
-
-                <div className="flex items-center gap-2 bg-elevated p-1 rounded-lg border border-app transition-opacity shadow-subtle">
-                    <button
-                        onClick={() => setGridStep(2)}
-                        className={cn("p-2 rounded-md flex items-center gap-2 text-xs font-bold transition-all",
-                            gridStep === 2 ? "bg-app-bg text-app shadow-sm border border-app border-dashed" : "text-muted hover:text-app"
-                        )}
-                        title="Grilla cada 2 hs"
-                    >
-                        <Grid3X3 size={16} /> 2h
-                    </button>
-                    <button
-                        onClick={() => setGridStep(4)}
-                        className={cn("p-2 rounded-md flex items-center gap-2 text-xs font-bold transition-all",
-                            gridStep === 4 ? "bg-app-bg text-app shadow-sm border border-app border-dashed" : "text-muted hover:text-app"
-                        )}
-                        title="Grilla cada 4 hs"
-                    >
-                        <Grid2X2 size={16} /> 4h
-                    </button>
-                </div>
             </div>
 
             <div className="select-none bg-elevated rounded-xl border border-app shadow-soft overflow-hidden overflow-x-auto relative">
@@ -219,7 +187,7 @@ export const UnifiedSchedulePlanner = ({
                         <tr>
                             <th className="p-3 border-b border-r border-app bg-surface text-center min-w-[70px] text-muted font-bold font-retro">Turno</th>
                             {DAYS.map(day => (
-                                <th key={day.key} className="p-3 border-b border-app bg-surface text-center min-w-[130px] text-app font-bold uppercase tracking-wider">
+                                <th key={day.key} className="p-3 border-b border-app bg-surface text-center min-w-[180px] text-app font-bold uppercase tracking-wider">
                                     {day.label}
                                 </th>
                             ))}
@@ -240,7 +208,7 @@ export const UnifiedSchedulePlanner = ({
                                         <td
                                             key={key}
                                             className={cn(
-                                                "p-0 border-b border-r border-app/30 align-top h-14 relative transition-colors duration-200",
+                                                "p-0 border-b border-r border-app/30 align-top min-h-[70px] relative transition-colors duration-200",
                                                 mode === 'AVAILABILITY' && "cursor-pointer hover:bg-white/5",
                                                 mode === 'AVAILABILITY' && isAvailable && "bg-green-500/20 hover:bg-green-500/30",
                                                 mode === 'SCHEDULE' && !isAvailable && "bg-app-bg",
@@ -293,7 +261,7 @@ export const UnifiedSchedulePlanner = ({
                 {/* Modal */}
                 {isModalOpen && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in">
-                        <div className="bg-surface border-2 border-app rounded-xl p-0 w-full max-w-md shadow-retro scale-100 animate-in zoom-in-95 overflow-hidden">
+                        <div className="bg-surface border-2 border-app rounded-xl p-0 w-full max-w-xl shadow-retro scale-100 animate-in zoom-in-95 overflow-hidden">
                             <div className="bg-elevated p-5 border-b border-app">
                                 <h3 className="text-xl font-bold text-app font-retro tracking-wide">Asignar Materia</h3>
                                 <p className="text-sm text-muted mt-1 font-mono">
@@ -303,24 +271,45 @@ export const UnifiedSchedulePlanner = ({
 
                             <div className="p-6 space-y-4">
                                 <div>
-                                    <label className="block text-sm font-bold text-muted mb-2 uppercase tracking-wide">Seleccionar Cursada (Lista Filtrada)</label>
-                                    <select
-                                        className="w-full bg-app-bg border border-app rounded-lg px-3 py-3 text-app focus:ring-2 focus:ring-unlam-500/50 outline-none shadow-inner"
-                                        value={selectedSubjectId}
-                                        onChange={(e) => setSelectedSubjectId(e.target.value)}
-                                        size={8}
-                                    >
-                                        <option value="" disabled className="text-muted/50 py-1 border-b border-app/20 line-through">-- Solo Disponibles/Recursadas --</option>
-                                        {sortedSubjects.map(s => (
-                                            <option key={s.id} value={s.id} className={cn(
-                                                "py-1.5 px-2 rounded-sm mb-1 cursor-pointer",
-                                                recommendedIds.has(s.id) ? "font-bold text-unlam-500 bg-unlam-500/5" : "hover:bg-surface"
-                                            )}>
-                                                {recommendedIds.has(s.id) ? "★ " : ""}{s.name}
-                                            </option>
-                                        ))}
-                                    </select>
-                                    <p className="text-[10px] text-muted mt-2 block">* Las materias "estrella" son obligatorias y recomendadas por tu historial.</p>
+                                    <label className="block text-sm font-bold text-muted mb-2 uppercase tracking-wide">Seleccionar Cursada</label>
+                                    <input
+                                        type="text"
+                                        placeholder="Buscar materia..."
+                                        className="w-full bg-app-bg border border-app rounded-t-lg px-3 py-2 text-sm focus:ring-1 focus:ring-unlam-500 outline-none mb-1 text-app"
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                    />
+                                    <div className="max-h-56 overflow-y-auto w-full bg-app-bg border border-app rounded-b-lg scrollbar-thin scrollbar-thumb-unlam-500/50">
+                                        {filteredModalSubjects.length === 0 && (
+                                            <div className="p-4 text-center text-muted text-sm italic">
+                                                No se encontraron materias.
+                                            </div>
+                                        )}
+                                        {filteredModalSubjects.map(s => {
+                                            const isRecommended = recommendedIds.has(s.id);
+                                            const isSelected = selectedSubjectId === s.id;
+                                            return (
+                                                <button
+                                                    key={s.id}
+                                                    onClick={() => setSelectedSubjectId(s.id)}
+                                                    className={cn(
+                                                        "w-full text-left p-3 border-b border-app/20 flex flex-col gap-1 transition-all last:border-b-0",
+                                                        isSelected ? "bg-unlam-500/20 shadow-inner" : "hover:bg-surface",
+                                                        isRecommended && !isSelected ? "bg-unlam-500/5" : ""
+                                                    )}
+                                                >
+                                                    <span className={cn(
+                                                        "font-bold text-sm md:text-base leading-tight",
+                                                        isRecommended ? "text-unlam-500" : "text-app"
+                                                    )}>
+                                                        {isRecommended ? "★ " : ""}{s.name}
+                                                    </span>
+                                                    <span className="text-xs text-muted font-mono">{s.planCode}</span>
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                    <p className="text-[10px] text-muted mt-2 block">* Las materias "estrella" son recomendadas por tu historial.</p>
                                 </div>
 
                                 <div className="flex justify-end gap-3 pt-4 border-t border-app-border/40">

@@ -78,3 +78,62 @@ export async function fetchAcademicHistory(params?: {
 
   return response.json();
 }
+
+// ========================
+// PDF Upload Functions
+// ========================
+
+/** Parsed record returned by the backend after uploading a Historia Académica PDF */
+export interface ParsedAcademicRecord {
+  planCode: string;
+  name: string;
+  date: string; // DD/MM/YYYY
+  grade: number | null;
+  acta: string;
+  status?: string;
+}
+
+/** Upload a Historia Académica PDF and receive parsed records for preview */
+export async function uploadHistoriaPdf(
+  file: File
+): Promise<{ data: ParsedAcademicRecord[] }> {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const response = await authFetch(`${API_URL}/history/upload`, {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.json().catch(() => null);
+    throw new Error(errorBody?.message || `Error ${response.status}: No se pudo procesar el PDF.`);
+  }
+
+  return response.json();
+}
+
+/** Batch record DTO for saving */
+export interface BatchAcademicRecordPayload {
+  planCode: string;
+  status: string;
+  finalGrade?: number | null;
+  statusDate?: string | null; // ISO date
+}
+
+/** Save batch of parsed academic records */
+export async function batchSaveHistory(
+  records: BatchAcademicRecordPayload[]
+): Promise<{ count: number }> {
+  const response = await authFetch(`${API_URL}/history/batch`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ records }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Error al guardar los registros.");
+  }
+
+  return response.json();
+}

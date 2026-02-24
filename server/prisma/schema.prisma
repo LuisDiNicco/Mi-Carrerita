@@ -16,6 +16,7 @@ model User {
   email            String               @unique
   name             String?
   googleId         String?              @unique
+  passwordHash     String?              // For local auth (register/login)
   avatarUrl        String?
   refreshTokenHash String?
   academicRecords  AcademicRecord[]

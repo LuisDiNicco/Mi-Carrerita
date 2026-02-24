@@ -1,8 +1,10 @@
-import { Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Req, Res, UseGuards, Body } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import type { Request, Response } from 'express';
 import { AuthService } from '../services/auth.service';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import { RegisterDto, LoginDto, ChangePasswordDto } from '../dto/auth.dto';
+import { CurrentUser } from '../../../common/decorators/current-user.decorator';
 
 const ACCESS_TOKEN_PARAM = 'access_token';
 const REFRESH_COOKIE = 'refresh_token';
@@ -12,6 +14,53 @@ const MS_PER_DAY = 24 * 60 * 60 * 1000;
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
+
+  @Post('register')
+  async register(@Body() dto: RegisterDto, @Res() res: Response) {
+    const result = await this.authService.register(dto);
+
+    res.cookie(REFRESH_COOKIE, result.refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: REFRESH_DAYS * MS_PER_DAY,
+      path: '/',
+    });
+
+    return res.json({
+      accessToken: result.accessToken,
+      user: result.user,
+    });
+  }
+
+  @Post('login')
+  async login(@Body() dto: LoginDto, @Res() res: Response) {
+    const result = await this.authService.login(dto);
+
+    res.cookie(REFRESH_COOKIE, result.refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: REFRESH_DAYS * MS_PER_DAY,
+      path: '/',
+    });
+
+    return res.json({
+      accessToken: result.accessToken,
+      user: result.user,
+    });
+  }
+
+  @Post('change-password')
+  @UseGuards(JwtAuthGuard)
+  async changePassword(
+    @CurrentUser('sub') userId: string,
+    @Body() dto: ChangePasswordDto,
+    @Res() res: Response,
+  ) {
+    const result = await this.authService.changePassword(userId, dto);
+    return res.json(result);
+  }
 
   @Get('google')
   @UseGuards(AuthGuard('google'))

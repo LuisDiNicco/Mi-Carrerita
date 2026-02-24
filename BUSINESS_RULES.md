@@ -1,53 +1,102 @@
 # 🏢 Reglas de Negocio (Business Rules)
 
-Este documento centraliza todas las lógicas y reglas propias del bloque "negocio" universitario que `Mi Carrerita` mapea en código. Cualquier modificación en las reglamentaciones académicas debe reflejarse primero aquí y luego ser derivada al código fuente (Backend y Frontend).
+Centraliza todas las lógicas del dominio universitario de `Mi Carrerita`. Todo cambio en la reglamentación académica debe reflejarse aquí primero y luego derivarse al código.
 
 ---
 
 ## 1. Franjas Horarias (Shift System)
 
-La facultad opera bajo un esquema bloqueado de tres turnos. No existe oferta académica válida fuera de estos rangos. El sistema ruteador y planificador de UI debe omitir o deshabilitar cualquier tiempo muerto.
+La facultad opera en tres turnos fijos. No existe oferta académica fuera de estos rangos.
 
-### 1.1 Turnos Activos
-- **Turno Mañana:** 08:00 a 12:00.
-- **Turno Tarde:** 14:00 a 18:00.
-- **Turno Noche:** 19:00 a 23:00.
+| Turno   | Horario       |
+|---------|---------------|
+| Mañana  | 08:00–12:00   |
+| Tarde   | 14:00–18:00   |
+| Noche   | 19:00–23:00   |
 
-### 1.2 "Zonas Muertas" (Breaks)
-Las siguientes zonas horarias **NO deben mostrarse en el grid ni permitir asignaciones**, ya que en este lapso la facultad no imparte clases:
-- **Mediodía:** 12:00 a 14:00.
-- **Tarde/Noche:** 18:00 a 19:00.
+**Zonas muertas** (sin clases): 12:00–14:00 y 18:00–19:00. No mostrar en el grid ni permitir asignaciones en esos slots.
 
 ---
 
-## 2. Planificador y Motor de Recomendaciones (Scheduler Engine)
-
-El armado de horarios de la facultad sigue reglas de colisiones matemáticas estrictas y dependencias de grafos.
+## 2. Planificador y Motor de Recomendaciones
 
 ### 2.1 Condiciones para "Materia Disponible"
-Una materia cambia a estado `DISPONIBLE` únicamente si el estudiante alcanzó el "status final" de las predecesoras. Si una materia tiene 3 correlativas fuertes, las 3 deben figurar como `APROBADA` u `REGULARIZADA` según la exigencia del plan.
+Una materia pasa a `DISPONIBLE` solo si el estudiante cumplió el estado requerido en **todas** sus correlativas predecesoras (`APROBADA`, `EQUIVALENCIA` o `REGULARIZADA`, según exija el plan).
 
 ### 2.2 Carga de Oferta Horaria
-- Para generar una recomendación factible o armar una ruta, el estudiante DEBE proporcionar los horarios propuestos para las materias que le interesan.
-- **Sistema Anti-Colisión:** Nunca puede haber solapamiento (`overlap`) mayor a 0 minutos entre una asignatura pre-inscripta y otra. El sistema debe lanzar error 409 o un warning en Frontend.
+El estudiante debe proveer los horarios propuestos para las materias de interés. **Anti-colisión**: nunca puede haber solapamiento (>0 min) entre dos asignaturas pre-inscriptas.
 
 ### 2.3 Tipos de Recomendaciones
-Para aportar valor al estudiante, la recomendación se divide en 2 motores:
-- **Motor Real (Ideal Scheduler):** Toma lista de materias `DISPONIBLES` o `RECURSADAS`, compara su oferta de horarios asignada, descarta las combinaciones que chocan (solapan), e imprime un calendario armónico base.
-- **Motor "Materias Clave":** Un análisis meramente de Grafo. Prioriza en un ranking las asignaturas pendientes basadas en su peso de la "Ruta crítica" (cuántas materias siguientes destraban). Esto ignora los horarios.
+- **Motor Real (Ideal Scheduler):** Toma materias `DISPONIBLES` o `RECURSADAS`, descarta combinaciones que colisionan y genera un calendario base.
+- **Motor "Materias Clave":** Análisis de grafo que rankea materias pendientes por peso en la ruta crítica (cuántas materias siguientes destraban). Ignora horarios.
 
 ---
 
-## 3. Rangos de Evaluación y Cursada
+## 3. Evaluación y Equivalencias
 
-### Notas Aprobatorias y Referencias
-- El rango de la nota final válida es un número entero/decimal acotado `[1, 10]`.
-- Nota probatoria de Cursada: Mayor o igual a `4`. (La materia entra en `REGULARIZADA` o a veces `FINAL_PENDIENTE`).
-- Promociones directas: Normalmente requieren notas `≥ 7` o `≥ 8` (dependiendo el estatuto reflejado en el calculador).
+### 3.1 Notas
+- Rango válido: entero/decimal en `[1, 10]`.
+- Aprobación de cursada (→ `REGULARIZADA`): nota ≥ 4.
+- Promoción directa: normalmente ≥ 7 (depende del estatuto).
 
-### 4. Sistema de Gamificación (Trofeos)
+### 3.2 Equivalencias
+Las materias con origen `Equivalencia` en el PDF de Historia Académica son materias aprobadas por reconocimiento académico previo. Reglas:
 
-El motor de recompensas opera reaccionando al historial, validando bajo 4 Tiers: _Bronce, Plata, Oro, Platino._
-- **Eficiencia (Recursera):** Recomienda evitar los estados recurrentes de `RECURSADA` para destrabar oros.
-- **Velocidad (Tiempos):** Existen flags para "Año Limpio" o "Sprint" basados en años naturales de aprobación comparados a la inserción en la carrera.
-- Cualquier lógica de validación de trofeo **NO debe comprometer la performance principal**. Si la métrica es compleja (promedios estacionales), se debe calcular en *background job* o asincrónicamente mediante *Events*.
+1. **Origen en el PDF**: la columna `Origen` indica si la materia fue aprobada por `Promocion`, `Examen` o `Equivalencia`.
+2. **Comportamiento para correlativas**: una `EQUIVALENCIA` se comporta exactamente igual que `APROBADA` — desbloquea todas las correlativas que dependan de ella.
+3. **Con nota**: si la equivalencia tiene nota, se la trata exactamente como una materia aprobada en todos los cálculos (promedio, gráficos, etc.).
+4. **Sin nota**: si la equivalencia no tiene nota, se la **excluye de todos los cálculos donde la nota sea relevante** (promedio, evolución del promedio, scatter de dificultad). Para contar materias completadas, horas o porcentaje de avance, se la incluye normalmente.  
+   > Ejemplo: 62 materias aprobadas, 4 equivalencias sin nota → promedio = suma de notas / 58.
+5. **Conteo de materias**: aprobadas + equivalencias cuentan como "materias completadas". La distinción es solo burocrática.
+
+### 3.3 Materias Optativas
+Solo impactan los totales del Dashboard (pendientes, en curso, etc.) si el alumno tiene un registro activo (`APROBADA`, `EQUIVALENCIA`, `REGULARIZADA`, `EN_CURSO`). De lo contrario no engrosan la currícula.
+
+---
+
+## 4. Cuatrimestres
+
+El año lectivo tiene **3 cuatrimestres**:
+
+| # | Nombre              | Período aproximado                    | Duración |
+|---|---------------------|---------------------------------------|----------|
+| 1 | 1er cuatrimestre    | Marzo–Julio                           | 16 sem.  |
+| 2 | 2do cuatrimestre    | Agosto–Diciembre                      | 16 sem.  |
+| 3 | Cuatrimestre verano | Enero–Febrero (puede iniciar en últimos días de enero y terminar a principios de marzo) | 5 sem.   |
+
+**Clasificación por mes** (usado en gráficos):
+- Q1 → meses 3–7 (Marzo a Julio)
+- Q2 → meses 8–12 (Agosto a Diciembre)
+- Q3 → meses 1–2 (Enero y Febrero)
+
+**Formato de etiqueta en gráficos**: `[número]C[año]`  
+Ejemplos: `1C2025` (1er cuatrimestre 2025), `3C2022` (verano 2022).
+
+---
+
+## 5. Gráficos del Dashboard
+
+### 5.1 Burn Up (Progreso Acumulado)
+- **Eje X**: muestra todos los cuatrimestres en los que el estudiante aprobó al menos una materia, usando el formato `1C/2C/3C + año`. No se proyectan cuatrimestres futuros.
+- **Eje Y**: porcentaje de la carrera completado (materias aprobadas + equivalencias / total).
+- Si entre dos cuatrimestres activos no hubo avances, ese período intermedio se omite del eje.
+
+### 5.2 Evolución del Promedio
+- **Eje X**: mismos cuatrimestres activos que el Burn Up.
+- **Eje Y**: promedio acumulado hasta ese cuatrimestre, calculado **solo sobre materias con nota** (excluye equivalencias sin nota).
+- El promedio es acumulativo (no por cuatrimestre aislado).
+
+### 5.3 Proyección (Simulador)
+- **Fórmula**: `⌈Materias restantes / Carga objetivo⌉ cuatrimestres`.
+- La **carga objetivo** la define el usuario con el slider (materias por cuatrimestre).
+- La proyección es **lineal** y no contempla correlatividades, oferta de horarios ni disponibilidad real.
+- Se muestra adicionalmente el **ritmo histórico real** del estudiante (mat. aprobadas totales / cuatrimestres cursados) para que el usuario contraste su tendencia real con la hipotética.
+
+---
+
+## 6. Sistema de Gamificación (Trofeos)
+
+El motor de recompensas valida bajo 4 Tiers: _Bronce, Plata, Oro, Platino_.
+- **Eficiencia (Recursera):** Penaliza estados recurrentes de `RECURSADA`.
+- **Velocidad (Tiempos):** Flags para "Año Limpio" o "Sprint" basados en años naturales de aprobación desde el ingreso.
+- La validación de trofeos **no debe comprometer la performance principal**. Las métricas complejas se calculan en background mediante *Events* (`subject.status.updated`).

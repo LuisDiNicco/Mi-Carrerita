@@ -1,4 +1,4 @@
-# 🏗️ Diseño y Arquitectura Técnica - Mi Carrerita
+# Diseño y Arquitectura Técnica - Mi Carrerita
 
 Este documento expone las justificaciones de arquitectura subyacente, analizando los compromisos (trade-offs), las decisiones de diseño adoptadas e insights fundamentales de cómo opera internamente Mi-Carrerita. Está orientado a líderes técnicos e ingenieros de software revisando la robustez y escalabilidad.
 

@@ -6,9 +6,10 @@ import { PrismaModule } from '../../prisma/prisma.module';
 import { DevAuthGuard } from '../../common/guards/dev-auth.guard';
 import { EnvironmentAuthGuard } from '../../common/guards/environment-auth.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { PdfParserModule } from '../../shared/pdf-parser/pdf-parser.module';
 
 @Module({
-  imports: [PrismaModule],
+  imports: [PrismaModule, PdfParserModule],
   providers: [
     ScheduleService,
     RecommendationService,
@@ -20,4 +21,4 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
   controllers: [ScheduleController],
   exports: [ScheduleService, RecommendationService],
 })
-export class ScheduleModule {}
+export class ScheduleModule { }

@@ -11,42 +11,83 @@ import type {
 
 export type DashboardScope = 'TOTAL' | 'INTERMEDIATE';
 
-export const TOTAL_CAREER_SUBJECTS = 63; // Hardcoded goal
+// 62 materias obligatorias. "Taller de Integración" es la única optativa
+// y no se cuenta aquí — si fue cursada, el total sube a 63 naturalmente
+// por la lógica de filteredSubjects en calculateDashboardData.
+export const TOTAL_CAREER_SUBJECTS = 62; // 62 obligatorias (sin Taller de Integración)
+
+/**
+ * Returns the academic quarter (1, 2 or 3) for a given month (0-indexed, JS convention).
+ *
+ * UNLAM academic calendar — actas are passed at end of each quarter:
+ *   Q3 (Verano):           Jan–Mar  → months 0–2  (actas en feb/marzo)
+ *   Q1 (1er cuatrimestre): Apr–Aug  → months 3–7  (actas en julio/agosto)
+ *   Q2 (2do cuatrimestre): Sep–Dec  → months 8–11 (actas en nov/diciembre)
+ *
+ * Note: Q3 of year Y is the summer between 2C(Y-1) and 1C(Y).
+ * E.g. 05/03/2022 → Q3 → label "3C2022".
+ */
+function getQuarter(month: number): 1 | 2 | 3 {
+    if (month >= 0 && month <= 2) return 3;  // Jan–Mar (Verano / 3er cuatrimestre)
+    if (month >= 3 && month <= 7) return 1;  // Apr–Aug (1er cuatrimestre)
+    return 2;                                // Sep–Dec (2do cuatrimestre)
+}
+
+/** Builds the quarter label in format `1C2025` */
+function buildQuarterLabel(year: number, quarter: 1 | 2 | 3): string {
+    return `${quarter}C${year}`;
+}
+
+/** Numeric sort key for a quarter, for chronological ordering */
+function quarterSortKey(year: number, quarter: 1 | 2 | 3): number {
+    // Q3 of year Y comes BEFORE Q1 of year Y (it's the summer before)
+    // We treat Q3 as the start of the year cycle: Q3(Y) < Q1(Y) < Q2(Y)
+    const intraYear = quarter === 3 ? 0 : quarter; // 3→0, 1→1, 2→2
+    return year * 10 + intraYear;
+}
 
 export function calculateDashboardData(
     subjects: Subject[],
     scope: DashboardScope
 ): DashboardDataDto {
+    // Filter optionals that aren't active, but keep EQUIVALENCIA subjects
+    const filteredSubjects = subjects.filter(s => {
+        if (s.isOptional) {
+            const activeStatuses = [SubjectStatus.APROBADA, SubjectStatus.REGULARIZADA, SubjectStatus.EN_CURSO, SubjectStatus.EQUIVALENCIA] as string[];
+            return activeStatuses.includes(s.status);
+        }
+        return true;
+    });
+
     // 1. Filter based on scope
     const scopedSubjects =
         scope === 'TOTAL'
-            ? subjects
-            : subjects.filter((s) => s.isIntermediateDegree);
+            ? filteredSubjects
+            : filteredSubjects.filter((s) => s.isIntermediateDegree);
 
-    // 2. Summary Calculation
+    // 2. "Completed" = APROBADA + EQUIVALENCIA (both count as passed)
+    const isCompleted = (s: Subject) =>
+        s.status === SubjectStatus.APROBADA || s.status === SubjectStatus.EQUIVALENCIA;
+
+    const completed = scopedSubjects.filter(isCompleted);
+    const completedCount = completed.length;
+
     const totalSubjects =
         scope === 'TOTAL' ? Math.max(scopedSubjects.length, TOTAL_CAREER_SUBJECTS) : scopedSubjects.length;
 
-    const completed = scopedSubjects.filter((s) => s.status === SubjectStatus.APROBADA);
-    const completedCount = completed.length;
     const completionPercentage =
         totalSubjects > 0 ? Math.round((completedCount / totalSubjects) * 100) : 0;
 
-    const widthGrades = completed.filter((s) => s.grade !== null && s.grade > 0);
-    const sumGrades = widthGrades.reduce((acc, s) => acc + (s.grade || 0), 0);
+    // Average: only subjects with a grade (excludes equivalencias without grade)
+    const withGrades = completed.filter((s) => s.grade !== null && s.grade > 0);
+    const sumGrades = withGrades.reduce((acc, s) => acc + (s.grade || 0), 0);
     const overallAverageGrade =
-        widthGrades.length > 0 ? Number((sumGrades / widthGrades.length).toFixed(2)) : null;
+        withGrades.length > 0 ? Number((sumGrades / withGrades.length).toFixed(2)) : null;
 
     // Total Hours
     const totalHours = scopedSubjects.reduce((acc, s) => acc + s.hours, 0);
     const completedHours = completed.reduce((acc, s) => acc + s.hours, 0);
 
-    // Success Rate (Passes vs Fails/Retry - simplified as just passes / total attempted if we had attempts, 
-    // but here we might just base it on passed vs total subjects? 
-    // Actually, backend might calculate this differently (passed / (passed + failed)).
-    // Without history of fails, we can assume success rate is high or just calculate based on passed.
-    // We'll placeholder this as 100% if we don't have fail history, or maybe just completed %?
-    // Let's stick to what we have. If we have no fail info, maybe ignore or set to 100.
     const overallSuccessRate = 100;
 
     const summary: DashboardSummaryDto = {
@@ -60,7 +101,8 @@ export function calculateDashboardData(
     };
 
     // 3. Subject Volume Chart
-    const statusCounts = {
+    // Show EQUIVALENCIA as part of "Aprobadas" in the pie (merge them visually)
+    const statusCounts: Record<string, number> = {
         [SubjectStatus.APROBADA]: 0,
         [SubjectStatus.REGULARIZADA]: 0,
         [SubjectStatus.EN_CURSO]: 0,
@@ -70,16 +112,13 @@ export function calculateDashboardData(
     };
 
     scopedSubjects.forEach((s) => {
-        if (statusCounts[s.status] !== undefined) {
+        if (s.status === SubjectStatus.EQUIVALENCIA) {
+            // Count equivalencias alongside APROBADA
+            statusCounts[SubjectStatus.APROBADA]++;
+        } else if (statusCounts[s.status] !== undefined) {
             statusCounts[s.status]++;
         }
     });
-
-    // For TOTAL scope, if we have fewer subjects than TOTAL_CAREER_SUBJECTS, 
-    // the missing ones are implicitly PENDING/FUTURE. 
-    // But usually 'subjects' contains all plan subjects.
-    // If subjects.length < TOTAL_CAREER_SUBJECTS, we technically have "Unknown" or "Future".
-    // Let's assume subjects array is complete for the plan.
 
     const subjectVolumeChart: SubjectVolumeChartDto = {
         data: Object.entries(statusCounts).map(([status, count]) => ({
@@ -88,64 +127,85 @@ export function calculateDashboardData(
         })),
     };
 
-    // 4. Performance Chart (Area) - Avg Grade per Year/Semester
-    // We need to group by "Year-Semester" of when it was PASSED.
-    // If we don't have updateDate for all, we might fallback to subject.year (plan year).
-    // But "Performance" usually implies "Over Time".
-    // If statusDate is available for APROBADA, use it.
-
-    const passedWithDate = completed
+    // 4. Performance & BurnUp Charts using proper quarter system
+    // Only include completed subjects with a statusDate
+    // For grade chart: only include subjects that have a grade (excludes equivalencias without grade)
+    const completedWithDate = completed
         .filter((s) => s.statusDate)
         .map((s) => {
             const date = new Date(s.statusDate!);
+            const year = date.getFullYear();
+            const month = date.getMonth();
+            const quarter = getQuarter(month);
             return {
                 subject: s,
                 date,
-                year: date.getFullYear(),
-                month: date.getMonth(),
+                year,
+                month,
+                quarter,
+                quarterKey: buildQuarterLabel(year, quarter),
+                sortKey: quarterSortKey(year, quarter),
             };
         })
-        .sort((a, b) => a.date.getTime() - b.date.getTime());
+        .sort((a, b) => a.sortKey - b.sortKey || a.date.getTime() - b.date.getTime());
 
-    // Group by chronological semester (e.g. 2020-1, 2020-2)
-    const semesters = new Map<string, { sum: number; count: number; date: number }>();
+    // Group by quarter for performance chart (only subjects with grades for avg calculation)
+    type QuarterEntry = { gradeSum: number; gradeCount: number; totalPassed: number; sortKey: number; year: number; quarter: 1 | 2 | 3 };
+    const quarterMap = new Map<string, QuarterEntry>();
 
-    passedWithDate.forEach((item) => {
-        const semester = item.month < 6 ? 1 : 2;
-        const key = `${item.year}-${semester}`;
-        if (!semesters.has(key)) {
-            semesters.set(key, { sum: 0, count: 0, date: item.date.getTime() });
+    completedWithDate.forEach((item) => {
+        const key = item.quarterKey;
+        if (!quarterMap.has(key)) {
+            quarterMap.set(key, {
+                gradeSum: 0,
+                gradeCount: 0,
+                totalPassed: 0,
+                sortKey: item.sortKey,
+                year: item.year,
+                quarter: item.quarter,
+            });
         }
-        const entry = semesters.get(key)!;
-        if (item.subject.grade) {
-            entry.sum += item.subject.grade;
-            entry.count++;
+        const entry = quarterMap.get(key)!;
+        entry.totalPassed++;
+        if (item.subject.grade !== null && item.subject.grade > 0) {
+            entry.gradeSum += item.subject.grade;
+            entry.gradeCount++;
         }
     });
 
-    const performanceData: SemesterDataPoint[] = Array.from(semesters.entries())
-        .map(([label, data]) => ({
-            year: parseInt(label.split('-')[0]),
-            semester: parseInt(label.split('-')[1]),
+    // Sort quarters chronologically
+    const sortedQuarters = Array.from(quarterMap.entries()).sort(
+        ([, a], [, b]) => a.sortKey - b.sortKey
+    );
+
+    // Cumulative average grade over time (running total)
+    let runningGradeSum = 0;
+    let runningGradeCount = 0;
+
+    const performanceData: SemesterDataPoint[] = sortedQuarters.map(([label, data]) => {
+        runningGradeSum += data.gradeSum;
+        runningGradeCount += data.gradeCount;
+        const avgGrade = runningGradeCount > 0
+            ? Number((runningGradeSum / runningGradeCount).toFixed(2))
+            : null;
+        return {
+            year: data.year,
+            semester: data.quarter,
             label,
-            avgGrade: data.count > 0 ? Number((data.sum / data.count).toFixed(2)) : null,
-            successPercentage: 100, // Placeholder
+            avgGrade,
+            successPercentage: 100,
             totalHours: 0,
             completedHours: 0,
             subjectCount: 0,
-            passedCount: data.count,
-        }))
-        .sort((a, b) => {
-            if (a.year !== b.year) return a.year - b.year;
-            return a.semester - b.semester;
-        });
+            passedCount: data.totalPassed,
+        };
+    });
 
     const performanceChart: PerformanceChartDto = {
         data: performanceData,
     };
 
-    // 5. Burn Up Chart
-    // Cumulative progress over time
+    // 5. Burn Up Chart — cumulative progress over quarters
     let cumulativeCount = 0;
     const burnUpData = performanceData.map((point) => {
         cumulativeCount += point.passedCount;
@@ -163,7 +223,7 @@ export function calculateDashboardData(
         data: burnUpData,
     };
 
-    // 6. Difficulty Scatter
+    // 6. Difficulty Scatter — only subjects with both difficulty and grade
     const difficultyData = completed
         .filter((s) => s.difficulty && s.grade)
         .map((s) => ({
@@ -188,7 +248,7 @@ export function calculateDashboardData(
         }
         const data = progressByYearMap.get(s.year)!;
         data.total += 1;
-        if (s.status === SubjectStatus.APROBADA) {
+        if (isCompleted(s)) {
             data.completed += 1;
         }
     });
@@ -206,13 +266,11 @@ export function calculateDashboardData(
         data: progressByYearData,
     };
 
-    // Dummy Ranking (not requested to be perfect yet, just placeholder structure)
     const subjectRankingsChart = {
         mataPromedios: [],
         salvavidas: [],
     };
 
-    // Efficacy and Load charts - placeholders or derived similarly
     const efficacyChart = { data: [] };
     const academicLoadChart = { data: [] };
 

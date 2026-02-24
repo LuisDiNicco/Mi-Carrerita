@@ -62,17 +62,13 @@ export function calculateAverage(grades: (number | null)[]): number | null {
 /** Calculate success percentage from array of statuses */
 export function calculateSuccessPercentage(statuses: string[]): number {
   if (statuses.length === 0) return 0;
-  const passedCount = statuses.filter((s) =>
-    [SubjectStatus.APROBADA, SubjectStatus.REGULARIZADA].includes(
-      s as SubjectStatus,
-    ),
-  ).length;
+  const passedCount = statuses.filter((s) => isSubjectPassed(s)).length;
   return Math.round((passedCount / statuses.length) * 100 * 100) / 100;
 }
 
 /** Check if a subject is considered "passed" */
 export function isSubjectPassed(status: string): boolean {
-  return [SubjectStatus.APROBADA, SubjectStatus.REGULARIZADA].includes(
+  return [SubjectStatus.APROBADA, SubjectStatus.REGULARIZADA, SubjectStatus.EQUIVALENCIA].includes(
     status as SubjectStatus,
   );
 }

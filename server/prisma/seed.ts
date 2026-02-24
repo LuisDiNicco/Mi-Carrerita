@@ -1,10 +1,6 @@
 // server/prisma/seed.ts
 import { PrismaClient } from '@prisma/client';
-// IMPORTAMOS DESDE NUESTRO ARCHIVO MANUAL
-import {
-  SubjectStatus,
-  CorrelativityCondition,
-} from '../src/common/constants/academic-enums';
+import { CorrelativityCondition } from '../src/common/constants/academic-enums';
 import { PLAN_2023 } from '../src/data/plan-2023';
 
 const prisma = new PrismaClient();
@@ -65,22 +61,6 @@ async function main() {
     }
   }
 
-  // Historial de prueba
-  const discreta = allSubjects.find((s) => s.planCode === '3621');
-  if (discreta) {
-    await prisma.academicRecord.upsert({
-      where: {
-        userId_subjectId: { userId: admin.id, subjectId: discreta.id },
-      },
-      create: {
-        userId: admin.id,
-        subjectId: discreta.id,
-        status: SubjectStatus.APROBADA, // Usamos el Enum TS
-        finalGrade: 9,
-      },
-      update: {},
-    });
-  }
   console.log('✅ Seed finalizado correctamente.');
 }
 

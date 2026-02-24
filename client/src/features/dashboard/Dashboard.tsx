@@ -64,7 +64,16 @@ export const Dashboard = () => {
     const remaining = Math.max(0, totalSubjects - completedSubjects);
     const normalizedLoad = Math.max(1, targetLoad);
     const semesters = Math.ceil(remaining / normalizedLoad);
-    return { remaining, semesters };
+
+    // Historical pace: average subjects approved per quarter
+    const burnUp = dashboardData.burnUpChart.data;
+    const quartersWithData = burnUp.length;
+    const historicalPace =
+      quartersWithData > 0
+        ? Number((completedSubjects / quartersWithData).toFixed(1))
+        : 0;
+
+    return { remaining, semesters, historicalPace, quartersWithData };
   }, [dashboardData, targetLoad]);
 
   const volumeData = useMemo(() => {
@@ -430,11 +439,11 @@ export const Dashboard = () => {
             <div className="mb-4">
               <h4 className="text-lg font-bold text-app">Proyección (Simulador)</h4>
               <p className="text-xs text-muted mb-2">
-                Calcula la cantidad de cuatrimestres necesarios basados en tu ritmo.
+                Calcula la cantidad de cuatrimestres necesarios basados en tu ritmo objetivo.
               </p>
             </div>
 
-            <div className="flex-1 flex flex-col justify-center space-y-6">
+            <div className="flex-1 flex flex-col justify-center space-y-4">
               <div className="space-y-2">
                 <label className="text-[11px] uppercase tracking-wider text-muted block font-bold">
                   Cant. de materias a anotar por cuatrimestre:
@@ -458,6 +467,30 @@ export const Dashboard = () => {
                 <p className="text-5xl font-bold text-app font-jersey text-shadow mt-2 mb-2 tracking-wide">{projection.semesters}</p>
                 <p className="text-sm font-bold text-unlam-500 uppercase tracking-widest mt-1">Cuatrimestres</p>
                 <p className="text-xs text-muted mt-2 block font-mono">({(projection.semesters / 2).toFixed(1)} años de cursada regular)</p>
+              </div>
+
+              {/* How the projection is calculated */}
+              <div className="rounded-lg bg-app-bg border border-app-border px-4 py-3 space-y-1.5">
+                <p className="text-[11px] uppercase tracking-wider text-muted font-bold">¿Cómo se calcula?</p>
+                <p className="text-xs text-muted leading-relaxed">
+                  <span className="text-app font-semibold">{projection.remaining} materias restantes</span> ÷{' '}
+                  <span className="text-unlam-500 font-semibold">{targetLoad} por cuatrimestre</span> (objetivo del slider).
+                  Es una estimación lineal y no contempla correlatividades ni oferta de materias.
+                </p>
+                {projection.quartersWithData > 0 && (
+                  <p className="text-xs leading-relaxed">
+                    <span className="text-muted">Tu ritmo histórico real: </span>
+                    <span className={`font-bold ${projection.historicalPace >= targetLoad ? 'text-green-400' : 'text-yellow-400'
+                      }`}>
+                      {projection.historicalPace} mat/cuatrimestre
+                    </span>
+                    <span className="text-muted"> en {projection.quartersWithData} cuatrimestres cursados</span>
+                    {projection.historicalPace >= targetLoad
+                      ? <span className="text-green-400"> — superás el objetivo ✓</span>
+                      : <span className="text-yellow-400"> — por debajo del objetivo</span>
+                    }
+                  </p>
+                )}
               </div>
             </div>
           </div>

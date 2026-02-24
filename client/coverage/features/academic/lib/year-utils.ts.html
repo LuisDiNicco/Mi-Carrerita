@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/10</span>
+                <span class='fraction'>10/10</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/4</span>
+                <span class='fraction'>4/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/3</span>
+                <span class='fraction'>3/3</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/9</span>
+                <span class='fraction'>9/9</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -90,44 +90,44 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">13x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">13x</span>
+<span class="cline-any cline-yes">21x</span>
+<span class="cline-any cline-yes">21x</span>
+<span class="cline-any cline-yes">18x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">21x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">13x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-yes">13x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import type { Subject } from "../../../shared/types/academic";
 &nbsp;
-export function <span class="fstat-no" title="function not covered" >groupSubjectsByYear(</span>
+export function groupSubjectsByYear(
   subjects: Subject[],
 ): Map&lt;number, Subject[]&gt; {
-  const grouped = <span class="cstat-no" title="statement not covered" >new Map&lt;number, Subject[]&gt;();</span>
+  const grouped = new Map&lt;number, Subject[]&gt;();
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  subjects.forEach(<span class="fstat-no" title="function not covered" >(s</span>ubject) =&gt; {</span>
-    const year = <span class="cstat-no" title="statement not covered" >subject.year;</span>
-<span class="cstat-no" title="statement not covered" >    if (!grouped.has(year)) {</span>
-<span class="cstat-no" title="statement not covered" >      grouped.set(year, []);</span>
+  subjects.forEach((subject) =&gt; {
+    const year = subject.year;
+    if (!grouped.has(year)) {
+      grouped.set(year, []);
     }
-<span class="cstat-no" title="statement not covered" >    grouped.get(year)!.push(subject);</span>
+    grouped.get(year)!.push(subject);
   });
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  return grouped;</span>
+  return grouped;
 }
 &nbsp;
-export function <span class="fstat-no" title="function not covered" >getYearLabel(y</span>ear: number): string {
-<span class="cstat-no" title="statement not covered" >  if (year === 0) <span class="cstat-no" title="statement not covered" >return "TRANSVERSAL";</span></span>
-<span class="cstat-no" title="statement not covered" >  return `AÑO ${year}`;</span>
+export function getYearLabel(year: number): string {
+  if (year === 0) return "TRANSVERSAL";
+  return `AÑO ${year}`;
 }
 &nbsp;</pre></td></tr></table></pre>
 
@@ -136,7 +136,7 @@ export function <span class="fstat-no" title="function not covered" >getYearLabe
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-02-20T12:58:47.473Z
+                at 2026-02-24T14:40:50.184Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

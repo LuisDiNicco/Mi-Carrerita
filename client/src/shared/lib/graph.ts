@@ -237,17 +237,24 @@ export function getRecommendationsWithReasons(
   edges: GraphEdge[],
   desiredCount: number,
   excludeIds: string[] = [],
+  timetables?: { subjectId: string }[],
 ): RecommendationWithReason[] {
   const excludeSet = new Set(excludeIds);
   const subjectByPlanCode = buildSubjectByPlanCode(subjects);
 
+  // Both DISPONIBLE and RECURSADA are valid candidates
   const available = subjects.filter(
     (subject) =>
-      subject.status === SubjectStatus.DISPONIBLE &&
+      (subject.status === SubjectStatus.DISPONIBLE ||
+        subject.status === SubjectStatus.RECURSADA) &&
       !excludeSet.has(subject.id) &&
       subject.correlativeIds.every((reqCode: string) => {
         const required = subjectByPlanCode.get(reqCode);
-        return !required || required.status === SubjectStatus.APROBADA;
+        return (
+          !required ||
+          required.status === SubjectStatus.APROBADA ||
+          required.status === SubjectStatus.EQUIVALENCIA
+        );
       }),
   );
 
@@ -260,6 +267,7 @@ export function getRecommendationsWithReasons(
   );
   const unlocksThesis = getSubjectsThatUnlockThesis(subjects, edges);
   const unlockMap = buildUnlockMap(edges);
+  const scheduledIds = new Set((timetables ?? []).map((t) => t.subjectId));
 
   const scored = available.map((subject) => {
     const reasons: string[] = [];
@@ -296,12 +304,42 @@ export function getRecommendationsWithReasons(
     const distance = distanceToSink.get(subject.id) ?? 0;
     score += distance * 0.1;
 
+    // Penalización: materias optativas tienen prioridad mínima
+    if (subject.isOptional) {
+      score -= 1000;
+      reasons.push('⚠️ Materia Optativa (baja prioridad)');
+    }
+
     return {
       subject,
       reasons,
       score,
     };
   });
+
+  // Detectar si todas las disponibles tienen score base 0
+  // (caso típico de alumnos de 5to año donde ya no quedan correlativas que desbloquear)
+  const allScoresZero = scored.every((s) => s.score === 0);
+
+  if (allScoresZero) {
+    // Prioridad especial: Proyecto Final primero (+200)
+    scored.forEach((s) => {
+      if (s.subject.name === PROYECTO_FINAL_NAME) {
+        s.score += 200;
+        s.reasons.unshift("⭐ Proyecto Final");
+      }
+    });
+
+    // Segundo criterio: materias que ya tienen horario cargado
+    if (scheduledIds.size > 0) {
+      scored.forEach((s) => {
+        if (scheduledIds.has(s.subject.id)) {
+          s.score += 10;
+          s.reasons.push("📅 Horario asignado");
+        }
+      });
+    }
+  }
 
   // Ordenar por score (descendente), luego por año (ascendente)
   scored.sort((a, b) => {
@@ -311,3 +349,4 @@ export function getRecommendationsWithReasons(
 
   return scored.slice(0, desiredCount);
 }
+

@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import type { Subject } from '../../../shared/types/academic';
 import { SubjectStatus } from '../../../shared/types/academic';
-import { RetroButton } from '../../../shared/ui/RetroButton';
+import { RetroButton, RetroCalendar } from '../../../shared/ui';
 import { Calendar } from 'lucide-react';
+import { fromISODate, toISODate } from '../../../shared/lib/utils';
 
 interface SubjectUpdatePanelProps {
   subject: Subject | null;
@@ -27,6 +28,7 @@ export const SubjectUpdatePanel = ({ subject, isOpen, onClose, onSave }: Subject
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
   const statusOptions = [
     { label: 'Pendiente', value: SubjectStatus.PENDIENTE },
@@ -35,6 +37,7 @@ export const SubjectUpdatePanel = ({ subject, isOpen, onClose, onSave }: Subject
     { label: 'Recursada', value: SubjectStatus.RECURSADA },
     { label: 'Regularizada', value: SubjectStatus.REGULARIZADA },
     { label: 'Aprobada', value: SubjectStatus.APROBADA },
+    { label: 'Equivalencia', value: SubjectStatus.EQUIVALENCIA },
   ];
 
   useEffect(() => {
@@ -48,7 +51,7 @@ export const SubjectUpdatePanel = ({ subject, isOpen, onClose, onSave }: Subject
     setStatus(cleanStatus);
     setGrade(subject.grade !== null ? String(subject.grade) : '');
     setDifficulty(subject.difficulty !== null && subject.difficulty !== undefined ? String(subject.difficulty) : '');
-    setStatusDate(subject.statusDate ? subject.statusDate.split('T')[0] : '');
+    setStatusDate(subject.statusDate ? fromISODate(subject.statusDate.split('T')[0]) : '');
     setNotes(subject.notes ?? '');
     setConfirmOpen(false); // Reset confirmation on subject change
     setError(null);
@@ -99,7 +102,9 @@ export const SubjectUpdatePanel = ({ subject, isOpen, onClose, onSave }: Subject
       const normalizedGrade = gradeValue !== null && Number.isNaN(gradeValue) ? null : gradeValue;
       const difficultyValue = difficulty.trim() === '' ? null : Number(difficulty);
       const normalizedDifficulty = difficultyValue !== null && Number.isNaN(difficultyValue) ? null : difficultyValue;
-      const statusDateValue = statusDate.trim() === '' ? null : statusDate;
+      // Convert DD/MM/YYYY → ISO before sending to API
+      const isoDate = statusDate.trim() === '' ? null : toISODate(statusDate);
+      const statusDateValue = isoDate || null;
       const notesValue = notes.trim() === '' ? null : notes.trim();
 
       await onSave({
@@ -130,7 +135,7 @@ export const SubjectUpdatePanel = ({ subject, isOpen, onClose, onSave }: Subject
   const modalContent = (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center px-4">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]" onClick={onClose} />
-      <div className="relative z-10 w-full max-w-2xl bg-surface border-2 border-app rounded-xl shadow-retro p-0 flex flex-col md:flex-row overflow-hidden animate-[fadeInUp_0.3s_ease-out]">
+      <div className="relative z-10 w-full max-w-2xl bg-surface border-2 border-app rounded-xl shadow-retro p-0 flex flex-col md:flex-row animate-[fadeInUp_0.3s_ease-out]">
 
         {/* Left Side: Header info & Status */}
         <div className="md:w-1/3 bg-elevated p-6 border-b md:border-b-0 md:border-r border-app flex flex-col justify-between">
@@ -261,32 +266,29 @@ export const SubjectUpdatePanel = ({ subject, isOpen, onClose, onSave }: Subject
                     className="w-full bg-elevated border-2 border-app-border rounded-lg pl-3 pr-10 py-2.5 text-app focus:border-unlam-500 focus:ring-2 focus:ring-unlam-500/20 outline-none transition-all placeholder:text-muted/50 font-mono text-sm"
                     value={statusDate}
                     onChange={(event) => {
-                      // Allow manual typing of YYYY-MM-DD
-                      let val = event.target.value.replace(/[^\d-]/g, '');
-                      setStatusDate(val);
+                      // Auto-format: insert slashes at DD/ and DD/MM/
+                      let val = event.target.value.replace(/[^\d]/g, '');
+                      if (val.length > 2) val = val.slice(0, 2) + '/' + val.slice(2);
+                      if (val.length > 5) val = val.slice(0, 5) + '/' + val.slice(5);
+                      setStatusDate(val.slice(0, 10));
                     }}
-                    placeholder="YYYY-MM-DD"
+                    placeholder="DD/MM/YYYY"
                   />
                   <button
                     type="button"
+                    onClick={() => setIsCalendarOpen(!isCalendarOpen)}
                     className="absolute right-2 p-1.5 text-muted hover:text-unlam-500 transition-colors cursor-pointer bg-elevated rounded"
-                    onClick={(e) => {
-                      const dateInput = e.currentTarget.nextElementSibling as HTMLInputElement;
-                      if (dateInput && dateInput.showPicker) {
-                        try {
-                          dateInput.showPicker();
-                        } catch (err) { }
-                      }
-                    }}
                     title="Abrir calendario"
                   >
                     <Calendar size={18} />
                   </button>
-                  <input
-                    type="date"
-                    className="absolute right-4 bottom-0 top-0 w-0 h-0 opacity-0 pointer-events-none"
-                    onChange={(e) => setStatusDate(e.target.value)}
-                  />
+                  {isCalendarOpen && (
+                    <RetroCalendar
+                      value={statusDate}
+                      onChange={setStatusDate}
+                      onClose={() => setIsCalendarOpen(false)}
+                    />
+                  )}
                 </div>
               </label>
 

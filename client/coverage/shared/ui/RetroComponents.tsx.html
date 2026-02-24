@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>5/10</span>
+                <span class='fraction'>10/10</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">11.11% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>1/9</span>
+                <span class='fraction'>9/9</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">25% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/4</span>
+                <span class='fraction'>4/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>5/10</span>
+                <span class='fraction'>10/10</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line medium'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -224,19 +224,19 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -255,8 +255,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -294,12 +294,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -337,12 +337,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -350,7 +350,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -375,19 +375,19 @@ interface RetroCardProps {
   glow?: boolean;
 }
 &nbsp;
-export const RetroCard = <span class="fstat-no" title="function not covered" >({</span>
+export const RetroCard = ({
   children,
   className,
-  variant = <span class="branch-0 cbranch-no" title="branch not covered" >'default',</span>
-  glow = <span class="branch-0 cbranch-no" title="branch not covered" >false</span>
+  variant = 'default',
+  glow = false
 }: RetroCardProps) =&gt; {
-  const variants = <span class="cstat-no" title="statement not covered" >{</span>
+  const variants = {
     default: 'bg-surface border-app',
     screen: 'bg-surface border-app shadow-subtle',
     console: 'bg-elevated border-app',
   };
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  return (</span>
+  return (
     &lt;div
       className={cn(
         'relative border-2 p-4 rounded-lg',
@@ -445,12 +445,12 @@ interface RetroErrorProps {
   onRetry?: () =&gt; void;
 }
 &nbsp;
-export const RetroError = <span class="fstat-no" title="function not covered" >({</span>
-  title = <span class="branch-0 cbranch-no" title="branch not covered" >'¡ERROR!',</span>
+export const RetroError = ({
+  title = '¡ERROR!',
   message,
   onRetry
 }: RetroErrorProps) =&gt; {
-<span class="cstat-no" title="statement not covered" >  return (</span>
+  return (
     &lt;div className="flex flex-col items-center justify-center space-y-6 p-8"&gt;
       &lt;div className="text-6xl text-red-500 font-retro"&gt;
         ⚠️
@@ -488,12 +488,12 @@ interface RetroBadgeProps {
   className?: string;
 }
 &nbsp;
-export const RetroBadge = <span class="fstat-no" title="function not covered" >({</span>
+export const RetroBadge = ({
   children,
-  variant = <span class="branch-0 cbranch-no" title="branch not covered" >'default',</span>
+  variant = 'default',
   className
 }: RetroBadgeProps) =&gt; {
-  const variants = <span class="cstat-no" title="statement not covered" >{</span>
+  const variants = {
     default: 'bg-gray-600 border-gray-800 text-white',
     success: 'bg-[#73D216] border-[#4E9A06] text-white',
     warning: 'bg-[#FCE94F] border-[#C4A000] text-[#2E3436]',
@@ -501,7 +501,7 @@ export const RetroBadge = <span class="fstat-no" title="function not covered" >(
     info: 'bg-[#729FCF] border-[#3465A4] text-white',
   };
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  return (</span>
+  return (
     &lt;span
       className={cn(
         'inline-block px-2 py-1 text-xs font-retro font-bold',
@@ -523,7 +523,7 @@ export const RetroBadge = <span class="fstat-no" title="function not covered" >(
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-02-20T12:58:47.473Z
+                at 2026-02-24T14:40:50.184Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

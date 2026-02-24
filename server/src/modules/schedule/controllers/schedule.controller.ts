@@ -7,7 +7,13 @@ import {
   Body,
   Param,
   UseGuards,
+  UseInterceptors,
+  UploadedFile,
+  ParseFilePipe,
+  MaxFileSizeValidator,
+  FileTypeValidator,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ScheduleService } from '../services/schedule.service';
 import { RecommendationService } from '../services/recommendation.service';
@@ -21,6 +27,7 @@ import {
 } from '../dto';
 import { EnvironmentAuthGuard } from '../../../common/guards/environment-auth.guard';
 import { CurrentUser } from '../../../common/decorators/current-user.decorator';
+import { PdfParserService } from '../../../shared/pdf-parser/pdf-parser.service';
 
 @Controller('schedule')
 @UseGuards(EnvironmentAuthGuard)
@@ -28,7 +35,8 @@ export class ScheduleController {
   constructor(
     private readonly scheduleService: ScheduleService,
     private readonly recommendationService: RecommendationService,
-  ) {}
+    private readonly pdfParserService: PdfParserService,
+  ) { }
 
   // ========================
   // Timetable Endpoints
@@ -56,6 +64,25 @@ export class ScheduleController {
       userEmail,
       dto.timetables,
     );
+  }
+
+  @Post('upload-oferta')
+  @ApiOperation({ summary: 'Parsear un PDF de Oferta de Materias' })
+  @ApiResponse({ status: 200, description: 'Parsed offering data' })
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadOferta(
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 5000000 }), // 5MB
+          new FileTypeValidator({ fileType: 'pdf' }),
+        ],
+      }),
+    )
+    file: Express.Multer.File,
+  ) {
+    const parsedData = await this.pdfParserService.parseOfertaMaterias(file.buffer);
+    return { data: parsedData };
   }
 
   @Get('timetable')
