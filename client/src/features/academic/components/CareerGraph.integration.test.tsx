@@ -4,6 +4,7 @@ import { CareerGraph } from './CareerGraph';
 import * as academicApi from '../lib/academic-api';
 import * as authApi from '../../auth/lib/api';
 import { useAcademicStore } from '../store/academic-store';
+import { useAuthStore } from '../../auth/store/auth-store';
 import { SubjectStatus } from '../../../shared/types/academic';
 
 // Mock dependencies
@@ -64,6 +65,9 @@ describe('CareerGraph Integration Flow', () => {
     beforeEach(() => {
         vi.clearAllMocks();
         useAcademicStore.setState({ subjects: [] });
+        sessionStorage.clear();
+        // Simulate a logged-in user so handleSaveSubject uses authFetch
+        useAuthStore.setState({ isGuest: false, user: { name: 'Test', email: 'test@test.com' } });
     });
 
     it('Flujo E2E Integrado: Carga materias, abre panel, edita estado, intercepta patch localmente', async () => {

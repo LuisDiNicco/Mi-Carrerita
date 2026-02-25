@@ -11,6 +11,14 @@ const REFRESH_COOKIE = 'refresh_token';
 const REFRESH_DAYS = 7;
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
+const getRefreshCookieOptions = () => ({
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: process.env.NODE_ENV === 'production' ? ('none' as const) : ('strict' as const),
+  maxAge: REFRESH_DAYS * MS_PER_DAY,
+  path: '/',
+});
+
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -19,16 +27,11 @@ export class AuthController {
   async register(@Body() dto: RegisterDto, @Res() res: Response) {
     const result = await this.authService.register(dto);
 
-    res.cookie(REFRESH_COOKIE, result.refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: REFRESH_DAYS * MS_PER_DAY,
-      path: '/',
-    });
+    res.cookie(REFRESH_COOKIE, result.refreshToken, getRefreshCookieOptions());
 
     return res.json({
       accessToken: result.accessToken,
+      refreshToken: result.refreshToken,
       user: result.user,
     });
   }
@@ -37,16 +40,11 @@ export class AuthController {
   async login(@Body() dto: LoginDto, @Res() res: Response) {
     const result = await this.authService.login(dto);
 
-    res.cookie(REFRESH_COOKIE, result.refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: REFRESH_DAYS * MS_PER_DAY,
-      path: '/',
-    });
+    res.cookie(REFRESH_COOKIE, result.refreshToken, getRefreshCookieOptions());
 
     return res.json({
       accessToken: result.accessToken,
+      refreshToken: result.refreshToken,
       user: result.user,
     });
   }
@@ -81,13 +79,7 @@ export class AuthController {
       await this.authService.issueTokens(user);
     const clientUrl = process.env.CLIENT_URL ?? 'http://localhost:5173';
 
-    res.cookie(REFRESH_COOKIE, refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: REFRESH_DAYS * MS_PER_DAY,
-      path: '/',
-    });
+    res.cookie(REFRESH_COOKIE, refreshToken, getRefreshCookieOptions());
 
     return res.redirect(`${clientUrl}/?${ACCESS_TOKEN_PARAM}=${accessToken}`);
   }
@@ -99,10 +91,23 @@ export class AuthController {
   }
 
   @Post('refresh')
-  async refresh(@Req() req: Request, @Res() res: Response) {
-    const refreshToken = req.cookies?.[REFRESH_COOKIE];
-    const accessToken = await this.authService.refreshAccessToken(refreshToken);
-    return res.json({ accessToken });
+  async refresh(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Body() body?: { refreshToken?: string },
+  ) {
+    // Intenta obtener el refresh token del body primero (para cross-domain)
+    // Si no está, intenta obtenerlo del cookie (para mismo dominio)
+    const refreshToken = body?.refreshToken || req.cookies?.[REFRESH_COOKIE];
+    const result = await this.authService.refreshAccessToken(refreshToken);
+
+    // Actualiza el cookie con el nuevo refresh token
+    res.cookie(REFRESH_COOKIE, result.refreshToken, getRefreshCookieOptions());
+
+    return res.json({
+      accessToken: result.accessToken,
+      refreshToken: result.refreshToken,
+    });
   }
 
   @Post('logout')

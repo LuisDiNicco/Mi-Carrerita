@@ -106,6 +106,55 @@ export class AcademicCareerService {
     });
   }
 
+  async getPublicCareerGraph(): Promise<SubjectNodeDto[]> {
+    const subjects = await this.prisma.subject.findMany({
+      select: {
+        id: true,
+        planCode: true,
+        name: true,
+        year: true,
+        hours: true,
+        isOptional: true,
+        prerequisites: {
+          select: {
+            prerequisite: {
+              select: { planCode: true },
+            },
+          },
+        },
+      },
+      orderBy: { year: 'asc' },
+    });
+
+    return subjects.map((subject) => {
+      const requiredIds = subject.prerequisites.map((p) => p.prerequisite.planCode);
+      const yearInfo = getYearInfo(subject.planCode);
+
+      // A guest has no approved subjects yet, so:
+      //   • No prerequisites  → DISPONIBLE (can be taken right away)
+      //   • Has prerequisites → PENDIENTE  (waiting for them to be met)
+      // This mirrors calling resolveSubjectStatus() with empty approval sets.
+      const status =
+        requiredIds.length === 0 ? SubjectStatus.DISPONIBLE : SubjectStatus.PENDIENTE;
+
+      return new SubjectNodeDto({
+        id: subject.id,
+        planCode: subject.planCode,
+        name: subject.name,
+        year: subject.year,
+        hours: subject.hours,
+        isOptional: subject.isOptional,
+        status,
+        grade: null,
+        difficulty: null,
+        statusDate: null,
+        notes: null,
+        correlativeIds: requiredIds,
+        isIntermediateDegree: yearInfo.isIntermediateDegree,
+      });
+    });
+  }
+
   async updateSubjectRecord(
     userEmail: string,
     subjectId: string,

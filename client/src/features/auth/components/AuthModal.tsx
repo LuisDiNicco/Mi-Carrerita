@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useAuthStore } from '../store/auth-store';
 import { clearAccessToken } from '../lib/auth';
 import { registerUser, loginUser } from '../lib/api';
+import { useAcademicStore } from '../../academic/store/academic-store';
+import { migrateGuestProgressToAccount } from '../../academic/lib/academic-api';
 import { RetroButton } from '../../../shared/ui/RetroButton';
 import { Eye, EyeOff } from 'lucide-react';
 
@@ -18,6 +20,7 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
   const logout = useAuthStore((state) => state.logout);
   const continueAsGuest = useAuthStore((state) => state.continueAsGuest);
   const authUser = useAuthStore((state) => state.user);
+  const isGuest = useAuthStore((state) => state.isGuest);
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -66,6 +69,8 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
 
     setIsLoading(true);
     try {
+      const guestSubjectsSnapshot = useAcademicStore.getState().subjects;
+
       const result = mode === 'register'
         ? await registerUser({
             email: trimmedEmail,
@@ -76,6 +81,16 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
             email: trimmedEmail,
             password: trimmedPassword,
           });
+
+      if (mode === 'register' && isGuest) {
+        // Best-effort migration: if it fails, registration still completes.
+        // The user can manually set their progress once logged in.
+        try {
+          await migrateGuestProgressToAccount(guestSubjectsSnapshot);
+        } catch (migrationErr) {
+          console.warn('Could not migrate guest progress:', migrationErr);
+        }
+      }
 
       login({
         name: result.user?.name || trimmedName || 'Usuario',

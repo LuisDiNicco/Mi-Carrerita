@@ -7,6 +7,7 @@ import { SubjectStatus } from "../../../shared/types/academic";
 import { useAcademicStore } from "../store/academic-store";
 import { fetchAcademicGraph } from "../lib/academic-api";
 import { authFetch } from "../../auth/lib/api";
+import { useAuthStore } from "../../auth/store/auth-store";
 import {
   buildEdges,
   getCriticalPath,
@@ -26,9 +27,11 @@ const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 export const useCareerGraph = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
+  const setSubjectsFromServer = useAcademicStore((state) => state.setSubjectsFromServer);
   const setSubjects = useAcademicStore((state) => state.setSubjects);
   const subjects = useAcademicStore((state) => state.subjects);
   const updateSubject = useAcademicStore((state) => state.updateSubject);
+  const isGuest = useAuthStore((state) => state.isGuest);
   const nodesRef = useRef<Node[]>([]);
   const [flowInstance, setFlowInstance] = useState<ReactFlowInstance | null>(
     null,
@@ -39,6 +42,13 @@ export const useCareerGraph = () => {
   const [recentUpdateId, setRecentUpdateId] = useState<string | null>(null);
   const [focusedId, setFocusedId] = useState<string | null>(null);
   const [hoveredSubjectId, setHoveredSubjectId] = useState<string | null>(null);
+
+  // Keep an isGuest ref so callbacks can access the current value without
+  // being re-created every time isGuest changes.
+  const isGuestRef = useRef(isGuest);
+  useEffect(() => {
+    isGuestRef.current = isGuest;
+  }, [isGuest]);
 
   const {
     isFullscreen,
@@ -65,59 +75,94 @@ export const useCareerGraph = () => {
     nodesRef.current = nodes;
   }, [nodes]);
 
+  // ---------------------------------------------------------------------------
+  // buildGraphNodes — creates React Flow nodes/edges from subject array.
+  // Extracted so it can be reused without re-fetching from server.
+  // ---------------------------------------------------------------------------
+  const buildGraphNodes = useCallback(
+    (data: Subject[], options?: { preserveLayout?: boolean }) => {
+      const edgesList = buildEdges(data);
+      const positionMap = new Map(
+        nodesRef.current.map((node) => [node.id, node.position]),
+      );
+      const canReusePositions =
+        Boolean(options?.preserveLayout) &&
+        data.every((subject) => positionMap.has(subject.id));
+      const positions = canReusePositions
+        ? data.map((subject) => positionMap.get(subject.id)!)
+        : layoutNodesByYear(data, edgesList);
 
+      const newNodes = data.map((subject, index) => ({
+        id: subject.id,
+        type: "subject",
+        position: positions[index],
+        data: { subject },
+        draggable: true,
+        selectable: true,
+      }));
+
+      const newEdges: Edge[] = edgesList.map((edge) => ({
+        id: `e-${edge.from}-${edge.to}`,
+        source: edge.from,
+        target: edge.to,
+        animated: false,
+        style: EDGE_STYLES.normal,
+        type: "smoothstep",
+        markerEnd: {
+          type: MarkerType.ArrowClosed,
+          width: EDGE_MARKER.width,
+          height: EDGE_MARKER.height,
+          color: EDGE_STYLES.normal.stroke,
+        },
+      }));
+
+      setNodes(newNodes);
+      setEdges(newEdges);
+    },
+    [setNodes, setEdges],
+  );
+
+  // ---------------------------------------------------------------------------
+  // fetchCareerData
+  // For GUESTS: if subjects are already in the store (loaded earlier or from
+  // sessionStorage), rebuild the graph visually without hitting the server.
+  // This preserves local progress when the user switches between pages.
+  // Use `force: true` to always re-fetch even for guests.
+  // ---------------------------------------------------------------------------
   const fetchCareerData = useCallback(
-    async (options?: { preserveLayout?: boolean; silent?: boolean }) => {
+    async (options?: { preserveLayout?: boolean; silent?: boolean; force?: boolean }) => {
       try {
         if (!options?.silent) {
           setLoading(true);
         }
         setError(null);
 
-        const data: Subject[] = await fetchAcademicGraph();
+        const currentIsGuest = isGuestRef.current;
+
+        // Guest page-switch optimisation: rebuild from store, skip server call.
+        if (currentIsGuest && !options?.force) {
+          const stored = useAcademicStore.getState().subjects;
+          if (stored.length > 0) {
+            buildGraphNodes(stored, options);
+            return;
+          }
+        }
+
+        const data: Subject[] = await fetchAcademicGraph({ guestMode: currentIsGuest });
 
         if (!Array.isArray(data) || data.length === 0) {
           throw new Error("No se recibieron materias del servidor");
         }
 
-        const edgesList = buildEdges(data);
-        const positionMap = new Map(
-          nodesRef.current.map((node) => [node.id, node.position]),
-        );
-        const canReusePositions =
-          Boolean(options?.preserveLayout) &&
-          data.every((subject) => positionMap.has(subject.id));
-        const positions = canReusePositions
-          ? data.map((subject) => positionMap.get(subject.id)!)
-          : layoutNodesByYear(data, edgesList);
+        buildGraphNodes(data, options);
 
-        const newNodes = data.map((subject, index) => ({
-          id: subject.id,
-          type: "subject",
-          position: positions[index],
-          data: { subject },
-          draggable: true,
-          selectable: true,
-        }));
-
-        const newEdges: Edge[] = edgesList.map((edge) => ({
-          id: `e-${edge.from}-${edge.to}`,
-          source: edge.from,
-          target: edge.to,
-          animated: false,
-          style: EDGE_STYLES.normal,
-          type: "smoothstep",
-          markerEnd: {
-            type: MarkerType.ArrowClosed,
-            width: EDGE_MARKER.width,
-            height: EDGE_MARKER.height,
-            color: EDGE_STYLES.normal.stroke,
-          },
-        }));
-
-        setNodes(newNodes);
-        setEdges(newEdges);
-        setSubjects(data);
+        if (currentIsGuest) {
+          // setSubjects recalculates availability and saves to sessionStorage
+          setSubjects(data);
+        } else {
+          // setSubjectsFromServer: server already resolved availability, no sessionStorage
+          setSubjectsFromServer(data);
+        }
         setError(null);
       } catch (err) {
         console.error("Error al cargar la carrera:", err);
@@ -132,12 +177,15 @@ export const useCareerGraph = () => {
         }
       }
     },
-    [setEdges, setNodes, setSubjects],
+    // isGuest intentionally excluded — we use isGuestRef inside so this
+    // callback is stable and doesn't re-run the initial useEffect on auth change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [buildGraphNodes, setSubjects, setSubjectsFromServer],
   );
 
-  useEffect(() => {
-    fetchCareerData();
-  }, [fetchCareerData]);
+  // Run on mount only. The callback is stable so this fires exactly once.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { fetchCareerData(); }, []);
 
   const criticalPath = useMemo(() => {
     if (!showCriticalPath) {
@@ -333,6 +381,21 @@ export const useCareerGraph = () => {
       notes: string | null;
     }) => {
       if (!activeSubject) return;
+
+      if (isGuestRef.current) {
+        // Guest mode: apply change locally, recalculate availability, rebuild graph.
+        // No server call needed — nothing persists to DB.
+        updateSubject(activeSubject.id, payload);
+        // updateSubject already recalculated availability in the store.
+        // Now rebuild the graph nodes from the updated store state.
+        const updatedSubjects = useAcademicStore.getState().subjects;
+        buildGraphNodes(updatedSubjects, { preserveLayout: true });
+        setRecentUpdateId(activeSubject.id);
+        setTimeout(() => setRecentUpdateId(null), UPDATE_FLASH_MS);
+        return;
+      }
+
+      // Logged-in: persist to server
       const response = await authFetch(
         `${API_URL}/academic-career/subjects/${activeSubject.id}`,
         {
@@ -360,9 +423,10 @@ export const useCareerGraph = () => {
       updateSubject(activeSubject.id, payload);
       setRecentUpdateId(activeSubject.id);
       setTimeout(() => setRecentUpdateId(null), UPDATE_FLASH_MS);
-      fetchCareerData({ preserveLayout: true, silent: true });
+      // Re-fetch from server to get authoritative availability (triggers trophy eval etc.)
+      fetchCareerData({ preserveLayout: true, silent: true, force: true });
     },
-    [activeSubject, fetchCareerData, updateSubject],
+    [activeSubject, buildGraphNodes, fetchCareerData, updateSubject],
   );
 
   return {

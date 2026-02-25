@@ -5,6 +5,7 @@ import * as academicApi from '../lib/academic-api';
 import * as authApi from '../../auth/lib/api';
 import { SubjectStatus } from '../../../shared/types/academic';
 import { useAcademicStore } from '../store/academic-store';
+import { useAuthStore } from '../../auth/store/auth-store';
 
 vi.mock('../lib/academic-api', () => ({
     fetchAcademicGraph: vi.fn(),
@@ -39,15 +40,20 @@ describe('useCareerGraph hook', () => {
         planCode: 'MAT',
         name: 'Matematica',
         status: SubjectStatus.PENDIENTE,
+        grade: null as number | null,
         year: 1,
         hours: 96,
         isOptional: false,
         correlativeIds: [],
+        isIntermediateDegree: false,
     };
 
     beforeEach(() => {
         vi.clearAllMocks();
         useAcademicStore.setState({ subjects: [] });
+        sessionStorage.clear();
+        // Default to logged-in so tests that use authFetch use the correct path.
+        useAuthStore.setState({ isGuest: false, user: { name: 'Test', email: 'test@test.com' } });
     });
 
     it('debería inicializar cargando y fetchear los datos de la API', async () => {
@@ -125,7 +131,59 @@ describe('useCareerGraph hook', () => {
             })
         );
 
-        // Should fetch graph again but silent
+        // Should fetch graph again but silent (force: true for logged-in)
         expect(academicApi.fetchAcademicGraph).toHaveBeenCalledTimes(2);
+    });
+
+    it('en modo invitado, handleSaveSubject aplica el cambio localmente sin llamar a la API', async () => {
+        useAuthStore.setState({ isGuest: true, user: null });
+        (academicApi.fetchAcademicGraph as any).mockResolvedValue([mockSubject]);
+
+        const { result } = renderHook(() => useCareerGraph());
+
+        await act(async () => {
+            await new Promise(resolve => setTimeout(resolve, 10));
+        });
+
+        act(() => {
+            result.current.setActiveSubject(mockSubject as any);
+        });
+
+        const payload = {
+            status: SubjectStatus.APROBADA,
+            grade: 9,
+            difficulty: null,
+            statusDate: null,
+            notes: null,
+        };
+
+        await act(async () => {
+            await result.current.handleSaveSubject(payload);
+        });
+
+        // Must NOT call the server
+        expect(authApi.authFetch).not.toHaveBeenCalled();
+
+        // The store should reflect the update
+        const stored = useAcademicStore.getState().subjects;
+        expect(stored.find(s => s.id === 's1')?.status).toBe(SubjectStatus.APROBADA);
+    });
+
+    it('en modo invitado, no debería volver a buscar datos del servidor al montar si ya hay materias en el store', async () => {
+        useAuthStore.setState({ isGuest: true, user: null });
+
+        // Pre-populate the store as if the user had already loaded data
+        useAcademicStore.setState({ subjects: [{ ...mockSubject, status: SubjectStatus.APROBADA }] });
+
+        const { result } = renderHook(() => useCareerGraph());
+
+        await act(async () => {
+            await new Promise(resolve => setTimeout(resolve, 10));
+        });
+
+        // fetchAcademicGraph should NOT be called when subjects are already in the store
+        expect(academicApi.fetchAcademicGraph).not.toHaveBeenCalled();
+        // But the graph node should be visible
+        expect(result.current.nodes.length).toBe(1);
     });
 });

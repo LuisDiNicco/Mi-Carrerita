@@ -4,6 +4,7 @@ import { formatDate, formatGrade, fromISODate, toISODate } from '../../../shared
 import { authFetch } from '../../auth/lib/api';
 import { fetchAcademicGraph } from '../lib/academic-api';
 import { SubjectStatus } from '../../../shared/types/academic';
+import { useAuthStore } from '../../auth/store/auth-store';
 import { Search, ArrowUpDown, Edit2, Trash2, X, AlertTriangle, Upload, Calendar } from 'lucide-react';
 import { cn } from '../../../shared/lib/utils';
 import { RetroCalendar } from '../../../shared/ui';
@@ -27,6 +28,8 @@ export const HistoryTable = () => {
   const subjects = useAcademicStore((state) => state.subjects);
   const updateSubject = useAcademicStore((state) => state.updateSubject);
   const setSubjects = useAcademicStore((state) => state.setSubjects);
+  const setSubjectsFromServer = useAcademicStore((state) => state.setSubjectsFromServer);
+  const isGuest = useAuthStore((state) => state.isGuest);
 
   // Form State
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -155,6 +158,18 @@ export const HistoryTable = () => {
     if (!pendingDelete) return;
     const { id } = pendingDelete;
     setPendingDelete(null);
+
+    if (isGuest) {
+      updateSubject(id, {
+        status: SubjectStatus.PENDIENTE,
+        grade: null,
+        difficulty: null,
+        statusDate: null,
+        notes: null,
+      });
+      return;
+    }
+
     try {
       const response = await authFetch(`${API_URL}/academic-career/subjects/${id}`, {
         method: 'PATCH',
@@ -179,7 +194,7 @@ export const HistoryTable = () => {
       });
 
       const graphData = await fetchAcademicGraph();
-      setSubjects(graphData);
+      setSubjectsFromServer(graphData);
     } catch (err) {
       setDeleteError('No se pudo eliminar el registro. Intentá de nuevo.');
     }
@@ -223,21 +238,23 @@ export const HistoryTable = () => {
       const statusDateValue = isoDate || null;
       const notesValue = notes.trim() === '' ? null : notes.trim();
 
-      const response = await authFetch(`${API_URL}/academic-career/subjects/${subjectId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          status,
-          grade: normalizedGrade,
-          difficulty: normalizedDifficulty,
-          statusDate: statusDateValue,
-          notes: notesValue,
-        }),
-      });
+      if (!isGuest) {
+        const response = await authFetch(`${API_URL}/academic-career/subjects/${subjectId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            status,
+            grade: normalizedGrade,
+            difficulty: normalizedDifficulty,
+            statusDate: statusDateValue,
+            notes: notesValue,
+          }),
+        });
 
-      if (!response.ok) {
-        const body = await response.json().catch(() => null);
-        throw new Error(body?.message || 'No se pudo guardar el registro.');
+        if (!response.ok) {
+          const body = await response.json().catch(() => null);
+          throw new Error(body?.message || 'No se pudo guardar el registro.');
+        }
       }
 
       updateSubject(subjectId, {
@@ -248,8 +265,10 @@ export const HistoryTable = () => {
         notes: notesValue,
       });
 
-      const graphData = await fetchAcademicGraph();
-      setSubjects(graphData);
+      if (!isGuest) {
+        const graphData = await fetchAcademicGraph();
+        setSubjectsFromServer(graphData);
+      }
 
       resetForm();
     } catch (err) {
@@ -270,7 +289,8 @@ export const HistoryTable = () => {
     setIsUploading(true);
     setError(null);
     try {
-      const result = await uploadHistoriaPdf(file);
+      // Guests hit the public (no-auth) upload endpoint; logged-in users hit the auth endpoint.
+      const result = await uploadHistoriaPdf(file, { guestMode: isGuest });
       if (result.data.length === 0) {
         setError('No se encontraron registros en el PDF. Verificá que sea un PDF válido de Historia Académica.');
         return;
@@ -285,11 +305,30 @@ export const HistoryTable = () => {
   };
 
   const handleBatchConfirm = async (records: BatchAcademicRecordPayload[]) => {
+    if (isGuest) {
+      // Guest: apply batch locally, recalculate availability, persist to sessionStorage.
+      // No server call — the data only lives in the browser for this session.
+      const recordsByPlanCode = new Map(records.map((r) => [r.planCode, r]));
+      const nextSubjects = subjects.map((subject) => {
+        const record = recordsByPlanCode.get(subject.planCode);
+        if (!record) return subject;
+        return {
+          ...subject,
+          status: record.status as SubjectStatus,
+          grade: record.finalGrade ?? null,
+          statusDate: record.statusDate ?? null,
+        };
+      });
+      setSubjects(nextSubjects); // triggers recalculation + sessionStorage save
+      setParsedRecords(null);
+      return;
+    }
+
+    // Logged-in: save batch to DB then refresh graph from server.
     await batchSaveHistory(records);
     setParsedRecords(null);
-    // Refresh the graph after batch save
     const graphData = await fetchAcademicGraph();
-    setSubjects(graphData);
+    setSubjectsFromServer(graphData);
   };
 
   return (
