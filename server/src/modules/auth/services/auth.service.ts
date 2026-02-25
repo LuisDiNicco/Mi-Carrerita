@@ -131,7 +131,20 @@ export class AuthService {
       { secret: this.jwtSecret, expiresIn: this.accessTokenTtl },
     );
 
-    return accessToken;
+    // Generar un nuevo refresh token
+    const newRefreshToken = this.jwtService.sign(
+      { sub: user.id },
+      { secret: this.jwtRefreshSecret, expiresIn: this.refreshTokenTtl },
+    );
+
+    // Guardar el hash del nuevo refresh token
+    const refreshTokenHash = await hash(newRefreshToken, this.hashSalt);
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: { refreshTokenHash },
+    });
+
+    return { accessToken, refreshToken: newRefreshToken };
   }
 
   async revokeRefreshToken(refreshToken?: string) {

@@ -1,14 +1,27 @@
 import type { Subject } from "../../../shared/types/academic";
+import { SubjectStatus } from "../../../shared/types/academic";
 import { authFetch } from "../../auth/lib/api";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
-export async function fetchAcademicGraph(): Promise<Subject[]> {
-  const response = await authFetch(`${API_URL}/academic-career/graph`, {
+export async function fetchAcademicGraph(options?: {
+  guestMode?: boolean;
+}): Promise<Subject[]> {
+  const endpoint = options?.guestMode
+    ? `${API_URL}/academic-career/public-graph`
+    : `${API_URL}/academic-career/graph`;
+
+  const response = await (options?.guestMode
+    ? fetch(endpoint, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+    : authFetch(endpoint, {
     headers: {
       "Content-Type": "application/json",
     },
-  });
+  }));
 
   if (!response.ok) {
     throw new Error(`Error ${response.status}: ${response.statusText}`);
@@ -16,6 +29,42 @@ export async function fetchAcademicGraph(): Promise<Subject[]> {
 
   const data: Subject[] = await response.json();
   return data;
+}
+
+export async function migrateGuestProgressToAccount(
+  subjects: Subject[],
+): Promise<void> {
+  const uniqueSubjects = Array.from(
+    new Map(subjects.map((subject) => [subject.id, subject])).values(),
+  );
+
+  const changedSubjects = uniqueSubjects.filter((subject) => {
+    const hasStatusChange =
+      subject.status !== SubjectStatus.PENDIENTE &&
+      subject.status !== SubjectStatus.DISPONIBLE;
+    const hasAcademicData =
+      subject.grade !== null ||
+      subject.difficulty !== null ||
+      Boolean(subject.statusDate) ||
+      Boolean(subject.notes?.trim());
+
+    return hasStatusChange || hasAcademicData;
+  });
+
+  if (changedSubjects.length === 0) {
+    return;
+  }
+
+  for (const subject of changedSubjects) {
+    await updateSubjectRecord(subject.id, {
+      status: subject.status,
+      grade: subject.grade ?? null,
+      difficulty: subject.difficulty ?? null,
+      notes: subject.notes ?? null,
+      statusDate: subject.statusDate ?? null,
+      isIntermediate: subject.isIntermediateDegree,
+    });
+  }
 }
 
 export async function updateSubjectRecord(

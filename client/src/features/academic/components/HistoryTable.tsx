@@ -4,6 +4,7 @@ import { formatDate, formatGrade, fromISODate, toISODate } from '../../../shared
 import { authFetch } from '../../auth/lib/api';
 import { fetchAcademicGraph } from '../lib/academic-api';
 import { SubjectStatus } from '../../../shared/types/academic';
+import { useAuthStore } from '../../auth/store/auth-store';
 import { Search, ArrowUpDown, Edit2, Trash2, X, AlertTriangle, Upload, Calendar } from 'lucide-react';
 import { cn } from '../../../shared/lib/utils';
 import { RetroCalendar } from '../../../shared/ui';
@@ -26,7 +27,8 @@ type SortDirection = 'asc' | 'desc';
 export const HistoryTable = () => {
   const subjects = useAcademicStore((state) => state.subjects);
   const updateSubject = useAcademicStore((state) => state.updateSubject);
-  const setSubjects = useAcademicStore((state) => state.setSubjects);
+  const setSubjectsFromServer = useAcademicStore((state) => state.setSubjectsFromServer);
+  const isGuest = useAuthStore((state) => state.isGuest);
 
   // Form State
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -155,6 +157,18 @@ export const HistoryTable = () => {
     if (!pendingDelete) return;
     const { id } = pendingDelete;
     setPendingDelete(null);
+
+    if (isGuest) {
+      updateSubject(id, {
+        status: SubjectStatus.PENDIENTE,
+        grade: null,
+        difficulty: null,
+        statusDate: null,
+        notes: null,
+      });
+      return;
+    }
+
     try {
       const response = await authFetch(`${API_URL}/academic-career/subjects/${id}`, {
         method: 'PATCH',
@@ -179,7 +193,7 @@ export const HistoryTable = () => {
       });
 
       const graphData = await fetchAcademicGraph();
-      setSubjects(graphData);
+      setSubjectsFromServer(graphData);
     } catch (err) {
       setDeleteError('No se pudo eliminar el registro. Intentá de nuevo.');
     }
@@ -223,21 +237,23 @@ export const HistoryTable = () => {
       const statusDateValue = isoDate || null;
       const notesValue = notes.trim() === '' ? null : notes.trim();
 
-      const response = await authFetch(`${API_URL}/academic-career/subjects/${subjectId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          status,
-          grade: normalizedGrade,
-          difficulty: normalizedDifficulty,
-          statusDate: statusDateValue,
-          notes: notesValue,
-        }),
-      });
+      if (!isGuest) {
+        const response = await authFetch(`${API_URL}/academic-career/subjects/${subjectId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            status,
+            grade: normalizedGrade,
+            difficulty: normalizedDifficulty,
+            statusDate: statusDateValue,
+            notes: notesValue,
+          }),
+        });
 
-      if (!response.ok) {
-        const body = await response.json().catch(() => null);
-        throw new Error(body?.message || 'No se pudo guardar el registro.');
+        if (!response.ok) {
+          const body = await response.json().catch(() => null);
+          throw new Error(body?.message || 'No se pudo guardar el registro.');
+        }
       }
 
       updateSubject(subjectId, {
@@ -248,8 +264,10 @@ export const HistoryTable = () => {
         notes: notesValue,
       });
 
-      const graphData = await fetchAcademicGraph();
-      setSubjects(graphData);
+      if (!isGuest) {
+        const graphData = await fetchAcademicGraph();
+        setSubjectsFromServer(graphData);
+      }
 
       resetForm();
     } catch (err) {
@@ -288,8 +306,10 @@ export const HistoryTable = () => {
     await batchSaveHistory(records);
     setParsedRecords(null);
     // Refresh the graph after batch save
-    const graphData = await fetchAcademicGraph();
-    setSubjects(graphData);
+    if (!isGuest) {
+      const graphData = await fetchAcademicGraph();
+      setSubjectsFromServer(graphData);
+    }
   };
 
   return (

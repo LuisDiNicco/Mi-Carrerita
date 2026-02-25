@@ -1,4 +1,4 @@
-import { getAccessToken, setAccessToken, clearAccessToken } from "./auth";
+import { getAccessToken, setAccessToken, clearAccessToken, getRefreshToken, setRefreshToken, clearRefreshToken } from "./auth";
 import { useAuthStore } from "../store/auth-store";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
@@ -28,19 +28,28 @@ function extractApiMessage(payload: unknown, fallback: string): string {
 
 async function refreshAccessToken(): Promise<string | null> {
   try {
+    const token = getRefreshToken();
     const response = await fetch(REFRESH_ENDPOINT, {
       method: "POST",
       credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ refreshToken: token }),
     });
 
     if (!response.ok) {
+      clearRefreshToken();
       return null;
     }
 
-    const data = (await response.json()) as { accessToken?: string };
+    const data = (await response.json()) as { accessToken?: string; refreshToken?: string };
     if (!data?.accessToken) return null;
 
     setAccessToken(data.accessToken);
+    if (data.refreshToken) {
+      setRefreshToken(data.refreshToken);
+    }
     return data.accessToken;
   } catch {
     return null;
@@ -123,6 +132,9 @@ export async function registerUser(dto: {
 
   const data = await response.json();
   setAccessToken(data.accessToken);
+  if (data.refreshToken) {
+    setRefreshToken(data.refreshToken);
+  }
   return data;
 }
 
@@ -154,5 +166,8 @@ export async function loginUser(dto: {
 
   const data = await response.json();
   setAccessToken(data.accessToken);
+  if (data.refreshToken) {
+    setRefreshToken(data.refreshToken);
+  }
   return data;
 }

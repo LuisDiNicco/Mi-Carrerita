@@ -7,6 +7,7 @@ import { SubjectStatus } from "../../../shared/types/academic";
 import { useAcademicStore } from "../store/academic-store";
 import { fetchAcademicGraph } from "../lib/academic-api";
 import { authFetch } from "../../auth/lib/api";
+import { useAuthStore } from "../../auth/store/auth-store";
 import {
   buildEdges,
   getCriticalPath,
@@ -26,9 +27,11 @@ const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 export const useCareerGraph = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
+  const setSubjectsFromServer = useAcademicStore((state) => state.setSubjectsFromServer);
   const setSubjects = useAcademicStore((state) => state.setSubjects);
   const subjects = useAcademicStore((state) => state.subjects);
   const updateSubject = useAcademicStore((state) => state.updateSubject);
+  const isGuest = useAuthStore((state) => state.isGuest);
   const nodesRef = useRef<Node[]>([]);
   const [flowInstance, setFlowInstance] = useState<ReactFlowInstance | null>(
     null,
@@ -74,7 +77,7 @@ export const useCareerGraph = () => {
         }
         setError(null);
 
-        const data: Subject[] = await fetchAcademicGraph();
+        const data: Subject[] = await fetchAcademicGraph({ guestMode: isGuest });
 
         if (!Array.isArray(data) || data.length === 0) {
           throw new Error("No se recibieron materias del servidor");
@@ -117,7 +120,13 @@ export const useCareerGraph = () => {
 
         setNodes(newNodes);
         setEdges(newEdges);
-        setSubjects(data);
+        // Usar setSubjectsFromServer para NO guardar en localStorage
+        // (Los datos del servidor no deben persistir en localStorage)
+        if (isGuest) {
+          setSubjects(data);
+        } else {
+          setSubjectsFromServer(data);
+        }
         setError(null);
       } catch (err) {
         console.error("Error al cargar la carrera:", err);
@@ -132,7 +141,7 @@ export const useCareerGraph = () => {
         }
       }
     },
-    [setEdges, setNodes, setSubjects],
+    [isGuest, setEdges, setNodes, setSubjects, setSubjectsFromServer],
   );
 
   useEffect(() => {

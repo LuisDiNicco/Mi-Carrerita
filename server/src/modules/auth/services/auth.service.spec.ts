@@ -152,7 +152,7 @@ describe('AuthService', () => {
       );
     });
 
-    it('debería retornar un nuevo access token si todo esta correcto', async () => {
+    it('debería retornar nuevos access y refresh token si todo esta correcto', async () => {
       mockJwtService.verify.mockReturnValue({ sub: 'u1' });
       mockPrismaService.user.findUnique.mockResolvedValue({
         id: 'u1',
@@ -160,11 +160,14 @@ describe('AuthService', () => {
         refreshTokenHash: 'hash',
       });
       (bcrypt.compare as jest.Mock).mockResolvedValue(true);
-      mockJwtService.sign.mockReturnValue('new_access_token');
+      mockJwtService.sign
+        .mockReturnValueOnce('new_access_token')
+        .mockReturnValueOnce('new_refresh_token');
 
       const result = await service.refreshAccessToken('token');
 
-      expect(result).toBe('new_access_token');
+      expect(result.accessToken).toBe('new_access_token');
+      expect(result.refreshToken).toBe('new_refresh_token');
       expect(mockJwtService.sign).toHaveBeenCalledWith(
         {
           sub: 'u1',
@@ -174,6 +177,7 @@ describe('AuthService', () => {
         },
         { secret: 'secret', expiresIn: '15m' },
       );
+      expect(mockPrismaService.user.update).toHaveBeenCalled();
     });
   });
 

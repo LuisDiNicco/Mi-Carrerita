@@ -34,8 +34,10 @@ describe('useAcademicStore', () => {
     ];
 
     beforeEach(() => {
-        // Clear the store before each test
+        // Clear the store and localStorage before each test
         useAcademicStore.setState({ subjects: [] });
+        localStorage.clear();
+        sessionStorage.clear();
     });
 
     it('debería inicializar con subjects vacios', () => {
@@ -45,6 +47,21 @@ describe('useAcademicStore', () => {
     it('setSubjects debería establecer la lista de materias', () => {
         useAcademicStore.getState().setSubjects(initialSubjects);
         expect(useAcademicStore.getState().subjects).toEqual(initialSubjects);
+    });
+
+    it('setSubjects debería guardar en localStorage', () => {
+        useAcademicStore.getState().setSubjects(initialSubjects);
+        const stored = sessionStorage.getItem('mi-carrerita-academic-guest');
+        expect(stored).toBeTruthy();
+        expect(JSON.parse(stored!)).toEqual(initialSubjects);
+    });
+
+    it('setSubjectsFromServer debería establecer materias SIN guardar en localStorage', () => {
+        useAcademicStore.getState().setSubjectsFromServer(initialSubjects);
+        expect(useAcademicStore.getState().subjects).toEqual(initialSubjects);
+        // NO debe guardar en localStorage
+        const stored = sessionStorage.getItem('mi-carrerita-academic-guest');
+        expect(stored).toBeNull();
     });
 
     it('updateSubject debería actualizar los campos parciales de una materia', () => {
