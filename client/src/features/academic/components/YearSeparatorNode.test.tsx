@@ -1,7 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
 import { YearSeparatorNode } from './YearSeparatorNode';
-import type { YearSeparatorNodeType } from './YearSeparatorNode';
 
 // Mock @xyflow/react internals - we only need the NodeProps shape
 const makeNodeProps = (label: string, width: number) => ({
