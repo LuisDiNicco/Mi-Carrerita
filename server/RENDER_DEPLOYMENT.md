@@ -11,8 +11,9 @@
 ### 1. Variables de Entorno (Environment)
 
 ```env
-NODE_ENV=production
+
 DATABASE_URL=postgresql://user:password@host/database
+NODE_ENV=production
 JWT_SECRET=secreto-super-seguro-aleatorio-minimo-32-caracteres
 JWT_REFRESH_SECRET=otro-secreto-super-seguro-aleatorio-diferente
 CLIENT_URL=https://tu-frontend-en-render.com
