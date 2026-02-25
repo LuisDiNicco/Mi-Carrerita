@@ -130,6 +130,13 @@ export class AcademicCareerService {
       const requiredIds = subject.prerequisites.map((p) => p.prerequisite.planCode);
       const yearInfo = getYearInfo(subject.planCode);
 
+      // A guest has no approved subjects yet, so:
+      //   • No prerequisites  → DISPONIBLE (can be taken right away)
+      //   • Has prerequisites → PENDIENTE  (waiting for them to be met)
+      // This mirrors calling resolveSubjectStatus() with empty approval sets.
+      const status =
+        requiredIds.length === 0 ? SubjectStatus.DISPONIBLE : SubjectStatus.PENDIENTE;
+
       return new SubjectNodeDto({
         id: subject.id,
         planCode: subject.planCode,
@@ -137,7 +144,7 @@ export class AcademicCareerService {
         year: subject.year,
         hours: subject.hours,
         isOptional: subject.isOptional,
-        status: SubjectStatus.PENDIENTE,
+        status,
         grade: null,
         difficulty: null,
         statusDate: null,

@@ -144,15 +144,19 @@ export interface ParsedAcademicRecord {
 
 /** Upload a Historia Académica PDF and receive parsed records for preview */
 export async function uploadHistoriaPdf(
-  file: File
+  file: File,
+  options?: { guestMode?: boolean },
 ): Promise<{ data: ParsedAcademicRecord[] }> {
   const formData = new FormData();
   formData.append("file", file);
 
-  const response = await authFetch(`${API_URL}/history/upload`, {
-    method: "POST",
-    body: formData,
-  });
+  const endpoint = options?.guestMode
+    ? `${API_URL}/history/public-upload`
+    : `${API_URL}/history/upload`;
+
+  const response = options?.guestMode
+    ? await fetch(endpoint, { method: "POST", body: formData })
+    : await authFetch(endpoint, { method: "POST", body: formData });
 
   if (!response.ok) {
     const errorBody = await response.json().catch(() => null);

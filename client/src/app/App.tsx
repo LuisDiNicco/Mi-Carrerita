@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { CareerGraph } from '../features/academic/components/CareerGraph';
 import { BackgroundFX } from '../shared/components/BackgroundFX';
 import { AppHeader } from '../shared/layout/AppHeader';
-import { useAcademicStore } from '../features/academic/store/academic-store';
+import { useAcademicStore, configureAcademicStore } from '../features/academic/store/academic-store';
 import { calculateProgress } from '../shared/lib/utils';
 import { SubjectStatus } from '../shared/types/academic';
 import { Dashboard } from '../features/dashboard/Dashboard';
@@ -14,6 +14,13 @@ import { AuthModal } from '../features/auth/components/AuthModal';
 import { useAuthStore } from '../features/auth/store/auth-store';
 import { clearAccessToken, setAccessToken } from '../features/auth/lib/auth';
 import { authFetch } from '../features/auth/lib/api';
+
+// Wire the academic store's auth-awareness at module load time.
+// This avoids a circular import (auth-store → academic-store is already
+// established; this gives academic-store read-only access to auth state).
+configureAcademicStore({
+  isGuestGetter: () => useAuthStore.getState().isGuest,
+});
 
 function App() {
   const [activeSection, setActiveSection] = useState('home');
@@ -42,17 +49,6 @@ function App() {
   useEffect(() => {
     hydrateAuth();
   }, [hydrateAuth]);
-
-  // Listen for logout event to clean up academic store
-  useEffect(() => {
-    const handleLogout = () => {
-      const { clearSubjects } = useAcademicStore.getState();
-      clearSubjects();
-    };
-
-    window.addEventListener('auth:logout', handleLogout);
-    return () => window.removeEventListener('auth:logout', handleLogout);
-  }, []);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);

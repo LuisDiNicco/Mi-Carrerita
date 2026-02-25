@@ -25,9 +25,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   login: (user) => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
     localStorage.removeItem(GUEST_KEY);
-    // IMPORTANTE: Limpiar localStorage académico al loguearse
-    // El usuario loguetado cargará sus datos desde el servidor
-    useAcademicStore.getState().clearLocal();
+    // Clear any guest academic progress — logged-in user loads from server
     useAcademicStore.getState().clearSubjects();
     set({ user, isGuest: false });
   },
@@ -36,11 +34,9 @@ export const useAuthStore = create<AuthState>((set) => ({
     clearRefreshToken();
     localStorage.removeItem(STORAGE_KEY);
     localStorage.setItem(GUEST_KEY, "true");
-    // Limpiar datos académicos al logout
-    useAcademicStore.getState().clearLocal();
+    // Clear academic data — next session starts as clean guest
     useAcademicStore.getState().clearSubjects();
     set({ user: null, isGuest: true });
-    // Emit event for global cleanup (e.g., academic store)
     window.dispatchEvent(new Event('auth:logout'));
   },
   continueAsGuest: () => {
@@ -48,8 +44,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     clearRefreshToken();
     localStorage.removeItem(STORAGE_KEY);
     localStorage.setItem(GUEST_KEY, "true");
-    // Limpiar para empezar como invitado "limpio"
-    useAcademicStore.getState().clearLocal();
+    // Start fresh as guest with no academic data
     useAcademicStore.getState().clearSubjects();
     set({ user: null, isGuest: true });
   },

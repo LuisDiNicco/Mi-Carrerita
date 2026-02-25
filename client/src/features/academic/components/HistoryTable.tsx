@@ -27,6 +27,7 @@ type SortDirection = 'asc' | 'desc';
 export const HistoryTable = () => {
   const subjects = useAcademicStore((state) => state.subjects);
   const updateSubject = useAcademicStore((state) => state.updateSubject);
+  const setSubjects = useAcademicStore((state) => state.setSubjects);
   const setSubjectsFromServer = useAcademicStore((state) => state.setSubjectsFromServer);
   const isGuest = useAuthStore((state) => state.isGuest);
 
@@ -288,7 +289,8 @@ export const HistoryTable = () => {
     setIsUploading(true);
     setError(null);
     try {
-      const result = await uploadHistoriaPdf(file);
+      // Guests hit the public (no-auth) upload endpoint; logged-in users hit the auth endpoint.
+      const result = await uploadHistoriaPdf(file, { guestMode: isGuest });
       if (result.data.length === 0) {
         setError('No se encontraron registros en el PDF. Verificá que sea un PDF válido de Historia Académica.');
         return;
@@ -303,13 +305,30 @@ export const HistoryTable = () => {
   };
 
   const handleBatchConfirm = async (records: BatchAcademicRecordPayload[]) => {
+    if (isGuest) {
+      // Guest: apply batch locally, recalculate availability, persist to sessionStorage.
+      // No server call — the data only lives in the browser for this session.
+      const recordsByPlanCode = new Map(records.map((r) => [r.planCode, r]));
+      const nextSubjects = subjects.map((subject) => {
+        const record = recordsByPlanCode.get(subject.planCode);
+        if (!record) return subject;
+        return {
+          ...subject,
+          status: record.status as SubjectStatus,
+          grade: record.finalGrade ?? null,
+          statusDate: record.statusDate ?? null,
+        };
+      });
+      setSubjects(nextSubjects); // triggers recalculation + sessionStorage save
+      setParsedRecords(null);
+      return;
+    }
+
+    // Logged-in: save batch to DB then refresh graph from server.
     await batchSaveHistory(records);
     setParsedRecords(null);
-    // Refresh the graph after batch save
-    if (!isGuest) {
-      const graphData = await fetchAcademicGraph();
-      setSubjectsFromServer(graphData);
-    }
+    const graphData = await fetchAcademicGraph();
+    setSubjectsFromServer(graphData);
   };
 
   return (
