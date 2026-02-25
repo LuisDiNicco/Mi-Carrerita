@@ -83,7 +83,13 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
           });
 
       if (mode === 'register' && isGuest) {
-        await migrateGuestProgressToAccount(guestSubjectsSnapshot);
+        // Best-effort migration: if it fails, registration still completes.
+        // The user can manually set their progress once logged in.
+        try {
+          await migrateGuestProgressToAccount(guestSubjectsSnapshot);
+        } catch (migrationErr) {
+          console.warn('Could not migrate guest progress:', migrationErr);
+        }
       }
 
       login({

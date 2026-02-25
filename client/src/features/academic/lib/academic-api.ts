@@ -62,7 +62,7 @@ export async function migrateGuestProgressToAccount(
       difficulty: subject.difficulty ?? null,
       notes: subject.notes ?? null,
       statusDate: subject.statusDate ?? null,
-      isIntermediate: subject.isIntermediateDegree,
+      // isIntermediate is NOT part of UpdateSubjectRecordDto — omitted intentionally
     });
   }
 }
@@ -75,7 +75,6 @@ export async function updateSubjectRecord(
     difficulty?: number | null;
     notes?: string | null;
     statusDate?: string | null;
-    isIntermediate?: boolean;
   }
 ): Promise<Subject> {
   const response = await authFetch(`${API_URL}/academic-career/subjects/${subjectId}`, {
@@ -87,10 +86,25 @@ export async function updateSubjectRecord(
   });
 
   if (!response.ok) {
-    throw new Error(`Error ${response.status}: ${response.statusText}`);
+    const errorBody = await response.json().catch(() => null);
+    const msg = extractMessage(errorBody, `Error ${response.status}: No se pudo actualizar la materia.`);
+    throw new Error(msg);
   }
 
   return response.json();
+}
+
+/** Extract a human-readable message from a NestJS error response body. */
+function extractMessage(payload: unknown, fallback: string): string {
+  if (typeof payload === "string" && payload.trim()) return payload;
+  if (Array.isArray(payload)) {
+    const msgs = payload.filter((x): x is string => typeof x === "string");
+    if (msgs.length) return msgs.join(" ");
+  }
+  if (payload && typeof payload === "object" && "message" in payload) {
+    return extractMessage((payload as { message?: unknown }).message, fallback);
+  }
+  return fallback;
 }
 
 export interface AcademicHistoryRecord {
