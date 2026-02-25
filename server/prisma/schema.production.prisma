@@ -1,0 +1,142 @@
+// server/prisma/schema.production.prisma
+// Schema para producción con PostgreSQL
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String               @id @default(uuid())
+  email            String               @unique
+  name             String?
+  googleId         String?              @unique
+  passwordHash     String?              // For local auth (register/login)
+  avatarUrl        String?
+  refreshTokenHash String?
+  academicRecords  AcademicRecord[]
+  reviews          SubjectReview[]
+  timetables       Timetable[]
+  recommendations  RecommendedSubject[]
+  trophies         UserTrophy[]
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+}
+
+model Subject {
+  id         String  @id @default(uuid())
+  planCode   String  @unique
+  name       String
+  year       Int
+  hours      Int
+  isOptional Boolean @default(false)
+
+  prerequisites   Correlativity[]      @relation("RequiredForSubject")
+  unlocks         Correlativity[]      @relation("PrerequisiteSubject")
+  records         AcademicRecord[]
+  reviews         SubjectReview[]
+  timetables      Timetable[]
+  recommendations RecommendedSubject[]
+}
+
+model Correlativity {
+  id             String  @id @default(uuid())
+  subjectId      String
+  subject        Subject @relation("RequiredForSubject", fields: [subjectId], references: [id])
+  prerequisiteId String
+  prerequisite   Subject @relation("PrerequisiteSubject", fields: [prerequisiteId], references: [id])
+
+  condition String
+
+  @@unique([subjectId, prerequisiteId])
+}
+
+model AcademicRecord {
+  id        String  @id @default(uuid())
+  userId    String
+  user      User    @relation(fields: [userId], references: [id])
+  subjectId String
+  subject   Subject @relation(fields: [subjectId], references: [id])
+
+  status         String
+  finalGrade     Int?
+  difficulty     Int?
+  statusDate     DateTime?
+  notes          String?
+  isIntermediate Boolean   @default(false)
+  updatedAt      DateTime  @updatedAt
+
+  @@unique([userId, subjectId])
+}
+
+model SubjectReview {
+  id              String   @id @default(uuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+  subjectId       String
+  subject         Subject  @relation(fields: [subjectId], references: [id])
+  difficultyScore Int
+  rating          Int
+  comment         String?
+  anonymous       Boolean  @default(false)
+  createdAt       DateTime @default(now())
+}
+
+// Schedule Management
+model Timetable {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subjectId String
+  subject   Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  period    String // 'AM', 'PM', 'EVENING'
+  dayOfWeek Int // 1=Mon, 6=Sat
+  createdAt DateTime @default(now())
+
+  @@unique([userId, subjectId, period, dayOfWeek])
+}
+
+model RecommendedSubject {
+  id            String    @id @default(uuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subjectId     String
+  subject       Subject   @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  status        String // 'SUGGESTED', 'MANTENIDA', 'DELETED'
+  recommendedAt DateTime  @default(now())
+  takenAt       DateTime?
+
+  @@unique([userId, subjectId])
+}
+
+// Trophy System
+model Trophy {
+  id           String       @id @default(uuid())
+  code         String       @unique
+  name         String
+  description  String?
+  tier         String // 'BRONZE', 'SILVER', 'GOLD', 'PLATINUM'
+  icon         String // URL to icon
+  rarity       Int // 1-100
+  criteria     String? // Description of unlock logic
+  createdAt    DateTime     @default(now())
+  userTrophies UserTrophy[]
+}
+
+model UserTrophy {
+  id          String    @id @default(uuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trophyId    String
+  trophy      Trophy    @relation(fields: [trophyId], references: [id], onDelete: Cascade)
+  unlockedAt  DateTime?
+  progress    Int       @default(0) // 0-100
+  metadata    String? // JSON string for custom data
+  lastUpdated DateTime  @default(now())
+
+  @@unique([userId, trophyId])
+}
