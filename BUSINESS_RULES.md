@@ -14,7 +14,15 @@ La facultad opera en tres turnos fijos. No existe oferta académica fuera de est
 | Tarde   | 14:00–18:00   |
 | Noche   | 19:00–23:00   |
 
-**Zonas muertas** (sin clases): 12:00–14:00 y 18:00–19:00. No mostrar en el grid ni permitir asignaciones en esos slots.
+**Zonas muertas** (sin clases): 12:00–14:00 y 18:00–19:00.
+
+### Excepciones permitidas
+- **Taller de Integración** (`3680`) puede cursarse en franjas no estándar (por ejemplo `12a14`).
+- **Inglés** (`0901`–`0904`) y **Computación** (`0911`–`0912`) pueden tener:
+   - menos de 4 horas semanales,
+   - distribución en 2 días (ej: `MaVi12a14`),
+   - modalidad **A distancia** sin ocupar celda física de grilla.
+- En estos casos, el sistema debe permitir su representación aun cuando no coincida con los 3 turnos clásicos.
 
 ---
 
@@ -23,8 +31,13 @@ La facultad opera en tres turnos fijos. No existe oferta académica fuera de est
 ### 2.1 Condiciones para "Materia Disponible"
 Una materia pasa a `DISPONIBLE` solo si el estudiante cumplió el estado requerido en **todas** sus correlativas predecesoras (`APROBADA`, `EQUIVALENCIA` o `REGULARIZADA`, según exija el plan).
 
-### 2.2 Carga de Oferta Horaria
-El estudiante debe proveer los horarios propuestos para las materias de interés. **Anti-colisión**: nunca puede haber solapamiento (>0 min) entre dos asignaturas pre-inscriptas.
+### 2.2 Oferta vs Cursada (separación obligatoria)
+1. **Oferta de materias (facultad):** son todas las comisiones posibles que publica la universidad para materias disponibles del alumno.
+   - Puede haber solapamientos entre materias.
+   - Debe mostrarse completa, sin aplicar anti-colisión.
+2. **Cursada elegida (alumno):** es la selección final del alumno a partir de la oferta.
+   - Aquí sí aplica anti-colisión (no puede estar en dos aulas al mismo tiempo).
+   - Solo una materia por celda/slot de cursada final.
 
 ### 2.3 Tipos de Recomendaciones
 - **Motor Real (Ideal Scheduler):** Toma materias `DISPONIBLES` o `RECURSADAS`, descarta combinaciones que colisionan y genera un calendario base.
@@ -51,6 +64,17 @@ Las materias con origen `Equivalencia` en el PDF de Historia Académica son mate
 
 ### 3.3 Materias Optativas
 Solo impactan los totales del Dashboard (pendientes, en curso, etc.) si el alumno tiene un registro activo (`APROBADA`, `EQUIVALENCIA`, `REGULARIZADA`, `EN_CURSO`). De lo contrario no engrosan la currícula.
+
+### 3.4 Equivalencia de Electivas concretas
+Para la carrera, las electivas genéricas son `3672` (Electiva I), `3673` (Electiva II) y `3674` (Electiva III). Las materias concretas de oferta asociadas son:
+- `3599` (Redes Móviles e IoT)
+- `3677` (Lenguaje Orientado a Negocios)
+- `3678` (Tecnologías en Seguridad)
+- `3679` (Visión Artificial)
+
+Regla funcional:
+- Al aprobar/equivaler cualquiera de esas 4 materias, se completa una electiva genérica **en orden** (`3672` → `3673` → `3674`).
+- Para recibirse se requieren 3 electivas completas; por eso el alumno cursa 3 de esas 4 concretas.
 
 ---
 

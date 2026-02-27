@@ -10,6 +10,7 @@ import helmet from 'helmet';
 import { execSync } from 'node:child_process';
 import path from 'node:path';
 import fs from 'node:fs';
+import { Request, Response } from 'express';
 
 async function ensureDevDatabase() {
   if (process.env.NODE_ENV === 'production') {
@@ -66,6 +67,10 @@ async function bootstrap() {
   });
 
   app.use(cookieParser());
+
+  app.use('/socket.io', (_req: Request, res: Response) => {
+    res.status(204).end();
+  });
 
   app.useGlobalPipes(
     new ValidationPipe({

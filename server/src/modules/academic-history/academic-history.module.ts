@@ -19,4 +19,4 @@ import { PdfParserModule } from '../../shared/pdf-parser/pdf-parser.module';
   controllers: [AcademicHistoryController, AcademicHistoryPublicController],
   exports: [AcademicHistoryService],
 })
-export class AcademicHistoryModule { }
+export class AcademicHistoryModule {}

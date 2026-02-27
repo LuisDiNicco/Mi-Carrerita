@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Req, Res, UseGuards, Body } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+  Body,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import type { Request, Response } from 'express';
 import { AuthService } from '../services/auth.service';
@@ -14,7 +22,10 @@ const MS_PER_DAY = 24 * 60 * 60 * 1000;
 const getRefreshCookieOptions = () => ({
   httpOnly: true,
   secure: process.env.NODE_ENV === 'production',
-  sameSite: process.env.NODE_ENV === 'production' ? ('none' as const) : ('strict' as const),
+  sameSite:
+    process.env.NODE_ENV === 'production'
+      ? ('none' as const)
+      : ('strict' as const),
   maxAge: REFRESH_DAYS * MS_PER_DAY,
   path: '/',
 });

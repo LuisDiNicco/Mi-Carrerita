@@ -3,7 +3,11 @@ import { AuthService } from './auth.service';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { UnauthorizedException, BadRequestException, ConflictException } from '@nestjs/common';
+import {
+  UnauthorizedException,
+  BadRequestException,
+  ConflictException,
+} from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 
 jest.mock('bcryptjs', () => ({
@@ -205,7 +209,11 @@ describe('AuthService', () => {
   });
 
   describe('register', () => {
-    const validDto = { email: 'new@test.com', password: 'ValidPass1', name: 'Test' };
+    const validDto = {
+      email: 'new@test.com',
+      password: 'ValidPass1',
+      name: 'Test',
+    };
 
     it('debería registrar un nuevo usuario exitosamente', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
@@ -230,37 +238,45 @@ describe('AuthService', () => {
     it('debería lanzar ConflictException si el email ya existe', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue({ id: 'existing' });
 
-      await expect(service.register(validDto)).rejects.toThrow('ya está registrado');
+      await expect(service.register(validDto)).rejects.toThrow(
+        'ya está registrado',
+      );
     });
 
     it('debería lanzar BadRequestException si la contraseña es demasiado corta', async () => {
       await expect(
-        service.register({ email: 'x@x.com', password: 'Sh0rt' })
+        service.register({ email: 'x@x.com', password: 'Sh0rt' }),
       ).rejects.toThrow('8 caracteres');
     });
 
     it('debería lanzar BadRequestException si falta mayúscula', async () => {
       await expect(
-        service.register({ email: 'x@x.com', password: 'nouppercase1' })
+        service.register({ email: 'x@x.com', password: 'nouppercase1' }),
       ).rejects.toThrow('mayúscula');
     });
 
     it('debería lanzar BadRequestException si falta minúscula', async () => {
       await expect(
-        service.register({ email: 'x@x.com', password: 'NOLOWERCASE1' })
+        service.register({ email: 'x@x.com', password: 'NOLOWERCASE1' }),
       ).rejects.toThrow('minúscula');
     });
 
     it('debería lanzar BadRequestException si falta dígito', async () => {
       await expect(
-        service.register({ email: 'x@x.com', password: 'NoDigitPwd' })
+        service.register({ email: 'x@x.com', password: 'NoDigitPwd' }),
       ).rejects.toThrow('dígito');
     });
   });
 
   describe('login', () => {
     it('debería autenticar un usuario correctamente', async () => {
-      const user = { id: 'u1', email: 'u@t.com', name: 'U', avatarUrl: null, passwordHash: 'hash' };
+      const user = {
+        id: 'u1',
+        email: 'u@t.com',
+        name: 'U',
+        avatarUrl: null,
+        passwordHash: 'hash',
+      };
       mockPrismaService.user.findUnique.mockResolvedValue(user);
       (bcrypt.compare as jest.Mock).mockResolvedValue(true);
       mockJwtService.sign
@@ -268,7 +284,10 @@ describe('AuthService', () => {
         .mockReturnValueOnce('ref-tok');
       (bcrypt.hash as jest.Mock).mockResolvedValue('hashed-ref');
 
-      const result = await service.login({ email: 'u@t.com', password: 'Pass1' });
+      const result = await service.login({
+        email: 'u@t.com',
+        password: 'Pass1',
+      });
 
       expect(result.accessToken).toBe('acc-tok');
       expect(result.user.email).toBe('u@t.com');
@@ -278,28 +297,32 @@ describe('AuthService', () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
 
       await expect(
-        service.login({ email: 'noexist@t.com', password: 'Pass1' })
+        service.login({ email: 'noexist@t.com', password: 'Pass1' }),
       ).rejects.toThrow(UnauthorizedException);
     });
 
     it('debería lanzar UnauthorizedException si el usuario no tiene passwordHash (solo Google)', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue({
-        id: 'u2', email: 'g@t.com', passwordHash: null,
+        id: 'u2',
+        email: 'g@t.com',
+        passwordHash: null,
       });
 
       await expect(
-        service.login({ email: 'g@t.com', password: 'any' })
+        service.login({ email: 'g@t.com', password: 'any' }),
       ).rejects.toThrow(UnauthorizedException);
     });
 
     it('debería lanzar UnauthorizedException si la contraseña es incorrecta', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue({
-        id: 'u3', email: 'u@t.com', passwordHash: 'hash',
+        id: 'u3',
+        email: 'u@t.com',
+        passwordHash: 'hash',
       });
       (bcrypt.compare as jest.Mock).mockResolvedValue(false);
 
       await expect(
-        service.login({ email: 'u@t.com', password: 'WrongPass1' })
+        service.login({ email: 'u@t.com', password: 'WrongPass1' }),
       ).rejects.toThrow(UnauthorizedException);
     });
   });
@@ -310,7 +333,9 @@ describe('AuthService', () => {
 
     it('debería cambiar la contraseña correctamente', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue({
-        id: userId, email: 'u@t.com', passwordHash: 'old-hash',
+        id: userId,
+        email: 'u@t.com',
+        passwordHash: 'old-hash',
       });
       (bcrypt.compare as jest.Mock).mockResolvedValue(true);
       (bcrypt.hash as jest.Mock).mockResolvedValue('new-hash');
@@ -318,7 +343,7 @@ describe('AuthService', () => {
       const result = await service.changePassword(userId, dto);
 
       expect(mockPrismaService.user.update).toHaveBeenCalledWith(
-        expect.objectContaining({ data: { passwordHash: 'new-hash' } })
+        expect.objectContaining({ data: { passwordHash: 'new-hash' } }),
       );
       expect(result.ok).toBe(true);
     });
@@ -326,21 +351,30 @@ describe('AuthService', () => {
     it('debería lanzar UnauthorizedException si el usuario no existe', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
 
-      await expect(service.changePassword(userId, dto)).rejects.toThrow(UnauthorizedException);
+      await expect(service.changePassword(userId, dto)).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
 
     it('debería lanzar UnauthorizedException si la contraseña actual es incorrecta', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue({
-        id: userId, email: 'u@t.com', passwordHash: 'hash',
+        id: userId,
+        email: 'u@t.com',
+        passwordHash: 'hash',
       });
       (bcrypt.compare as jest.Mock).mockResolvedValue(false);
 
-      await expect(service.changePassword(userId, dto)).rejects.toThrow(UnauthorizedException);
+      await expect(service.changePassword(userId, dto)).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
 
     it('debería lanzar BadRequestException si la nueva contraseña no cumple los requisitos', async () => {
       await expect(
-        service.changePassword(userId, { currentPassword: 'OldPass1', newPassword: 'weak' })
+        service.changePassword(userId, {
+          currentPassword: 'OldPass1',
+          newPassword: 'weak',
+        }),
       ).rejects.toThrow(BadRequestException);
     });
   });

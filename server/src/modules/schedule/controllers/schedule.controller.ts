@@ -36,7 +36,7 @@ export class ScheduleController {
     private readonly scheduleService: ScheduleService,
     private readonly recommendationService: RecommendationService,
     private readonly pdfParserService: PdfParserService,
-  ) { }
+  ) {}
 
   // ========================
   // Timetable Endpoints
@@ -81,7 +81,9 @@ export class ScheduleController {
     )
     file: Express.Multer.File,
   ) {
-    const parsedData = await this.pdfParserService.parseOfertaMaterias(file.buffer);
+    const parsedData = await this.pdfParserService.parseOfertaMaterias(
+      file.buffer,
+    );
     return { data: parsedData };
   }
 

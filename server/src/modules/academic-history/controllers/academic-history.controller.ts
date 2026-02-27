@@ -34,7 +34,7 @@ export class AcademicHistoryController {
   constructor(
     private readonly historyService: AcademicHistoryService,
     private readonly pdfParserService: PdfParserService,
-  ) { }
+  ) {}
 
   @Get()
   @ApiOperation({ summary: 'Obtener historial académico con filtros' })
@@ -48,7 +48,10 @@ export class AcademicHistoryController {
 
   @Post('upload')
   @ApiOperation({ summary: 'Parsear un PDF de Historia Académica' })
-  @ApiResponse({ status: 200, description: 'Parsed PDF data ready for preview' })
+  @ApiResponse({
+    status: 200,
+    description: 'Parsed PDF data ready for preview',
+  })
   @UseInterceptors(FileInterceptor('file'))
   async uploadPdf(
     @UploadedFile(
@@ -61,12 +64,16 @@ export class AcademicHistoryController {
     )
     file: Express.Multer.File,
   ) {
-    const parsedData = await this.pdfParserService.parseHistoriaAcademica(file.buffer);
+    const parsedData = await this.pdfParserService.parseHistoriaAcademica(
+      file.buffer,
+    );
     return { data: parsedData };
   }
 
   @Post('batch')
-  @ApiOperation({ summary: 'Guardar múltiples registros de historia académica' })
+  @ApiOperation({
+    summary: 'Guardar múltiples registros de historia académica',
+  })
   @ApiResponse({ status: 200, description: 'Records updated' })
   async batchUpdateRecords(
     @Body() dto: BatchSaveHistoryDto,

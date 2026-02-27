@@ -33,7 +33,7 @@ export class DashboardService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly logger: Logger,
-  ) { }
+  ) {}
 
   /**
    * Get complete dashboard data with all charts and summary
@@ -68,11 +68,15 @@ export class DashboardService {
     const typedRecords = records as unknown as AcademicRecordWithSubject[];
 
     // Filter out Equivalencies and inactive Optional subjects to not skew metrics
-    const filteredRecords = typedRecords.filter(r => {
+    const filteredRecords = typedRecords.filter((r) => {
       if (r.status === SubjectStatus.EQUIVALENCIA) return false;
 
       if (r.subject.isOptional) {
-        const isActive = [SubjectStatus.APROBADA, SubjectStatus.REGULARIZADA, SubjectStatus.EN_CURSO].includes(r.status as SubjectStatus);
+        const isActive = [
+          SubjectStatus.APROBADA,
+          SubjectStatus.REGULARIZADA,
+          SubjectStatus.EN_CURSO,
+        ].includes(r.status as SubjectStatus);
         if (!isActive) return false;
       }
       return true;
@@ -101,8 +105,12 @@ export class DashboardService {
     const subjectVolumeChart = this.buildSubjectVolumeChart(filteredRecords);
     const difficultyScatterChart =
       this.buildDifficultyScatterChart(filteredRecords);
-    const burnUpChart = this.buildBurnUpChart(semesters, filteredRecords.length);
-    const subjectRankingsChart = this.buildSubjectRankingsChart(filteredRecords);
+    const burnUpChart = this.buildBurnUpChart(
+      semesters,
+      filteredRecords.length,
+    );
+    const subjectRankingsChart =
+      this.buildSubjectRankingsChart(filteredRecords);
 
     // Build summary
     const summary = this.buildDashboardSummary(

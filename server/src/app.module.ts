@@ -39,4 +39,4 @@ import { PdfParserModule } from './shared/pdf-parser/pdf-parser.module';
     PdfParserModule,
   ],
 })
-export class AppModule { }
+export class AppModule {}

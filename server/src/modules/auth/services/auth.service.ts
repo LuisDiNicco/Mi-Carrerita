@@ -1,4 +1,10 @@
-import { Injectable, Logger, UnauthorizedException, BadRequestException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  UnauthorizedException,
+  BadRequestException,
+  ConflictException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService, type JwtSignOptions } from '@nestjs/jwt';
 import { compare, hash } from 'bcryptjs';
@@ -262,18 +268,14 @@ export class AuthService {
     });
 
     if (!user || !user.passwordHash) {
-      throw new UnauthorizedException(
-        'Correo o contraseña incorrectos.',
-      );
+      throw new UnauthorizedException('Correo o contraseña incorrectos.');
     }
 
     // Verify password
     const isPasswordValid = await compare(password, user.passwordHash);
 
     if (!isPasswordValid) {
-      throw new UnauthorizedException(
-        'Correo o contraseña incorrectos.',
-      );
+      throw new UnauthorizedException('Correo o contraseña incorrectos.');
     }
 
     // Issue tokens
@@ -299,7 +301,10 @@ export class AuthService {
   /**
    * Change password for authenticated user
    */
-  async changePassword(userId: string, dto: { currentPassword: string; newPassword: string }) {
+  async changePassword(
+    userId: string,
+    dto: { currentPassword: string; newPassword: string },
+  ) {
     const { currentPassword, newPassword } = dto;
 
     // Validate new password strength
@@ -320,9 +325,7 @@ export class AuthService {
     const isCurrentValid = await compare(currentPassword, user.passwordHash);
 
     if (!isCurrentValid) {
-      throw new UnauthorizedException(
-        'La contraseña actual es incorrecta.',
-      );
+      throw new UnauthorizedException('La contraseña actual es incorrecta.');
     }
 
     // Hash new password

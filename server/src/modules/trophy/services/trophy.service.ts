@@ -23,7 +23,7 @@ export class TrophyService implements OnModuleInit {
   constructor(
     private readonly prisma: PrismaService,
     private readonly logger: Logger,
-  ) { }
+  ) {}
 
   /**
    * Initialize trophy definitions on module startup
@@ -336,24 +336,31 @@ export class TrophyService implements OnModuleInit {
     // Define criteria evaluation
     // Notas van de 0 a 10 (no de 0 a 100). Thresholds ajustados correctamente.
     const passedRecords = records.filter(
-      (r) => r.status === SubjectStatus.APROBADA || r.status === SubjectStatus.EQUIVALENCIA,
+      (r) =>
+        r.status === SubjectStatus.APROBADA ||
+        r.status === SubjectStatus.EQUIVALENCIA,
     );
 
     const criteriaMap: Record<string, boolean> = {
       // BRONZE
       FIRST_SUBJECT_COMPLETED: completedSubjects.length >= 1,
-      PERFECT_SCORE_10: records.some((r) => r.finalGrade === 10),        // nota máxima = 10
+      PERFECT_SCORE_10: records.some((r) => r.finalGrade === 10), // nota máxima = 10
       TEN_SUBJECTS_PASSED: passedRecords.length >= 10,
       YEAR_1_COMPLETION: this.checkYearCompletion(records, 1),
       YEAR_2_COMPLETION: this.checkYearCompletion(records, 2),
-      DIFFICULT_SUBJECT_PASSED: passedRecords.some((r) => (r.difficulty ?? 0) >= 80),
+      DIFFICULT_SUBJECT_PASSED: passedRecords.some(
+        (r) => (r.difficulty ?? 0) >= 80,
+      ),
       HOURS_100_COMPLETED: this.checkHoursCompleted(records, 100),
       CONSISTENCY_BRONZE: this.checkConsistency(records, 4),
-      AVERAGE_80_OVERALL: this.checkOverallAverage(records, 8),          // 8/10
+      AVERAGE_80_OVERALL: this.checkOverallAverage(records, 8), // 8/10
       SEMESTER_AVERAGE_NINE: this.checkSemesterAverageThreshold(records, 9), // 9/10
       MIXED_STATUS_PASS: this.checkMixedStatus(records),
       SUMMER_WARRIOR: this.checkSummerWarrior(records),
-      DIFFICULTY_RESEARCHER: records.filter((r) => r.difficulty !== null && r.difficulty !== undefined).length >= 5,
+      DIFFICULTY_RESEARCHER:
+        records.filter(
+          (r) => r.difficulty !== null && r.difficulty !== undefined,
+        ).length >= 5,
       DIVERSIFIED_YEARS: this.checkDiversifiedYears(passedRecords),
       ALL_OPTIONALS_COMPLETED: this.checkAllOptionalsCompleted(records),
 
@@ -361,9 +368,10 @@ export class TrophyService implements OnModuleInit {
       HALFWAY_COMPLETION: completionPercentage >= 50,
       INTERMEDIATE_DEGREE: this.checkIntermediateDegree(records),
       CONSISTENCY_SILVER: this.checkConsistency(records, 8),
-      HIGH_DIFFICULTY_MASTERY: passedRecords.filter((r) => (r.difficulty ?? 0) >= 70).length >= 5,
+      HIGH_DIFFICULTY_MASTERY:
+        passedRecords.filter((r) => (r.difficulty ?? 0) >= 70).length >= 5,
       QUICK_PROGRESS: this.checkQuickProgress(records),
-      EXCELLENCE_85_PLUS: this.checkOverallAverage(records, 8.5),        // 8.5/10
+      EXCELLENCE_85_PLUS: this.checkOverallAverage(records, 8.5), // 8.5/10
       YEAR_3_COMPLETION: this.checkYearCompletion(records, 3),
       GROWING_AVERAGE: this.checkGrowingAverage(records, 3),
       HOURS_200_COMPLETED: this.checkHoursCompleted(records, 200),
@@ -371,17 +379,17 @@ export class TrophyService implements OnModuleInit {
 
       // GOLD
       YEAR_4_COMPLETION: this.checkYearCompletion(records, 4),
-      PERFECT_AVERAGE: this.checkOverallAverage(records, 9),             // 9/10
+      PERFECT_AVERAGE: this.checkOverallAverage(records, 9), // 9/10
       CONSISTENT_EXCELLENCE: this.checkConsistentExcellence(records),
-      CHALLENGE_ACCEPTED: passedRecords.filter((r) => (r.difficulty ?? 0) >= 70).length >= 10,
+      CHALLENGE_ACCEPTED:
+        passedRecords.filter((r) => (r.difficulty ?? 0) >= 70).length >= 10,
       MARATHON_CHAMPION: this.checkHoursCompleted(records, 350),
       CONSISTENCY_GOLD: this.checkConsistency(records, 12),
       CAREER_COMPLETION: completionPercentage >= 100,
 
       // PLATINUM
       LEGEND:
-        completionPercentage >= 100 &&
-        this.checkOverallAverage(records, 9),                            // 9/10, no retake requirement
+        completionPercentage >= 100 && this.checkOverallAverage(records, 9), // 9/10, no retake requirement
     };
 
     return criteriaMap[code] ?? false;
@@ -455,7 +463,8 @@ export class TrophyService implements OnModuleInit {
         .map((r) => r.finalGrade)
         .filter((grade): grade is number => typeof grade === 'number');
       if (grades.length === 0) continue;
-      const average = grades.reduce((sum, grade) => sum + grade, 0) / grades.length;
+      const average =
+        grades.reduce((sum, grade) => sum + grade, 0) / grades.length;
       if (average >= threshold) return true;
     }
     return false;
@@ -486,7 +495,9 @@ export class TrophyService implements OnModuleInit {
   ): boolean {
     const grades = records
       .map((r) => r.finalGrade)
-      .filter((grade): grade is number => typeof grade === 'number' && grade > 0);
+      .filter(
+        (grade): grade is number => typeof grade === 'number' && grade > 0,
+      );
     if (grades.length === 0) return false;
     const average =
       grades.reduce((sum, grade) => sum + grade, 0) / grades.length;
@@ -559,11 +570,14 @@ export class TrophyService implements OnModuleInit {
       if (!semesterRecords.every((r) => this.isPassed(r))) continue;
       const grades = semesterRecords
         .map((r) => r.finalGrade)
-        .filter((grade): grade is number => typeof grade === 'number' && grade > 0);
+        .filter(
+          (grade): grade is number => typeof grade === 'number' && grade > 0,
+        );
       if (grades.length === 0) continue;
       const average =
         grades.reduce((sum, grade) => sum + grade, 0) / grades.length;
-      if (average >= 9) { // 9/10 (notas van de 0 a 10)
+      if (average >= 9) {
+        // 9/10 (notas van de 0 a 10)
         return true;
       }
     }
@@ -592,7 +606,9 @@ export class TrophyService implements OnModuleInit {
     for (const semesterRecords of semesterGroups.values()) {
       const grades = semesterRecords
         .map((r) => r.finalGrade)
-        .filter((grade): grade is number => typeof grade === 'number' && grade > 0);
+        .filter(
+          (grade): grade is number => typeof grade === 'number' && grade > 0,
+        );
       if (grades.length === 0) continue;
       const average =
         grades.reduce((sum, grade) => sum + grade, 0) / grades.length;
@@ -624,7 +640,10 @@ export class TrophyService implements OnModuleInit {
    */
   private isPassed(r: AcademicRecordWithSubject): boolean {
     // EQUIVALENCIA también cuenta como aprobada para propósitos de trofeos
-    return r.status === SubjectStatus.APROBADA || r.status === SubjectStatus.EQUIVALENCIA;
+    return (
+      r.status === SubjectStatus.APROBADA ||
+      r.status === SubjectStatus.EQUIVALENCIA
+    );
   }
 
   /**
@@ -717,7 +736,9 @@ export class TrophyService implements OnModuleInit {
   /**
    * Check DIVERSIFIED_YEARS: approvals across 4+ different plan years
    */
-  private checkDiversifiedYears(passedRecords: AcademicRecordWithSubject[]): boolean {
+  private checkDiversifiedYears(
+    passedRecords: AcademicRecordWithSubject[],
+  ): boolean {
     const years = new Set(passedRecords.map((r) => r.subject.year));
     return years.size >= 4;
   }
@@ -737,7 +758,9 @@ export class TrophyService implements OnModuleInit {
           const grades = recs
             .map((r) => r.finalGrade)
             .filter((g): g is number => typeof g === 'number' && g > 0);
-          return grades.length > 0 ? grades.reduce((a, b) => a + b, 0) / grades.length : null;
+          return grades.length > 0
+            ? grades.reduce((a, b) => a + b, 0) / grades.length
+            : null;
         })(),
       }))
       .filter((s) => s.avg !== null)
@@ -758,7 +781,9 @@ export class TrophyService implements OnModuleInit {
   /**
    * Check ALL_ENGLISH_COMPLETED: all 4 English Transversal subjects approved
    */
-  private checkAllEnglishCompleted(records: AcademicRecordWithSubject[]): boolean {
+  private checkAllEnglishCompleted(
+    records: AcademicRecordWithSubject[],
+  ): boolean {
     const ENGLISH_CODES = ['901', '902', '903', '904'];
     return ENGLISH_CODES.every((code) =>
       records.some((r) => r.subject.planCode === code && this.isPassed(r)),

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useAcademicStore } from '../academic/store/academic-store';
 import { buildEdges, getRecommendationsWithReasons } from '../../shared/lib/graph';
 import { fetchAcademicGraph } from '../academic/lib/academic-api';
+import type { Subject } from '../../shared/types/academic';
 import { Lock, Unlock, RotateCcw, Calendar, List, Wand2, Upload, CheckCircle, AlertTriangle, Info, Plus, Trash2 } from 'lucide-react';
 import { UnifiedSchedulePlanner } from '../schedule/components/UnifiedSchedulePlanner';
 import { fetchTimetables, uploadOfertaPdf } from '../schedule/lib/schedule-api';
@@ -25,6 +26,21 @@ const PERIODS_FOR_MANUAL: { key: TimePeriod; label: string }[] = [
   { key: 'T1', label: 'Tarde (14:00 - 18:00)' },
   { key: 'N1', label: 'Noche (19:00 - 23:00)' },
 ];
+
+const OFFER_DAY_TO_WEEK: Record<string, DayOfWeek> = {
+  Lunes: 'MONDAY',
+  Martes: 'TUESDAY',
+  Miércoles: 'WEDNESDAY',
+  Jueves: 'THURSDAY',
+  Viernes: 'FRIDAY',
+  Sábado: 'SATURDAY',
+};
+
+const OFFER_PERIOD_TO_SLOT: Record<string, TimePeriod> = {
+  'Mañana': 'M1',
+  'Tarde': 'T1',
+  'Noche': 'N1',
+};
 
 type ViewMode = 'CALENDAR' | 'LIST';
 
@@ -53,6 +69,7 @@ export const RecommendationsPage = () => {
 
   // Schedule State
   const [timetables, setTimetables] = useState<TimetableDto[]>([]);
+  const [offerEntries, setOfferEntries] = useState<TimetableDto[]>([]);
   const [availability, setAvailability] = useState<Map<string, boolean>>(new Map());
 
   // Oferta PDF State
@@ -70,15 +87,17 @@ export const RecommendationsPage = () => {
         setIsLoading(true);
         setLoadError(null);
 
-        const promises: Promise<any>[] = [];
-        if (subjects.length === 0) promises.push(fetchAcademicGraph());
-        promises.push(fetchTimetables());
+        let graphFromApi: Subject[] | null = null;
 
-        const results = await Promise.all(promises);
+        if (subjects.length === 0) {
+          graphFromApi = await fetchAcademicGraph();
+        }
+
+        const timetablesFromApi = await fetchTimetables();
 
         if (!active) return;
 
-        if (subjects.length === 0) setSubjects(results[0]);
+        if (graphFromApi) setSubjects(graphFromApi);
 
         // Load timetables from local storage
         const storedTimetables = localStorage.getItem('user_timetables');
@@ -87,10 +106,10 @@ export const RecommendationsPage = () => {
             setTimetables(JSON.parse(storedTimetables));
           } catch (e) {
             console.error("Failed to parse timetables", e);
-            setTimetables(subjects.length === 0 ? results[1] : results[0]);
+            setTimetables(timetablesFromApi);
           }
         } else {
-          setTimetables(subjects.length === 0 ? results[1] : results[0]);
+          setTimetables(timetablesFromApi);
         }
 
         // Load availability from local storage
@@ -107,9 +126,28 @@ export const RecommendationsPage = () => {
         const storedOferta = localStorage.getItem('oferta_materias');
         if (storedOferta) {
           try {
-            setOfertaData(JSON.parse(storedOferta));
+            const parsedOffers = JSON.parse(storedOferta) as ParsedTimetableOffer[];
+            setOfertaData(parsedOffers);
+
+            const storedOfferEntries = localStorage.getItem('offer_entries');
+            if (storedOfferEntries) {
+              setOfferEntries(JSON.parse(storedOfferEntries));
+            } else {
+              const builtEntries = buildTimetablesFromOferta(parsedOffers);
+              setOfferEntries(builtEntries);
+              localStorage.setItem('offer_entries', JSON.stringify(builtEntries));
+            }
           } catch (e) {
             console.error("Failed to parse oferta data", e);
+          }
+        }
+
+        const storedOfferEntries = localStorage.getItem('offer_entries');
+        if (!storedOferta && storedOfferEntries) {
+          try {
+            setOfferEntries(JSON.parse(storedOfferEntries));
+          } catch (e) {
+            console.error("Failed to parse offer entries", e);
           }
         }
 
@@ -143,24 +181,126 @@ export const RecommendationsPage = () => {
     localStorage.setItem('user_timetables', JSON.stringify(updated));
   };
 
-  const handleAddTimetable = async (data: { subjectId: string; day: DayOfWeek; period: TimePeriod }) => {
-    if (timetables.some(t => t.dayOfWeek === data.day && t.period === data.period)) {
-      setInlineMessage({ text: 'Ya existe una materia asignada en ese turno.', type: 'error' });
-      return;
+  const saveOfferEntriesLocal = (updated: TimetableDto[]) => {
+    setOfferEntries(updated);
+    localStorage.setItem('offer_entries', JSON.stringify(updated));
+  };
+
+  const normalizePlanCode = (code: string) => {
+    const normalized = code.replace(/^0+/, '');
+    return normalized || '0';
+  };
+
+  const parseOfferMeta = (offer: ParsedTimetableOffer): { slotRange: string; durationHours: number; isRemote: boolean } => {
+    const daysRaw = offer.days?.trim() || '';
+
+    if (daysRaw.toLowerCase() === 'a distancia') {
+      return { slotRange: 'A distancia', durationHours: 0, isRemote: true };
     }
 
+    const range = daysRaw.match(/(\d{2}a\d{2})$/)?.[1]
+      ?? (offer.periodLabel === 'Mañana' ? '08a12' : offer.periodLabel === 'Tarde' ? '14a18' : '19a23');
+    const parsed = range.match(/^(\d{2})a(\d{2})$/);
+    const durationHours = parsed ? Math.max(0, Number(parsed[2]) - Number(parsed[1])) : 4;
+
+    return { slotRange: range, durationHours, isRemote: false };
+  };
+
+  const buildTimetablesFromOferta = (offers: ParsedTimetableOffer[]): TimetableDto[] => {
+    const availableSubjects = subjects.filter(
+      (subject) => subject.status === SubjectStatus.DISPONIBLE || subject.status === SubjectStatus.RECURSADA,
+    );
+
+    const subjectByPlanCode = new Map(
+      availableSubjects.map((subject) => [normalizePlanCode(subject.planCode), subject]),
+    );
+
+    const generated: TimetableDto[] = [];
+
+    for (const offer of offers) {
+      const subject = subjectByPlanCode.get(normalizePlanCode(offer.planCode));
+      if (!subject) continue;
+
+      const meta = parseOfferMeta(offer);
+
+      if (meta.isRemote) {
+        generated.push({
+          id: `offer-${subject.id}-remote-${offer.commission}`,
+          subjectId: subject.id,
+          dayOfWeek: 'MONDAY',
+          dayLabel: 'A distancia',
+          period: 'M1',
+          subjectName: subject.name,
+          planCode: subject.planCode,
+          commission: offer.commission,
+          slotRange: meta.slotRange,
+          durationHours: meta.durationHours,
+          isRemote: true,
+        });
+        continue;
+      }
+
+      const dayOfWeek = OFFER_DAY_TO_WEEK[offer.dayLabel];
+      const period = OFFER_PERIOD_TO_SLOT[offer.periodLabel];
+      if (!dayOfWeek || !period) continue;
+
+      generated.push({
+        id: `offer-${subject.id}-${dayOfWeek}-${period}-${offer.commission}-${offer.days ?? 'std'}`,
+        subjectId: subject.id,
+        dayOfWeek,
+        dayLabel: DAYS_FOR_MANUAL.find((day) => day.key === dayOfWeek)?.label ?? dayOfWeek,
+        period,
+        subjectName: subject.name,
+        planCode: subject.planCode,
+        commission: offer.commission,
+        slotRange: meta.slotRange,
+        durationHours: meta.durationHours,
+        isRemote: false,
+      });
+    }
+
+    return generated;
+  };
+
+  const handleAddTimetable = async (data: {
+    subjectId: string;
+    day: DayOfWeek;
+    period: TimePeriod;
+    slotRange?: string;
+    durationHours?: number;
+    commission?: string;
+  }) => {
     const subject = subjects.find(s => s.id === data.subjectId);
+    const existingSlot = timetables.find(
+      (t) =>
+        t.dayOfWeek === data.day &&
+        t.period === data.period &&
+        (t.slotRange ?? '') === (data.slotRange ?? ''),
+    );
+
     const newTimetable: TimetableDto = {
-      id: Math.random().toString(36).substring(7),
+      id: existingSlot?.id ?? Math.random().toString(36).substring(7),
       subjectId: data.subjectId,
       dayOfWeek: data.day,
       dayLabel: data.day,
       period: data.period,
       subjectName: subject?.name || 'Materia Desconocida',
       planCode: subject?.planCode || '',
+      slotRange: data.slotRange,
+      durationHours: data.durationHours,
+      commission: data.commission,
+      isRemote: false,
     };
 
-    saveTimetablesLocal([...timetables, newTimetable]);
+    const cleaned = timetables.filter(
+      (t) =>
+        !(
+          t.dayOfWeek === data.day &&
+          t.period === data.period &&
+          (t.slotRange ?? '') === (data.slotRange ?? '')
+        ),
+    );
+    saveTimetablesLocal([...cleaned, newTimetable]);
   };
 
   const handleRemoveTimetable = async (subjectId: string) => {
@@ -192,23 +332,25 @@ export const RecommendationsPage = () => {
 
   const handleAddManualTimetable = () => {
     if (!manualSubjectId) return;
-    if (timetables.some(t => t.dayOfWeek === manualDay && t.period === manualPeriod)) {
-      setInlineMessage({ text: 'Ya existe una materia asignada en ese turno.', type: 'error' });
-      return;
-    }
+
     const subject = subjects.find(s => s.id === manualSubjectId);
     const newTimetable: TimetableDto = {
-      id: Math.random().toString(36).substring(7),
+      id: `manual-offer-${manualSubjectId}-${manualDay}-${manualPeriod}-${Math.random().toString(36).substring(7)}`,
       subjectId: manualSubjectId,
       dayOfWeek: manualDay,
       dayLabel: DAYS_FOR_MANUAL.find(d => d.key === manualDay)?.label ?? manualDay,
       period: manualPeriod,
       subjectName: subject?.name || 'Materia Desconocida',
       planCode: subject?.planCode || '',
+      commission: 'Manual',
+      slotRange: manualPeriod === 'M1' ? '08a12' : manualPeriod === 'T1' ? '14a18' : '19a23',
+      durationHours: 4,
+      isRemote: false,
     };
-    saveTimetablesLocal([...timetables, newTimetable]);
+
+    saveOfferEntriesLocal([...offerEntries, newTimetable]);
     setManualSubjectId('');
-    setInlineMessage({ text: `Horario agregado: ${subject?.name}`, type: 'success' });
+    setInlineMessage({ text: `Horario de oferta agregado: ${subject?.name}`, type: 'success' });
     setTimeout(() => setInlineMessage(null), 3000);
   };
 
@@ -260,8 +402,16 @@ export const RecommendationsPage = () => {
   };
 
   const handleAutoComplete = async () => {
+    const offerBySlot = new Map<string, TimetableDto[]>();
+    for (const offer of offerEntries.filter((entry) => !entry.isRemote)) {
+      const key = `${offer.dayOfWeek}-${offer.period}`;
+      const list = offerBySlot.get(key) || [];
+      list.push(offer);
+      offerBySlot.set(key, list);
+    }
+
     const availableSlots = Array.from(availability.entries())
-      .filter(([_, isAvail]) => isAvail)
+      .filter(([, isAvail]) => isAvail)
       .map(([key]) => {
         const [day, period] = key.split('-');
         return { day: day as DayOfWeek, period: period as TimePeriod };
@@ -287,9 +437,22 @@ export const RecommendationsPage = () => {
 
     const newTimetables = [...timetables];
     let addedCount = 0;
+
     for (const rec of unassignedRecommendations) {
       if (emptySlots.length === 0) break;
-      const slot = emptySlots.shift()!;
+
+      const slotIndex = emptySlots.findIndex((slot) => {
+        const key = `${slot.day}-${slot.period}`;
+        const options = offerBySlot.get(key) || [];
+        return options.some((option) => option.subjectId === rec.subject.id);
+      });
+
+      if (slotIndex === -1) continue;
+      const slot = emptySlots.splice(slotIndex, 1)[0];
+
+      const key = `${slot.day}-${slot.period}`;
+      const options = offerBySlot.get(key) || [];
+      const selectedOffer = options.find((option) => option.subjectId === rec.subject.id);
       const subject = subjects.find(s => s.id === rec.subject.id);
       newTimetables.push({
         id: Math.random().toString(36).substring(7),
@@ -299,6 +462,10 @@ export const RecommendationsPage = () => {
         period: slot.period,
         subjectName: subject?.name || 'Materia',
         planCode: subject?.planCode || '',
+        slotRange: selectedOffer?.slotRange,
+        durationHours: selectedOffer?.durationHours,
+        commission: selectedOffer?.commission,
+        isRemote: false,
       });
       addedCount++;
     }
@@ -324,9 +491,16 @@ export const RecommendationsPage = () => {
         setOfertaMessage({ text: 'No se encontraron ofertas. Verificá que el PDF sea válido.', type: 'error' });
         return;
       }
+
+      const importedTimetables = buildTimetablesFromOferta(result.data);
+
       setOfertaData(result.data);
       localStorage.setItem('oferta_materias', JSON.stringify(result.data));
-      setOfertaMessage({ text: `Se cargaron ${result.data.length} horarios desde el PDF.`, type: 'success' });
+      saveOfferEntriesLocal(importedTimetables);
+      setOfertaMessage({
+        text: `Se parsearon ${result.data.length} registros y se cargaron ${importedTimetables.length} horarios de oferta para tus materias disponibles.`,
+        type: 'success',
+      });
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Error al procesar el PDF.';
       setOfertaMessage({ text: message, type: 'error' });
@@ -570,7 +744,7 @@ export const RecommendationsPage = () => {
           <div className="space-y-3">
             <div className="border-b border-app pb-2">
               <h3 className="text-xl font-bold text-app uppercase tracking-wide">Cargar Horarios Manualmente</h3>
-              <p className="text-xs text-muted mt-1">Alternativa a subir el PDF de oferta. Agrega horarios uno por uno.</p>
+              <p className="text-xs text-muted mt-1">Esta sección representa la oferta de la facultad. Puede haber materias solapadas en el mismo horario.</p>
             </div>
 
             {/* Inline message */}
@@ -644,21 +818,21 @@ export const RecommendationsPage = () => {
                 </button>
               </div>
 
-              {/* List of current manual / loaded timetables */}
-              {timetables.length > 0 && (
+              {/* List of offer options loaded manually or from PDF */}
+              {offerEntries.length > 0 && (
                 <div className="mt-4 border-t border-app-border/30 pt-3">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-muted mb-2">Horarios cargados ({timetables.length})</p>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-muted mb-2">Oferta cargada ({offerEntries.length})</p>
                   <div className="space-y-1.5 max-h-40 overflow-y-auto">
-                    {timetables.map(t => (
+                    {offerEntries.map(t => (
                       <div key={t.id} className="flex items-center justify-between px-3 py-1.5 bg-app-bg rounded-lg border border-app/30 text-xs">
                         <span className="font-bold text-app truncate max-w-[60%]">{t.subjectName}</span>
                         <span className="text-muted font-mono">
-                          {DAYS_FOR_MANUAL.find(d => d.key === t.dayOfWeek)?.label ?? t.dayOfWeek}
+                          {t.isRemote ? 'A distancia' : (DAYS_FOR_MANUAL.find(d => d.key === t.dayOfWeek)?.label ?? t.dayOfWeek)}
                           {' — '}
-                          {PERIODS_FOR_MANUAL.find(p => p.key === t.period)?.label ?? t.period}
+                          {t.isRemote ? 'Sin franja fija' : (t.slotRange ?? (PERIODS_FOR_MANUAL.find(p => p.key === t.period)?.label ?? t.period))}
                         </span>
                         <button
-                          onClick={() => handleRemoveTimetable(t.subjectId)}
+                          onClick={() => saveOfferEntriesLocal(offerEntries.filter(entry => entry.id !== t.id))}
                           className="ml-2 text-red-400 hover:text-red-500 transition-colors"
                           title="Eliminar"
                         >
@@ -697,7 +871,7 @@ export const RecommendationsPage = () => {
               <UnifiedSchedulePlanner
                 availability={availability}
                 timetables={timetables}
-                subjects={subjects}
+                offerEntries={offerEntries}
                 onAvailabilityChange={handleAvailabilityChange}
                 onAddTimetable={handleAddTimetable}
                 onRemoveTimetable={handleRemoveTimetable}

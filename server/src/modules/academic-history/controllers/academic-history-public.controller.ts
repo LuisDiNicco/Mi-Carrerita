@@ -17,7 +17,10 @@ export class AcademicHistoryPublicController {
 
   @Post('public-upload')
   @ApiOperation({ summary: 'Parsear PDF de Historia Académica para invitados' })
-  @ApiResponse({ status: 200, description: 'Parsed PDF data ready for preview' })
+  @ApiResponse({
+    status: 200,
+    description: 'Parsed PDF data ready for preview',
+  })
   @UseInterceptors(FileInterceptor('file'))
   async uploadPdfPublic(
     @UploadedFile(
