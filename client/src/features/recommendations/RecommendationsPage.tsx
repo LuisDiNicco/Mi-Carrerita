@@ -37,8 +37,8 @@ export const RecommendationsPage = () => {
     <section className="space-y-6 max-w-6xl mx-auto pb-20 animate-in fade-in duration-500">
       <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h2 className="text-4xl font-bold text-app font-retro mb-2 uppercase tracking-wide">Planificador Acadé©mico</h2>
-          <p className="text-sm text-muted">Generá tu plan ideal y organizá tus horarios estraté©gicamente sin solapamientos.</p>
+          <h2 className="text-4xl font-bold text-app font-retro mb-2 uppercase tracking-wide">Planificador Académico</h2>
+          <p className="text-sm text-muted">Generá tu plan ideal y organizá tus horarios estratégicamente sin solapamientos.</p>
         </div>
 
         <div className="flex items-center gap-3">
@@ -76,22 +76,22 @@ export const RecommendationsPage = () => {
 
       <div className="rounded-xl border border-app bg-surface p-5 shadow-subtle">
         <div className="flex items-start justify-between mb-2 gap-2">
-          <label htmlFor="count-input" className="block text-xs font-bold text-muted uppercase tracking-wider">Â¿Cuántas materias queré©s cursar?</label>
+          <label htmlFor="count-input" className="block text-xs font-bold text-muted uppercase tracking-wider">¿Cuántas materias querés cursar?</label>
           <button onClick={() => setScoreInfoOpen(v => !v)} className="flex items-center gap-1 text-[10px] font-bold text-muted hover:text-unlam-500 transition-colors border border-app px-2 py-1 rounded-lg">
-            <Info size={12} /> Â¿Cé³mo se calcula el score?
+            <Info size={12} /> ¿Cómo se calcula el score?
           </button>
         </div>
 
         {scoreInfoOpen && (
           <div className="mb-3 rounded-lg bg-app-bg border border-app px-4 py-3 text-xs space-y-1.5 text-muted">
-            <p className="font-bold text-app text-[11px] uppercase tracking-wider mb-2">Cé³mo se calcula el score</p>
+            <p className="font-bold text-app text-[11px] uppercase tracking-wider mb-2">Cómo se calcula el score</p>
             <div className="grid gap-1">
-              <p><span className="text-unlam-500 font-bold">+200</span> â€” â­ Es "Proyecto Final"</p>
-              <p><span className="text-unlam-500 font-bold">+100</span> â€” ðŸ“Œ Pertenece al Té­tulo Intermedio</p>
-              <p><span className="text-unlam-500 font-bold">+80</span>  â€” ðŸŽ¯ Desbloquea directamente el Proyecto Final</p>
-              <p><span className="text-unlam-500 font-bold">+50</span>  â€” ðŸ”¥ Está en el Camino Cré­tico de la carrera</p>
-              <p><span className="text-unlam-500 font-bold">+10</span>  â€” ðŸ”“ Por cada materia que desbloquea</p>
-              <p><span className="text-unlam-500 font-bold">+10</span>  â€” ðŸ“… Tiene horario asignado</p>
+              <p><span className="text-unlam-500 font-bold">+200</span> — ⭐ Es "Proyecto Final"</p>
+              <p><span className="text-unlam-500 font-bold">+100</span> — 📍 Pertenece al Título Intermedio</p>
+              <p><span className="text-unlam-500 font-bold">+80</span>  — 🎯 Desbloquea directamente el Proyecto Final</p>
+              <p><span className="text-unlam-500 font-bold">+50</span>  — 🔥 Está en el Camino Crítico de la carrera</p>
+              <p><span className="text-unlam-500 font-bold">+10</span>  — 🔑 Por cada materia que desbloquea</p>
+              <p><span className="text-unlam-500 font-bold">+10</span>  — 🗓️ Tiene horario asignado</p>
             </div>
           </div>
         )}
@@ -159,7 +159,7 @@ export const RecommendationsPage = () => {
                   </select>
                 </label>
                 <label className="flex flex-col gap-1 text-xs font-bold text-muted uppercase tracking-wider">
-                  Dé­a
+                  Día
                   <select className="bg-app-bg border border-app rounded-lg px-3 py-2 text-app text-sm" value={manualDay} onChange={e => setManualDay(e.target.value as DayOfWeek)}>
                     {DAYS_FOR_MANUAL.map(d => (<option key={d.key} value={d.key}>{d.label}</option>))}
                   </select>

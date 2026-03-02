@@ -99,7 +99,9 @@ export const Dashboard = () => {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h2 className="text-3xl font-jersey text-app uppercase">Dashboard</h2>
-          <p className="text-muted text-sm">Análisis en tiempo real de tu progreso acadé©mico.</p>
+          <p className="text-muted text-sm">
+            Análisis en tiempo real de tu progreso académico.
+          </p>
         </div>
 
         <div className="flex items-center gap-2 bg-elevated p-1 rounded-lg border border-app shadow-subtle">
@@ -119,7 +121,7 @@ export const Dashboard = () => {
               : 'text-muted hover:text-app'
               }`}
           >
-            Té­tulo Intermedio
+            Título Intermedio
           </button>
         </div>
       </div>
@@ -130,7 +132,9 @@ export const Dashboard = () => {
           <h3 className="text-xl font-jersey tracking-wide text-app uppercase flex items-center gap-2">
             <span className="text-unlam-500">#</span> Resumen General
           </h3>
-          <p className="text-sm text-muted">Mé©tricas clave sobre el estado actual de la cursada.</p>
+          <p className="text-sm text-muted">
+            Métricas clave sobre el estado actual de la cursada.
+          </p>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -186,7 +190,9 @@ export const Dashboard = () => {
             <h3 className="text-xl font-jersey tracking-wide text-app uppercase flex items-center gap-2">
               <span className="text-unlam-500">#</span> Análisis de Progreso
             </h3>
-            <p className="text-sm text-muted">Mide tu velocidad de avance acadé©mico y carga por aé±o del plan.</p>
+            <p className="text-sm text-muted">
+              Mide tu velocidad de avance académico y carga por año del plan.
+            </p>
           </div>
         </div>
 
@@ -195,7 +201,7 @@ export const Dashboard = () => {
           <div className="rounded-2xl border border-app bg-elevated p-5 shadow-subtle hover:shadow-md transition-shadow">
             <h4 className="text-lg font-bold text-app mb-1">Progreso Acumulado (Burn Up)</h4>
             <p className="text-xs text-muted mb-6 h-8">
-              La curva creciente muestra cé³mo suma tu % de té­tulo completado. A mayor pendiente, mejor ritmo.
+              La curva creciente muestra cómo suma tu % de título completado. A mayor pendiente, mejor ritmo.
             </p>
             <div style={{ height: CHART_HEIGHTS.line }}>
               <ResponsiveContainer width="100%" height="100%">
@@ -206,7 +212,7 @@ export const Dashboard = () => {
                     stroke="var(--app-muted)"
                     tick={{ fontSize: 10 }}
                     tickMargin={10}
-                    label={{ value: 'Peré­odo (Aé±o-Cuatrimestre)', position: 'insideBottom', offset: -15, fill: 'var(--app-muted)', fontSize: 11 }}
+                    label={{ value: 'Período (Año-Cuatrimestre)', position: 'insideBottom', offset: -15, fill: 'var(--app-muted)', fontSize: 11 }}
                   />
                   <YAxis
                     domain={[0, 100]}
@@ -234,9 +240,9 @@ export const Dashboard = () => {
 
           {/* Progress By Year Chart */}
           <div className="rounded-2xl border border-app bg-elevated p-5 shadow-subtle hover:shadow-md transition-shadow">
-            <h4 className="text-lg font-bold text-app mb-1">Avance por Aé±o del Plan</h4>
+            <h4 className="text-lg font-bold text-app mb-1">Avance por Año del Plan</h4>
             <p className="text-xs text-muted mb-6 h-8">
-              Muestra cuántas materias aprobadas tené©s sobre el total de materias que conforman cada aé±o del plan.
+              Muestra cuántas materias aprobadas tenés sobre el total de materias que conforman cada año del plan.
             </p>
             <div style={{ height: CHART_HEIGHTS.line }}>
               <ResponsiveContainer width="100%" height="100%">
@@ -253,7 +259,7 @@ export const Dashboard = () => {
                     stroke="var(--app-muted)"
                     tick={{ fontSize: 10 }}
                     tickMargin={10}
-                    label={{ value: 'Aé±o del Plan de Estudios', position: 'insideBottom', offset: -15, fill: 'var(--app-muted)', fontSize: 11 }}
+                    label={{ value: 'Año del Plan de Estudios', position: 'insideBottom', offset: -15, fill: 'var(--app-muted)', fontSize: 11 }}
                   />
                   <YAxis
                     domain={[0, 100]}
@@ -270,7 +276,7 @@ export const Dashboard = () => {
                     stroke={CHART_COLORS.inProgress}
                     fillOpacity={1}
                     fill="url(#colorYear)"
-                    name="% Completado del Aé±o"
+                    name="% Completado del Año"
                     strokeWidth={2}
                   />
                 </AreaChart>
@@ -280,19 +286,19 @@ export const Dashboard = () => {
         </div>
       </section>
 
-      {/* SUBSECTION: Rendimiento Acadé©mico */}
+      {/* SUBSECTION: Rendimiento Académico */}
       <section className="space-y-4">
         <div className="border-b-2 border-app-border/50 pb-2">
           <h3 className="text-xl font-jersey tracking-wide text-app uppercase flex items-center gap-2">
-            <span className="text-unlam-500">#</span> Rendimiento Acadé©mico
+            <span className="text-unlam-500">#</span> Rendimiento Académico
           </h3>
-          <p className="text-sm text-muted">Evaléºa cé³mo rinden tus notas segéºn tiempo y dificultad.</p>
+          <p className="text-sm text-muted">Evalúa cómo rinden tus notas según tiempo y dificultad.</p>
         </div>
 
         <div className="grid gap-6 lg:grid-cols-2">
           {/* Promedio Chart */}
           <div className="rounded-2xl border border-app bg-elevated p-5 shadow-subtle hover:shadow-md transition-shadow">
-            <h4 className="text-lg font-bold text-app mb-1">Evolucié³n del Promedio</h4>
+            <h4 className="text-lg font-bold text-app mb-1">Evolución del Promedio</h4>
             <p className="text-xs text-muted mb-6 h-8">
               Tendencia de tu nota promedio acumulada a lo largo de los cuatrimestres rendidos.
             </p>
@@ -305,7 +311,7 @@ export const Dashboard = () => {
                     stroke="var(--app-muted)"
                     tick={{ fontSize: 10 }}
                     tickMargin={10}
-                    label={{ value: 'Peré­odo', position: 'insideBottom', offset: -15, fill: 'var(--app-muted)', fontSize: 11 }}
+                    label={{ value: 'Período', position: 'insideBottom', offset: -15, fill: 'var(--app-muted)', fontSize: 11 }}
                   />
                   <YAxis
                     domain={[0, 10]}
@@ -370,7 +376,7 @@ export const Dashboard = () => {
                             <div className="space-y-1 text-muted">
                               <p>Dificultad: <span className="text-app">{String(data.userPerceivedDifficulty)}</span></p>
                               <p>Nota: <span className="text-app">{String(data.actualGrade)}</span></p>
-                              <p>Aé±o: <span className="text-app">{String(data.year)}</span></p>
+                              <p>Año: <span className="text-app">{String(data.year)}</span></p>
                             </div>
                           </div>
                         );
@@ -386,19 +392,19 @@ export const Dashboard = () => {
         </div>
       </section>
 
-      {/* SUBSECTION: Distribucié³n y Estimaciones */}
+      {/* SUBSECTION: Distribución y Estimaciones */}
       <section className="space-y-4">
         <div className="border-b-2 border-app-border/50 pb-2">
           <h3 className="text-xl font-jersey tracking-wide text-app uppercase flex items-center gap-2">
-            <span className="text-unlam-500">#</span> Distribucié³n y Estimaciones
+            <span className="text-unlam-500">#</span> Distribución y Estimaciones
           </h3>
-          <p className="text-sm text-muted">Averigua de un pantallazo tu status actual y previsiones de finalizacié³n.</p>
+          <p className="text-sm text-muted">Averigua de un pantallazo tu status actual y previsiones de finalización.</p>
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
           <div className="rounded-2xl border border-app bg-elevated p-5 shadow-subtle hover:shadow-md transition-shadow flex flex-col">
             <div className="mb-4">
-              <h4 className="text-lg font-bold text-app">Distribucié³n de Estados</h4>
+              <h4 className="text-lg font-bold text-app">Distribución de Estados</h4>
               <p className="text-xs text-muted mb-2">
                 Cuántas materias pertenecen a cada estado. Ayuda a ver visualmente cuánto falta cursar (Pendientes) vs terminado.
               </p>
@@ -437,7 +443,7 @@ export const Dashboard = () => {
 
           <div className="rounded-2xl border border-app bg-elevated p-5 shadow-subtle hover:shadow-md transition-shadow flex flex-col">
             <div className="mb-4">
-              <h4 className="text-lg font-bold text-app">Proyeccié³n (Simulador)</h4>
+              <h4 className="text-lg font-bold text-app">Proyección (Simulador)</h4>
               <p className="text-xs text-muted mb-2">
                 Calcula la cantidad de cuatrimestres necesarios basados en tu ritmo objetivo.
               </p>
@@ -463,23 +469,25 @@ export const Dashboard = () => {
               </div>
 
               <div className="bg-surface/50 p-6 rounded-xl border border-app text-center shadow-inner">
-                <p className="text-sm text-muted mb-1 font-bold">Restaré­an aproximadamente</p>
+                <p className="text-sm text-muted mb-1 font-bold">Restarían aproximadamente</p>
                 <p className="text-5xl font-bold text-app font-jersey text-shadow mt-2 mb-2 tracking-wide">{projection.semesters}</p>
                 <p className="text-sm font-bold text-unlam-500 uppercase tracking-widest mt-1">Cuatrimestres</p>
-                <p className="text-xs text-muted mt-2 block font-mono">({(projection.semesters / 2).toFixed(1)} aé±os de cursada regular)</p>
+                <p className="text-xs text-muted mt-2 block font-mono">({(projection.semesters / 2).toFixed(1)} años de cursada regular)</p>
               </div>
 
               {/* How the projection is calculated */}
               <div className="rounded-lg bg-app-bg border border-app-border px-4 py-3 space-y-1.5">
-                <p className="text-[11px] uppercase tracking-wider text-muted font-bold">Â¿Cé³mo se calcula?</p>
+                <p className="text-[11px] uppercase tracking-wider text-muted font-bold">¿Cómo se calcula?</p>
                 <p className="text-xs text-muted leading-relaxed">
-                  <span className="text-app font-semibold">{projection.remaining} materias restantes</span> é·{' '}
+                  <span className="text-app font-semibold">{projection.remaining} materias restantes</span> ÷{' '}
                   <span className="text-unlam-500 font-semibold">{targetLoad} por cuatrimestre</span> (objetivo del slider).
-                  Es una estimacié³n lineal y no contempla correlatividades ni oferta de materias.
+                </p>
+                <p className="text-xs text-muted leading-relaxed">
+                  Es una estimación lineal y no contempla correlatividades ni oferta de materias.
                 </p>
                 {projection.quartersWithData > 0 && (
                   <p className="text-xs leading-relaxed">
-                    <span className="text-muted">Tu ritmo histé³rico real: </span>
+                    <span className="text-muted">Tu ritmo histórico real: </span>
                     <span className={`font-bold ${projection.historicalPace >= targetLoad ? 'text-green-400' : 'text-yellow-400'
                       }`}>
                       {projection.historicalPace} mat/cuatrimestre

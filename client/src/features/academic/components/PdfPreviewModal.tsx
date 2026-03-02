@@ -95,7 +95,7 @@ export const PdfPreviewModal = ({ records, onConfirm, onClose }: PdfPreviewModal
                 <div className="bg-elevated p-5 border-b border-app flex items-center justify-between shrink-0">
                     <div>
                         <h3 className="text-xl font-bold text-app font-retro tracking-wide flex items-center gap-2">
-                            <Upload size={20} /> Vista Previa â€” Historia Acadé©mica
+                            <Upload size={20} /> Vista Previa — Historia Académica
                         </h3>
                         <p className="text-sm text-muted mt-1">
                             Se encontraron <strong className="text-app">{records.length}</strong> registros. Revisá y editá antes de guardar.
@@ -111,12 +111,12 @@ export const PdfPreviewModal = ({ records, onConfirm, onClose }: PdfPreviewModal
                     <table className="w-full text-sm">
                         <thead>
                             <tr className="text-left text-muted border-b border-app bg-surface/50">
-                                <th className="py-2 px-3 font-medium w-20">Cé³digo</th>
+                                <th className="py-2 px-3 font-medium w-20">Código</th>
                                 <th className="py-2 px-3 font-medium">Materia</th>
                                 <th className="py-2 px-3 font-medium w-32">Estado</th>
                                 <th className="py-2 px-3 font-medium w-20 text-center">Nota</th>
                                 <th className="py-2 px-3 font-medium w-36">Fecha</th>
-                                <th className="py-2 px-3 font-medium w-16 text-center">Accié³n</th>
+                                <th className="py-2 px-3 font-medium w-16 text-center">Acción</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-app/10">

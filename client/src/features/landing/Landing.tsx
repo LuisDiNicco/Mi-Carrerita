@@ -14,17 +14,17 @@ const FEATURES: Feature[] = [
   {
     icon: BarChart3,
     title: 'Dashboard Completo',
-    description: 'Estadé­sticas avanzadas, gráficos interactivos y proyeccié³n inteligente de finalizacié³n',
+    description: 'Estadísticas avanzadas, gráficos interactivos y proyección inteligente de finalización',
   },
   {
     icon: GitBranch,
-    title: 'érbol Interactivo',
+    title: 'Árbol Interactivo',
     description: 'Visualiza materias, correlatividades y tu progreso en tiempo real con grafos dinámicos',
   },
   {
     icon: Target,
     title: 'Recomendaciones IA',
-    description: 'Planes personalizados basados en algoritmos de ruta cré­tica y tus objetivos',
+    description: 'Planes personalizados basados en algoritmos de ruta crítica y tus objetivos',
   },
   {
     icon: Trophy,
@@ -56,7 +56,7 @@ export const Landing = ({ onStart }: LandingProps) => {
                 Carrera de Grado
               </span>
               <span className="font-bold text-xs sm:text-sm text-app group-hover:text-unlam-500 transition-colors font-mono">
-                INGENIERéA EN INFORMéTICA @ UNLAM
+                INGENIERÍA EN INFORMÁTICA @ UNLAM
               </span>
             </div>
             <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-app-foreground/40 group-hover:text-unlam-500 group-hover:translate-x-1 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
@@ -74,7 +74,7 @@ export const Landing = ({ onStart }: LandingProps) => {
           {/* Description - smaller per request */}
           <p className="text-base sm:text-lg text-app/90 max-w-xl mx-auto leading-relaxed font-mono mb-10 animate-fade-in-up delay-100">
             La plataforma <span className="text-unlam-500 font-bold border-b-2 border-unlam-500/20 px-1">definitiva</span> para dominar tu carrera:
-            visualizacié³n en tiempo real, análisis y recomendaciones IA.
+            visualización en tiempo real, análisis y recomendaciones IA.
           </p>
 
           {/* CTA Buttons */}
@@ -86,7 +86,7 @@ export const Landing = ({ onStart }: LandingProps) => {
               <div className="absolute inset-0 bg-gradient-to-r from-unlam-600 via-unlam-500 to-unlam-600 bg-size-200 animate-gradient-xy" />
               <span className="relative z-10 text-white flex items-center justify-center gap-3">
                 <span>Comenzar Ahora</span>
-                <span className="transform group-hover:translate-x-1 transition-transform">â†’</span>
+                <span className="transform group-hover:translate-x-1 transition-transform">→</span>
               </span>
             </button>
 
@@ -113,7 +113,7 @@ export const Landing = ({ onStart }: LandingProps) => {
               Potencia Tu Carrera
             </h2>
             <p className="text-app/70 text-lg max-w-2xl mx-auto">
-              Herramientas profesionales diseé±adas para maximizar tu é©xito acadé©mico
+              Herramientas profesionales diseñadas para maximizar tu éxito académico
             </p>
           </div>
 
@@ -149,7 +149,7 @@ export const Landing = ({ onStart }: LandingProps) => {
 
         {/* Footer CTA */}
         <div className="mt-20 text-center">
-          <p className="text-muted mb-6 text-lg">Â¿Listo para transformar tu experiencia acadé©mica?</p>
+          <p className="text-muted mb-6 text-lg">¿Listo para transformar tu experiencia académica?</p>
           <button
             onClick={onStart}
             className="group relative overflow-hidden rounded-lg px-10 py-4 font-bold text-lg transition-all duration-300 hover:scale-105"
@@ -158,7 +158,7 @@ export const Landing = ({ onStart }: LandingProps) => {
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
             <span className="relative z-10 text-white flex items-center justify-center gap-2">
               <span>Empezar Ahora</span>
-              <span className="transform group-hover:translate-x-1 transition-transform duration-300">â†’</span>
+              <span className="transform group-hover:translate-x-1 transition-transform duration-300">→</span>
             </span>
           </button>
         </div>

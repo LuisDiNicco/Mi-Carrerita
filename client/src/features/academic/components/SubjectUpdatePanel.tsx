@@ -143,7 +143,7 @@ export const SubjectUpdatePanel = ({ subject, isOpen, onClose, onSave }: Subject
             <p className="text-[10px] text-muted uppercase tracking-widest font-bold mb-2">Actualizar Materia</p>
             <h2 className="text-xl md:text-2xl font-bold text-app font-retro mb-4 leading-tight">{subject.name}</h2>
             <div className="inline-block bg-surface px-2 py-1 border border-app rounded text-xs font-mono text-muted mb-6">
-              Cé³digo: {subject.planCode}
+              Código: {subject.planCode}
             </div>
 
             <label className="flex flex-col gap-2 text-sm text-muted">
@@ -164,7 +164,7 @@ export const SubjectUpdatePanel = ({ subject, isOpen, onClose, onSave }: Subject
             {isStatusLocked && (
               <div className="mt-4 p-3 bg-primary/10 border border-primary/30 rounded-lg text-xs tracking-wide">
                 <span className="text-primary font-bold mb-1 block">INFO:</span>
-                El estado <strong className="text-primary">Disponible</strong> se calcula automáticamente. Para modificar la materia, elegé­ un estado real.
+                El estado <strong className="text-primary">Disponible</strong> se calcula automáticamente. Para modificar la materia, elegí un estado real.
               </div>
             )}
           </div>
@@ -179,7 +179,7 @@ export const SubjectUpdatePanel = ({ subject, isOpen, onClose, onSave }: Subject
               onClick={onClose}
               aria-label="Cerrar"
             >
-              âœ•
+              ✕
             </button>
           </div>
 
@@ -187,13 +187,13 @@ export const SubjectUpdatePanel = ({ subject, isOpen, onClose, onSave }: Subject
             <div className="space-y-4 flex-1 flex flex-col justify-center animate-[fadeIn_0.3s_ease-out]">
               <div className="p-5 border-2 border-yellow-500/50 bg-yellow-500/10 rounded-xl shadow-soft">
                 <h3 className="text-xl font-bold text-yellow-500 mb-3 font-retro flex items-center gap-2">
-                  <span className="text-2xl">âš ï¸</span> Â¿Forzar Cambio?
+                  <span className="text-2xl">⚠️</span> ¿Forzar Cambio?
                 </h3>
                 <p className="text-sm text-app/90 leading-relaxed">
                   Esta materia figura como <strong className="bg-yellow-500/20 px-1 rounded text-yellow-400">PENDIENTE</strong> (bloqueada).
                   <br /><br />
-                  Si cambias su estado manualmente, podré­as estar rompiendo la cadena de correlatividades o el flujo del plan de estudios.
-                  Â¿Deseas continuar bajo tu propio riesgo?
+                  Si cambias su estado manualmente, podrías estar rompiendo la cadena de correlatividades o el flujo del plan de estudios.
+                  ¿Deseas continuar bajo tu propio riesgo?
                 </p>
               </div>
               <div className="flex justify-end gap-3 mt-4">
@@ -258,7 +258,7 @@ export const SubjectUpdatePanel = ({ subject, isOpen, onClose, onSave }: Subject
               </div>
 
               <label className="flex flex-col gap-2 text-sm text-muted">
-                <span className="font-bold">Fecha de Aprobacié³n/Regularidad</span>
+                <span className="font-bold">Fecha de Aprobación/Regularidad</span>
                 <div className="relative flex items-center">
                   <input
                     type="text"
@@ -298,7 +298,7 @@ export const SubjectUpdatePanel = ({ subject, isOpen, onClose, onSave }: Subject
                   className="w-full h-full min-h-[80px] bg-elevated border-2 border-app-border rounded-lg px-3 py-2.5 text-app resize-none focus:border-unlam-500 focus:ring-2 focus:ring-unlam-500/20 outline-none transition-all placeholder:text-muted/50"
                   value={notes}
                   onChange={(event) => setNotes(event.target.value)}
-                  placeholder="Ej: El final es oral y toma diseé±o de DB..."
+                  placeholder="Ej: El final es oral y toma diseño de DB..."
                 />
               </label>
 

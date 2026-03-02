@@ -273,29 +273,29 @@ export function getRecommendationsWithReasons(
     const reasons: string[] = [];
     let score = 0;
 
-    // Prioridad 1: Té­tulo Intermedio (+100)
+    // Prioridad 1: Título Intermedio (+100)
     if (subject.isIntermediateDegree) {
-      reasons.push("ðŸ“Œ Té­tulo Intermedio");
       score += 100;
+      reasons.push("📍 Título Intermedio");
     }
 
     // Prioridad 2: Desbloquea Proyecto Final (+80)
     if (unlocksThesis.has(subject.id)) {
-      reasons.push("ðŸŽ¯ Desbloquea Proyecto Final");
+      reasons.push("🎯 Desbloquea Proyecto Final");
       score += 80;
     }
 
-    // Prioridad 3: Camino Cré­tico (+50)
+    // Prioridad 3: Camino Crítico (+50)
     if (criticalNodes.has(subject.id)) {
-      reasons.push("ðŸ”¥ Camino Cré­tico");
       score += 50;
+      reasons.push("🔥 Camino Crítico");
     }
 
     // Prioridad 4: Desbloquea otras materias (+10 por cada una)
     const unlocksCount = unlockMap.get(subject.id) ?? 0;
     if (unlocksCount > 0) {
       reasons.push(
-        `ðŸ”“ Desbloquea ${unlocksCount} ${unlocksCount === 1 ? "materia" : "materias"}`,
+        `👉 Desbloquea ${unlocksCount} ${unlocksCount === 1 ? "materia" : "materias"}`,
       );
       score += unlocksCount * 10;
     }
@@ -304,10 +304,10 @@ export function getRecommendationsWithReasons(
     const distance = distanceToSink.get(subject.id) ?? 0;
     score += distance * 0.1;
 
-    // Penalizacié³n: materias optativas tienen prioridad mé­nima
+    // Penalización: materias optativas tienen prioridad mínima
     if (subject.isOptional) {
-      score -= 1000;
-      reasons.push('âš ï¸ Materia Optativa (baja prioridad)');
+      score -= 200;
+      reasons.push("⚙️ Materia Optativa (baja prioridad)");
     }
 
     return {
@@ -318,7 +318,7 @@ export function getRecommendationsWithReasons(
   });
 
   // Detectar si todas las disponibles tienen score base 0
-  // (caso té­pico de alumnos de 5to aé±o donde ya no quedan correlativas que desbloquear)
+  // (caso típico de alumnos de 5to año donde ya no quedan correlativas que desbloquear)
   const allScoresZero = scored.every((s) => s.score === 0);
 
   if (allScoresZero) {
@@ -341,7 +341,7 @@ export function getRecommendationsWithReasons(
     }
   }
 
-  // Ordenar por score (descendente), luego por aé±o (ascendente)
+  // Ordenar por score (descendente), luego por año (ascendente)
   scored.sort((a, b) => {
     if (b.score !== a.score) return b.score - a.score;
     return a.subject.year - b.subject.year;

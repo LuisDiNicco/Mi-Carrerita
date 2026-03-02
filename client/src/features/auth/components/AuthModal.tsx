@@ -43,22 +43,22 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
     }
 
     if (trimmedPassword.length < 8) {
-      setError('La contraseé±a debe tener al menos 8 caracteres.');
+      setError('La contraseña debe tener al menos 8 caracteres.');
       return;
     }
 
     if (mode === 'register' && !/[A-Z]/.test(trimmedPassword)) {
-      setError('La contraseé±a debe incluir al menos una letra mayéºscula.');
+      setError('La contraseña debe incluir al menos una letra mayúscula.');
       return;
     }
 
     if (mode === 'register' && !/[a-z]/.test(trimmedPassword)) {
-      setError('La contraseé±a debe incluir al menos una letra minéºscula.');
+      setError('La contraseña debe incluir al menos una letra minúscula.');
       return;
     }
 
     if (mode === 'register' && !/\d/.test(trimmedPassword)) {
-      setError('La contraseé±a debe incluir al menos un néºmero.');
+      setError('La contraseña debe incluir al menos un número.');
       return;
     }
 
@@ -73,14 +73,14 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
 
       const result = mode === 'register'
         ? await registerUser({
-            email: trimmedEmail,
-            password: trimmedPassword,
-            name: trimmedName || undefined,
-          })
+          email: trimmedEmail,
+          password: trimmedPassword,
+          name: trimmedName || undefined,
+        })
         : await loginUser({
-            email: trimmedEmail,
-            password: trimmedPassword,
-          });
+          email: trimmedEmail,
+          password: trimmedPassword,
+        });
 
       if (mode === 'register' && isGuest) {
         // Best-effort migration: if it fails, registration still completes.
@@ -101,8 +101,8 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
       const message = err instanceof Error
         ? err.message
         : mode === 'register'
-          ? 'No se pudo completar el registro. Intentá nuevamente.'
-          : 'No se pudo iniciar sesié³n. Intentá nuevamente.';
+          ? 'El correo ya se encuentra registrado.'
+          : 'No se pudo iniciar sesión. Intentá nuevamente.';
       setError(message);
     } finally {
       setIsLoading(false);
@@ -137,7 +137,7 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
       <div className="relative z-10 w-full max-w-lg rounded-2xl border-2 border-app bg-surface p-6 shadow-retro">
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-bold text-app font-retro">
-            {mode === 'login' ? 'Iniciar sesié³n' : 'Crear cuenta'}
+            {mode === 'login' ? 'Iniciar sesión' : 'Crear cuenta'}
           </h2>
           <button className="text-muted" onClick={onClose}>
             âœ•
@@ -169,21 +169,19 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
           <>
             <div className="mt-5 grid grid-cols-2 gap-2">
               <button
-                className={`rounded-lg border-2 py-2 text-sm font-bold transition-all ${
-                  mode === 'login'
+                className={`rounded-lg border-2 py-2 text-sm font-bold transition-all ${mode === 'login'
                     ? 'border-unlam-500 bg-unlam-500/20 text-app'
                     : 'border-app-border text-muted hover:border-app'
-                }`}
+                  }`}
                 onClick={() => setMode('login')}
               >
-                Iniciar sesié³n
+                Iniciar sesión
               </button>
               <button
-                className={`rounded-lg border-2 py-2 text-sm font-bold transition-all ${
-                  mode === 'register'
+                className={`rounded-lg border-2 py-2 text-sm font-bold transition-all ${mode === 'register'
                     ? 'border-unlam-500 bg-unlam-500/20 text-app'
                     : 'border-app-border text-muted hover:border-app'
-                }`}
+                  }`}
                 onClick={() => setMode('register')}
               >
                 Registrarse
@@ -214,7 +212,7 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
                 />
               </label>
               <label className="flex flex-col gap-1 text-sm text-muted">
-                <span className="font-bold">Contraseé±a</span>
+                <span className="font-bold">Contraseña</span>
                 <div className="relative">
                   <input
                     type={showPassword ? 'text' : 'password'}
@@ -227,14 +225,14 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
                     type="button"
                     className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-muted hover:text-app"
                     onClick={() => setShowPassword((prev) => !prev)}
-                    title={showPassword ? 'Ocultar contraseé±a' : 'Mostrar contraseé±a'}
+                    title={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                   >
                     {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
                 </div>
                 {mode === 'register' && (
                   <p className="text-xs text-muted/70 mt-1">
-                    Debe incluir mé­nimo 8 caracteres, una mayéºscula, una minéºscula y un néºmero.
+                    Debe incluir mínimo 8 caracteres, una mayúscula, una minúscula y un número.
                   </p>
                 )}
               </label>
