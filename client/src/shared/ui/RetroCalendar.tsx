@@ -1,4 +1,4 @@
-import { useState, useEffect, useLayoutEffect, useRef, type ChangeEvent } from 'react';
+﻿import { useState, useEffect, useLayoutEffect, useRef, type ChangeEvent } from 'react';
 import { cn } from '../lib/utils';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -147,12 +147,12 @@ export const RetroCalendar = ({ value, onChange, onClose }: RetroCalendarProps) 
       </div>
 
       <div className="mb-3 flex items-center gap-2">
-        <span className="text-xs font-bold uppercase tracking-wide text-muted">Año</span>
+        <span className="text-xs font-bold uppercase tracking-wide text-muted">Aé±o</span>
         <select
           className="flex-1 bg-elevated border-2 border-app-border rounded px-2 py-1.5 text-sm text-app focus:border-unlam-500 outline-none"
           value={year}
           onChange={handleYearChange}
-          aria-label="Seleccionar año"
+          aria-label="Seleccionar aé±o"
         >
           {Array.from({ length: 70 }, (_, index) => currentYear + 5 - index).map((yearOption) => (
             <option key={yearOption} value={yearOption}>
@@ -215,3 +215,4 @@ export const RetroCalendar = ({ value, onChange, onClose }: RetroCalendarProps) 
     </div>
   );
 };
+

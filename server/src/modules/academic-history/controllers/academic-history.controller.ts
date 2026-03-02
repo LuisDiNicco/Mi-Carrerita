@@ -15,7 +15,7 @@ import {
   FileTypeValidator,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {  ApiOperation, ApiResponse , ApiTags } from '@nestjs/swagger';
 import { AcademicHistoryService } from '../services/academic-history.service';
 import {
   AcademicHistoryFilterDto,
@@ -28,6 +28,7 @@ import { PdfParserService } from '../../../shared/pdf-parser/pdf-parser.service'
 import { EnvironmentAuthGuard } from '../../../common/guards/environment-auth.guard';
 import { CurrentUser } from '../../../common/decorators/current-user.decorator';
 
+@ApiTags('Academic History')
 @Controller('history')
 @UseGuards(EnvironmentAuthGuard)
 export class AcademicHistoryController {

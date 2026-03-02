@@ -1,9 +1,9 @@
-import { Trophy, Award, Zap, Star } from 'lucide-react';
+﻿import { Trophy, Award, Zap, Star } from 'lucide-react';
 
 export const CheckpointLegend = () => {
     const items = [
         { label: 'Inicio', icon: Zap, color: 'text-gray-400' },
-        { label: 'Título Intermedio', icon: Award, color: 'text-blue-400' },
+        { label: 'Té­tulo Intermedio', icon: Award, color: 'text-primary' },
         { label: 'Proyecto Final', icon: Star, color: 'text-yellow-400' },
         { label: 'Ingeniero', icon: Trophy, color: 'text-unlam-500' },
     ];
@@ -24,3 +24,4 @@ export const CheckpointLegend = () => {
         </div>
     );
 };
+

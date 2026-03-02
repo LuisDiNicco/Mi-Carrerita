@@ -1,4 +1,4 @@
-import type { Subject } from "../../../shared/types/academic";
+﻿import type { Subject } from "../../../shared/types/academic";
 import { SubjectStatus } from "../../../shared/types/academic";
 import { authFetch } from "../../auth/lib/api";
 
@@ -62,7 +62,7 @@ export async function migrateGuestProgressToAccount(
       difficulty: subject.difficulty ?? null,
       notes: subject.notes ?? null,
       statusDate: subject.statusDate ?? null,
-      // isIntermediate is NOT part of UpdateSubjectRecordDto — omitted intentionally
+      // isIntermediate is NOT part of UpdateSubjectRecordDto â€” omitted intentionally
     });
   }
 }
@@ -146,7 +146,7 @@ export async function fetchAcademicHistory(params?: {
 // PDF Upload Functions
 // ========================
 
-/** Parsed record returned by the backend after uploading a Historia Académica PDF */
+/** Parsed record returned by the backend after uploading a Historia Acadé©mica PDF */
 export interface ParsedAcademicRecord {
   planCode: string;
   name: string;
@@ -156,7 +156,7 @@ export interface ParsedAcademicRecord {
   status?: string;
 }
 
-/** Upload a Historia Académica PDF and receive parsed records for preview */
+/** Upload a Historia Acadé©mica PDF and receive parsed records for preview */
 export async function uploadHistoriaPdf(
   file: File,
   options?: { guestMode?: boolean },
@@ -204,3 +204,4 @@ export async function batchSaveHistory(
 
   return response.json();
 }
+

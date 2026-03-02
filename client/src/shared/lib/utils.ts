@@ -1,4 +1,4 @@
-import { type ClassValue, clsx } from "clsx";
+﻿import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
 /**
@@ -21,13 +21,13 @@ export function truncateSubjectName(name: string, maxLength = 30): string {
  */
 export function getSubjectEmoji(status: string): string {
   const emojiMap: Record<string, string> = {
-    PENDIENTE: "🔒",
-    DISPONIBLE: "🎯",
-    EN_CURSO: "📚",
-    REGULARIZADA: "✅",
-    APROBADA: "🏆",
+    PENDIENTE: "ðŸ”’",
+    DISPONIBLE: "ðŸŽ¯",
+    EN_CURSO: "ðŸ“š",
+    REGULARIZADA: "âœ…",
+    APROBADA: "ðŸ†",
   };
-  return emojiMap[status] || "❓";
+  return emojiMap[status] || "â“";
 }
 
 /**
@@ -77,9 +77,9 @@ export function groupBySemester<T extends { semester: number }>(
  * Formatear nota con estilo retro
  */
 export function formatGrade(grade: number | null): string {
-  if (grade === null) return "—";
-  if (grade >= 8) return `⭐ ${grade}`;
-  if (grade >= 6) return `✓ ${grade}`;
+  if (grade === null) return "â€”";
+  if (grade >= 8) return `â­ ${grade}`;
+  if (grade >= 6) return `âœ“ ${grade}`;
   return `${grade}`;
 }
 
@@ -87,7 +87,7 @@ export function formatGrade(grade: number | null): string {
  * Formatear fecha YYYY-MM-DD a formato legible DD/MM/YYYY
  */
 export function formatDate(date: string | null | undefined): string {
-  if (!date) return '—';
+  if (!date) return 'â€”';
   return new Date(date + 'T00:00:00').toLocaleDateString('es-AR');
 }
 
@@ -140,3 +140,4 @@ export function debounce<T extends (...args: unknown[]) => unknown>(
 /**
  * Validar estructura de Subject
  */
+

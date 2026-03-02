@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+﻿import { describe, it, expect, vi } from 'vitest';
 import {
     cn,
     truncateSubjectName,
@@ -14,8 +14,8 @@ import {
 
 describe('Shared Utils', () => {
     it('cn combina clases de Tailwind correctamente', () => {
-        expect(cn('bg-red-500', 'text-white')).toBe('bg-red-500 text-white');
-        expect(cn('bg-red-500', false, null, undefined, 'p-4')).toBe('bg-red-500 p-4');
+        expect(cn('bg-destructive', 'text-white')).toBe('bg-destructive text-white');
+        expect(cn('bg-destructive', false, null, undefined, 'p-4')).toBe('bg-destructive p-4');
     });
 
     it('truncateSubjectName trunca nombres largos', () => {
@@ -23,10 +23,10 @@ describe('Shared Utils', () => {
         expect(truncateSubjectName('Esta es una materia con un nombre muy pero muy largo', 20)).toBe('Esta es una mater...');
     });
 
-    it('getSubjectEmoji retorna emojis adecudos según el estado', () => {
-        expect(getSubjectEmoji('APROBADA')).toBe('🏆');
-        expect(getSubjectEmoji('PENDIENTE')).toBe('🔒');
-        expect(getSubjectEmoji('INEXISTENTE')).toBe('❓');
+    it('getSubjectEmoji retorna emojis adecudos segéºn el estado', () => {
+        expect(getSubjectEmoji('APROBADA')).toBe('ðŸ†');
+        expect(getSubjectEmoji('PENDIENTE')).toBe('ðŸ”’');
+        expect(getSubjectEmoji('INEXISTENTE')).toBe('â“');
     });
 
     it('getRandomRetroColor genera un color retro', () => {
@@ -54,18 +54,18 @@ describe('Shared Utils', () => {
     });
 
     it('formatGrade formatea la nota correctamente', () => {
-        expect(formatGrade(null)).toBe('—');
-        expect(formatGrade(9)).toBe('⭐ 9');
-        expect(formatGrade(8)).toBe('⭐ 8');
-        expect(formatGrade(7)).toBe('✓ 7');
-        expect(formatGrade(6)).toBe('✓ 6');
+        expect(formatGrade(null)).toBe('â€”');
+        expect(formatGrade(9)).toBe('â­ 9');
+        expect(formatGrade(8)).toBe('â­ 8');
+        expect(formatGrade(7)).toBe('âœ“ 7');
+        expect(formatGrade(6)).toBe('âœ“ 6');
         expect(formatGrade(4)).toBe('4');
     });
 
     it('formatDate formatea fechas', () => {
-        expect(formatDate(null)).toBe('—');
-        expect(formatDate(undefined)).toBe('—');
-        expect(formatDate('')).toBe('—');
+        expect(formatDate(null)).toBe('â€”');
+        expect(formatDate(undefined)).toBe('â€”');
+        expect(formatDate('')).toBe('â€”');
         // Local date string comparison might vary per environment, so just test it returns a string
         expect(typeof formatDate('2024-01-01')).toBe('string');
     });
@@ -78,7 +78,7 @@ describe('Shared Utils', () => {
         vi.useRealTimers();
     });
 
-    it('debounce retrasa la ejecución', () => {
+    it('debounce retrasa la ejecucié³n', () => {
         vi.useFakeTimers();
         const func = vi.fn();
         const debounced = debounce(func, 1000);
@@ -95,3 +95,4 @@ describe('Shared Utils', () => {
         vi.useRealTimers();
     });
 });
+

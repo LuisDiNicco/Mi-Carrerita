@@ -19,11 +19,38 @@ export interface TrophyDefinitionDto {
 }
 
 /** User's trophy state and progress */
-export interface TrophyDto extends TrophyDefinitionDto {
+export class TrophyDto implements TrophyDefinitionDto {
+  id: string;
+  code: string;
+  name: string;
+  description: string;
+  tier: TrophyTier;
+  icon: string;
+  rarity: number;
+  criteria?: string;
   unlocked: boolean;
-  unlockedAt?: string; // ISO date string
-  progress: number; // 0-100 (%)
-  metadata?: Record<string, unknown>; // Custom data per trophy (subjects, grades, etc.)
+  unlockedAt?: string;
+  progress: number;
+  metadata?: Record<string, unknown>;
+
+  static fromEntity(
+    trophy: { id: string; code: string; name: string; description?: string | null; tier: string; icon: string; rarity: number; criteria?: string | null },
+    userStatus?: { unlockedAt?: Date | null; progress?: number | null }
+  ): TrophyDto {
+    const dto = new TrophyDto();
+    dto.id = trophy.id;
+    dto.code = trophy.code;
+    dto.name = trophy.name;
+    dto.description = trophy.description || '';
+    dto.tier = trophy.tier as TrophyTier;
+    dto.icon = trophy.icon;
+    dto.rarity = trophy.rarity;
+    dto.unlocked = !!userStatus?.unlockedAt;
+    dto.unlockedAt = userStatus?.unlockedAt?.toISOString();
+    dto.progress = userStatus?.progress || 0;
+    dto.criteria = trophy.criteria || undefined;
+    return dto;
+  }
 }
 
 /** Check trophies request (manual trigger) */

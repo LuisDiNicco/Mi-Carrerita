@@ -1,4 +1,4 @@
-import { authFetch } from "../../auth/lib/api";
+﻿import { authFetch } from "../../auth/lib/api";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
@@ -116,7 +116,7 @@ export interface ParsedTimetableOffer {
     planCode: string;
     description: string;
     dayLabel: string;     // e.g. "Lunes"
-    periodLabel: string;  // e.g. "Noche", "Tarde", "Mañana"
+    periodLabel: string;  // e.g. "Noche", "Tarde", "Maé±ana"
     commission: string;
     modality: string;
     location: string;
@@ -143,3 +143,4 @@ export async function uploadOfertaPdf(
 
     return response.json();
 }
+

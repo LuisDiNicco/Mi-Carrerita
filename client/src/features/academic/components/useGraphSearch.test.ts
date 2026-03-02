@@ -1,4 +1,4 @@
-import { renderHook, act } from '@testing-library/react';
+﻿import { renderHook, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { useGraphSearch } from './useGraphSearch';
 import type { Subject } from '../../../shared/types/academic';
@@ -31,7 +31,7 @@ describe('useGraphSearch hook', () => {
         vi.clearAllTimers();
     });
 
-    it('debería filtrar materias basado en el nombre y código', () => {
+    it('deberé­a filtrar materias basado en el nombre y cé³digo', () => {
         const { result } = renderHook(() => useGraphSearch(mockSubjects, mockNodes, mockFlowInstance, mockSetFocusedId));
 
         act(() => {
@@ -47,7 +47,7 @@ describe('useGraphSearch hook', () => {
         expect(result.current.searchResults[0].id).toBe('2');
     });
 
-    it('no debería buscar si el query es muy corto', () => {
+    it('no deberé­a buscar si el query es muy corto', () => {
         const { result } = renderHook(() => useGraphSearch(mockSubjects, mockNodes, mockFlowInstance, mockSetFocusedId));
 
         act(() => {
@@ -104,3 +104,4 @@ describe('useGraphSearch hook', () => {
         expect(mockSetFocusedId).toHaveBeenCalledTimes(1);
     });
 });
+

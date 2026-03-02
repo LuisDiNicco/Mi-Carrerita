@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+﻿import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { RetroCard, RetroLoading, RetroError, RetroBadge } from './RetroComponents';
 
@@ -54,7 +54,7 @@ describe('RetroError', () => {
 
   it('renders the default title', () => {
     render(<RetroError message="Error" />);
-    expect(screen.getByText('¡ERROR!')).toBeInTheDocument();
+    expect(screen.getByText('Â¡ERROR!')).toBeInTheDocument();
   });
 
   it('renders a custom title', () => {
@@ -123,3 +123,4 @@ describe('RetroBadge', () => {
     expect(badge).toHaveClass('extra-class');
   });
 });
+

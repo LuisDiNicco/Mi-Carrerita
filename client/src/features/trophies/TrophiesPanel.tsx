@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import { fetchTrophyCase, checkAndUnlockTrophies } from './lib/trophies-api';
 import type { TrophyCaseDto, TrophyDto } from './lib/trophies-api';
 import { Trophy, CheckCircle, AlertTriangle } from 'lucide-react';
@@ -74,7 +74,7 @@ export const TrophiesPanel = () => {
       const newTrophies = await checkAndUnlockTrophies();
       if (newTrophies.length > 0) {
         await loadData();
-        setTrophyMessage({ text: `¡Has desbloqueado ${newTrophies.length} nuevos trofeos!`, type: 'success' });
+        setTrophyMessage({ text: `Â¡Has desbloqueado ${newTrophies.length} nuevos trofeos!`, type: 'success' });
       } else {
         setTrophyMessage({ text: 'No hay nuevos trofeos desbloqueados por ahora.', type: 'info' });
       }
@@ -103,7 +103,7 @@ export const TrophiesPanel = () => {
   }, [trophyCase]);
 
   if (loading) return <div className="p-8 text-center text-muted font-retro animate-pulse">Cargando trofeos...</div>;
-  if (error) return <div className="p-8 text-center text-red-500 font-bold">{error}</div>;
+  if (error) return <div className="p-8 text-center text-destructive font-bold">{error}</div>;
   if (!trophyCase) return null;
 
   return (
@@ -134,7 +134,7 @@ export const TrophiesPanel = () => {
           <span className="relative z-10 flex items-center gap-2">
             {checking ? (
               <>
-                <span className="animate-spin">↻</span> Verificando...
+                <span className="animate-spin">â†»</span> Verificando...
               </>
             ) : (
               <>Verificar Trofeos</>
@@ -145,12 +145,12 @@ export const TrophiesPanel = () => {
 
       {trophyMessage && (
         <div className={`flex items-center gap-2 px-4 py-3 rounded-xl border text-sm font-bold ${trophyMessage.type === 'success' ? 'bg-green-500/10 border-green-500/30 text-green-400'
-          : trophyMessage.type === 'error' ? 'bg-red-500/10 border-red-500/30 text-red-400'
-            : 'bg-blue-500/10 border-blue-500/30 text-blue-400'
+          : trophyMessage.type === 'error' ? 'bg-destructive/10 border-destructive/30 text-destructive'
+            : 'bg-primary/10 border-primary/30 text-primary'
           }`}>
           {trophyMessage.type === 'success' ? <CheckCircle size={16} /> : trophyMessage.type === 'error' ? <AlertTriangle size={16} /> : <Trophy size={16} />}
           {trophyMessage.text}
-          <button onClick={() => setTrophyMessage(null)} className="ml-auto text-muted hover:text-app">×</button>
+          <button onClick={() => setTrophyMessage(null)} className="ml-auto text-muted hover:text-app">é—</button>
         </div>
       )}
 
@@ -213,3 +213,4 @@ export const TrophiesPanel = () => {
     </section>
   );
 };
+

@@ -1,4 +1,4 @@
-import { renderHook, act } from '@testing-library/react';
+﻿import { renderHook, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { useCareerGraph } from './useCareerGraph';
 import * as academicApi from '../lib/academic-api';
@@ -56,7 +56,7 @@ describe('useCareerGraph hook', () => {
         useAuthStore.setState({ isGuest: false, user: { name: 'Test', email: 'test@test.com' } });
     });
 
-    it('debería inicializar cargando y fetchear los datos de la API', async () => {
+    it('deberé­a inicializar cargando y fetchear los datos de la API', async () => {
         (academicApi.fetchAcademicGraph as any).mockResolvedValue([mockSubject]);
 
         const { result } = renderHook(() => useCareerGraph());
@@ -75,7 +75,7 @@ describe('useCareerGraph hook', () => {
         expect(result.current.error).toBeNull();
     });
 
-    it('debería manejar errores de red y desactivar el loading', async () => {
+    it('deberé­a manejar errores de red y desactivar el loading', async () => {
         (academicApi.fetchAcademicGraph as any).mockRejectedValue(new Error('Network Error'));
 
         const { result } = renderHook(() => useCareerGraph());
@@ -91,7 +91,7 @@ describe('useCareerGraph hook', () => {
         expect(result.current.nodes.length).toBe(0);
     });
 
-    it('handleSaveSubject debería enviar la petición y recargar el grafo silenciosamente', async () => {
+    it('handleSaveSubject deberé­a enviar la peticié³n y recargar el grafo silenciosamente', async () => {
         (academicApi.fetchAcademicGraph as any).mockResolvedValue([mockSubject]);
 
         // Simulate successful JSON response
@@ -169,7 +169,7 @@ describe('useCareerGraph hook', () => {
         expect(stored.find(s => s.id === 's1')?.status).toBe(SubjectStatus.APROBADA);
     });
 
-    it('en modo invitado, no debería volver a buscar datos del servidor al montar si ya hay materias en el store', async () => {
+    it('en modo invitado, no deberé­a volver a buscar datos del servidor al montar si ya hay materias en el store', async () => {
         useAuthStore.setState({ isGuest: true, user: null });
 
         // Pre-populate the store as if the user had already loaded data
@@ -187,3 +187,4 @@ describe('useCareerGraph hook', () => {
         expect(result.current.nodes.length).toBe(1);
     });
 });
+

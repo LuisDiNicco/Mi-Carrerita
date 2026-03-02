@@ -232,8 +232,8 @@ export class PdfParserService {
       }
 
       return parsedRecords;
-    } catch (error: any) {
-      this.logger.error('Error parsing Historia Académica', error);
+    } catch (error: unknown) {
+      this.logger.error('Error parsing Historia Académica', error instanceof Error ? error.stack : String(error));
       throw new BadRequestException(
         'No se pudo procesar el archivo. Asegúrese de que sea un PDF válido de Historia Académica.',
       );

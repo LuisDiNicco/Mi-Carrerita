@@ -1,22 +1,24 @@
-import { useEffect, useMemo, useState } from 'react';
+﻿import React, { useEffect, useMemo, useState, Suspense } from 'react';
 import { CareerGraph } from '../features/academic/components/CareerGraph';
 import { BackgroundFX } from '../shared/components/BackgroundFX';
 import { AppHeader } from '../shared/layout/AppHeader';
 import { useAcademicStore, configureAcademicStore } from '../features/academic/store/academic-store';
 import { calculateProgress } from '../shared/lib/utils';
 import { SubjectStatus } from '../shared/types/academic';
-import { Dashboard } from '../features/dashboard/Dashboard';
-import { HistoryTable } from '../features/academic/components/HistoryTable';
-import { Landing } from '../features/landing/Landing';
-import { TrophiesPanel } from '../features/trophies/TrophiesPanel';
-import { RecommendationsPage } from '../features/recommendations/RecommendationsPage';
 import { AuthModal } from '../features/auth/components/AuthModal';
 import { useAuthStore } from '../features/auth/store/auth-store';
+import { PageSkeleton } from '../shared/ui/Skeleton';
+import { Landing } from '../features/landing/Landing';
+
+const Dashboard = React.lazy(() => import('../features/dashboard/Dashboard').then(m => ({ default: m.Dashboard })));
+const HistoryTable = React.lazy(() => import('../features/academic/components/HistoryTable').then(m => ({ default: m.HistoryTable })));
+const TrophiesPanel = React.lazy(() => import('../features/trophies/TrophiesPanel').then(m => ({ default: m.TrophiesPanel })));
+const RecommendationsPage = React.lazy(() => import('../features/recommendations/RecommendationsPage').then(m => ({ default: m.RecommendationsPage })));
 import { clearAccessToken, setAccessToken } from '../features/auth/lib/auth';
 import { authFetch } from '../features/auth/lib/api';
 
 // Wire the academic store's auth-awareness at module load time.
-// This avoids a circular import (auth-store → academic-store is already
+// This avoids a circular import (auth-store â†’ academic-store is already
 // established; this gives academic-store read-only access to auth state).
 configureAcademicStore({
   isGuestGetter: () => useAuthStore.getState().isGuest,
@@ -74,7 +76,7 @@ function App() {
 
   const stats = useMemo(() => {
     // Only count non-optional subjects (62 mandatory: 59 + 3 electivas).
-    // Taller de Integración is optional (isOptional:true) and only counts when active.
+    // Taller de Integracié³n is optional (isOptional:true) and only counts when active.
     const inactiveStatuses: string[] = [SubjectStatus.PENDIENTE, SubjectStatus.DISPONIBLE];
     const countableSubjects = subjects.filter(
       (s) => !s.isOptional || !inactiveStatuses.includes(s.status)
@@ -134,10 +136,12 @@ function App() {
               <CareerGraph progress={progress} stats={stats} />
             </div>
           )}
-          {activeSection === 'dashboard' && <Dashboard />}
-          {activeSection === 'recommendations' && <RecommendationsPage />}
-          {activeSection === 'history' && <HistoryTable />}
-          {activeSection === 'trophies' && <TrophiesPanel />}
+          <Suspense fallback={<PageSkeleton />}>
+            {activeSection === 'dashboard' && <Dashboard />}
+            {activeSection === 'recommendations' && <RecommendationsPage />}
+            {activeSection === 'history' && <HistoryTable />}
+            {activeSection === 'trophies' && <TrophiesPanel />}
+          </Suspense>
         </main>
 
         <AuthModal isOpen={authOpen} onClose={() => setAuthOpen(false)} />
@@ -147,3 +151,4 @@ function App() {
 }
 
 export default App;
+

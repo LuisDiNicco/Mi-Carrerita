@@ -133,7 +133,7 @@ describe('RecommendationService', () => {
       expect(result.conflicts).toHaveLength(2); // bidireccional mapping s1->s2 and s2->s1
       expect(result.recommendedSubjects).toHaveLength(2);
       expect(result.recommendedSubjects[0].status).toBe('MANTENIDA');
-      expect(result.recommendedSubjects[0].timetables).toBeDefined();
+      expect(Array.isArray(result.recommendedSubjects[0].timetables)).toBe(true);
     });
   });
 

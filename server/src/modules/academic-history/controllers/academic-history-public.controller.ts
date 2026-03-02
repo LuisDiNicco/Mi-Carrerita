@@ -8,9 +8,10 @@ import {
   FileTypeValidator,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {  ApiOperation, ApiResponse , ApiTags } from '@nestjs/swagger';
 import { PdfParserService } from '../../../shared/pdf-parser/pdf-parser.service';
 
+@ApiTags('Academic History Public')
 @Controller('history')
 export class AcademicHistoryPublicController {
   constructor(private readonly pdfParserService: PdfParserService) {}

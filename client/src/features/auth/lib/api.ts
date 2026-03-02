@@ -1,4 +1,4 @@
-import { getAccessToken, setAccessToken, clearAccessToken, getRefreshToken, setRefreshToken, clearRefreshToken } from "./auth";
+﻿import { getAccessToken, setAccessToken, clearAccessToken, getRefreshToken, setRefreshToken, clearRefreshToken } from "./auth";
 import { useAuthStore } from "../store/auth-store";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
@@ -159,7 +159,7 @@ export async function loginUser(dto: {
     throw new Error(
       extractApiMessage(
         errorData,
-        'No se pudo iniciar sesión. Verificá tu correo y contraseña.',
+        'No se pudo iniciar sesié³n. Verificá tu correo y contraseé±a.',
       ),
     );
   }

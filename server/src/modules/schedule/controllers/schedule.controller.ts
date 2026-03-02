@@ -14,7 +14,7 @@ import {
   FileTypeValidator,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {  ApiOperation, ApiResponse , ApiTags } from '@nestjs/swagger';
 import { ScheduleService } from '../services/schedule.service';
 import { RecommendationService } from '../services/recommendation.service';
 import {
@@ -29,6 +29,7 @@ import { EnvironmentAuthGuard } from '../../../common/guards/environment-auth.gu
 import { CurrentUser } from '../../../common/decorators/current-user.decorator';
 import { PdfParserService } from '../../../shared/pdf-parser/pdf-parser.service';
 
+@ApiTags('Schedule')
 @Controller('schedule')
 @UseGuards(EnvironmentAuthGuard)
 export class ScheduleController {

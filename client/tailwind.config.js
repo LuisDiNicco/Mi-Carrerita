@@ -27,13 +27,21 @@ export default {
           900: '#1B4F31',
         },
 
+        // Semantic Colors
+        background: 'hsl(var(--background))',
+        foreground: 'hsl(var(--foreground))',
+        primary: { DEFAULT: 'hsl(var(--primary))', foreground: 'hsl(var(--primary-foreground))' },
+        destructive: { DEFAULT: 'hsl(var(--destructive))', foreground: 'hsl(var(--destructive-foreground))' },
+        success: 'hsl(var(--success))',
+        info: 'hsl(var(--info))',
+
         // Colores retro/8-bits
         retro: {
           dark: '#0F380F',        // Verde oscuro Game Boy
           light: '#9BBC0F',       // Verde claro Game Boy
           accent: '#8BAC0F',      // Verde medio
           shadow: '#306230',      // Verde sombra
-          
+
           // Paleta NES
           red: '#EF2929',
           orange: '#F57900',
@@ -98,15 +106,15 @@ export default {
           '50%': { transform: 'translateY(-20px)' },
         },
         powerOn: {
-          '0%': { 
+          '0%': {
             opacity: '0',
             transform: 'scale(1, 0.01)',
           },
-          '50%': { 
+          '50%': {
             opacity: '1',
             transform: 'scale(1, 0.01)',
           },
-          '100%': { 
+          '100%': {
             transform: 'scale(1, 1)',
           },
         },
@@ -154,7 +162,7 @@ export default {
   },
   plugins: [
     // Plugin personalizado para image-rendering pixelated
-    function({ addUtilities }) {
+    function ({ addUtilities }) {
       addUtilities({
         '.image-rendering-pixelated': {
           'image-rendering': 'pixelated',

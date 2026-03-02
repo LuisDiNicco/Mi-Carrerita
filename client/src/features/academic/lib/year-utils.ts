@@ -1,4 +1,4 @@
-import type { Subject } from "../../../shared/types/academic";
+﻿import type { Subject } from "../../../shared/types/academic";
 
 export function groupSubjectsByYear(
   subjects: Subject[],
@@ -18,5 +18,6 @@ export function groupSubjectsByYear(
 
 export function getYearLabel(year: number): string {
   if (year === 0) return "TRANSVERSAL";
-  return `AÑO ${year}`;
+  return `Aé‘O ${year}`;
 }
+

@@ -1,4 +1,4 @@
-export const BackgroundFX = () => {
+﻿export const BackgroundFX = () => {
   return (
     <>
       <div className="app-backdrop" />
@@ -7,3 +7,4 @@ export const BackgroundFX = () => {
     </>
   );
 };
+

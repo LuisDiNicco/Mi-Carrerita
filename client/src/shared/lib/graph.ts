@@ -1,4 +1,4 @@
-import type { Subject } from "../types/academic";
+﻿import type { Subject } from "../types/academic";
 import { SubjectStatus } from "../types/academic";
 
 export const PROGRESS_CHECKPOINTS = [25, 50, 75, 100];
@@ -273,21 +273,21 @@ export function getRecommendationsWithReasons(
     const reasons: string[] = [];
     let score = 0;
 
-    // Prioridad 1: Título Intermedio (+100)
+    // Prioridad 1: Té­tulo Intermedio (+100)
     if (subject.isIntermediateDegree) {
-      reasons.push("📌 Título Intermedio");
+      reasons.push("ðŸ“Œ Té­tulo Intermedio");
       score += 100;
     }
 
     // Prioridad 2: Desbloquea Proyecto Final (+80)
     if (unlocksThesis.has(subject.id)) {
-      reasons.push("🎯 Desbloquea Proyecto Final");
+      reasons.push("ðŸŽ¯ Desbloquea Proyecto Final");
       score += 80;
     }
 
-    // Prioridad 3: Camino Crítico (+50)
+    // Prioridad 3: Camino Cré­tico (+50)
     if (criticalNodes.has(subject.id)) {
-      reasons.push("🔥 Camino Crítico");
+      reasons.push("ðŸ”¥ Camino Cré­tico");
       score += 50;
     }
 
@@ -295,7 +295,7 @@ export function getRecommendationsWithReasons(
     const unlocksCount = unlockMap.get(subject.id) ?? 0;
     if (unlocksCount > 0) {
       reasons.push(
-        `🔓 Desbloquea ${unlocksCount} ${unlocksCount === 1 ? "materia" : "materias"}`,
+        `ðŸ”“ Desbloquea ${unlocksCount} ${unlocksCount === 1 ? "materia" : "materias"}`,
       );
       score += unlocksCount * 10;
     }
@@ -304,10 +304,10 @@ export function getRecommendationsWithReasons(
     const distance = distanceToSink.get(subject.id) ?? 0;
     score += distance * 0.1;
 
-    // Penalización: materias optativas tienen prioridad mínima
+    // Penalizacié³n: materias optativas tienen prioridad mé­nima
     if (subject.isOptional) {
       score -= 1000;
-      reasons.push('⚠️ Materia Optativa (baja prioridad)');
+      reasons.push('âš ï¸ Materia Optativa (baja prioridad)');
     }
 
     return {
@@ -318,7 +318,7 @@ export function getRecommendationsWithReasons(
   });
 
   // Detectar si todas las disponibles tienen score base 0
-  // (caso típico de alumnos de 5to año donde ya no quedan correlativas que desbloquear)
+  // (caso té­pico de alumnos de 5to aé±o donde ya no quedan correlativas que desbloquear)
   const allScoresZero = scored.every((s) => s.score === 0);
 
   if (allScoresZero) {
@@ -326,7 +326,7 @@ export function getRecommendationsWithReasons(
     scored.forEach((s) => {
       if (s.subject.name === PROYECTO_FINAL_NAME) {
         s.score += 200;
-        s.reasons.unshift("⭐ Proyecto Final");
+        s.reasons.unshift("â­ Proyecto Final");
       }
     });
 
@@ -335,13 +335,13 @@ export function getRecommendationsWithReasons(
       scored.forEach((s) => {
         if (scheduledIds.has(s.subject.id)) {
           s.score += 10;
-          s.reasons.push("📅 Horario asignado");
+          s.reasons.push("ðŸ“… Horario asignado");
         }
       });
     }
   }
 
-  // Ordenar por score (descendente), luego por año (ascendente)
+  // Ordenar por score (descendente), luego por aé±o (ascendente)
   scored.sort((a, b) => {
     if (b.score !== a.score) return b.score - a.score;
     return a.subject.year - b.subject.year;
@@ -349,4 +349,5 @@ export function getRecommendationsWithReasons(
 
   return scored.slice(0, desiredCount);
 }
+
 

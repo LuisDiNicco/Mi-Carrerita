@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+﻿import { describe, it, expect } from 'vitest';
 import {
     buildEdges,
     buildUnlockMap,
@@ -80,7 +80,7 @@ describe('Graph Algorithms', () => {
         expect(recommendations[0].reasons.some(r => r.includes('Proyecto Final'))).toBe(true);
         // S3 should be second because it gives an intermediate degree (+100)
         expect(recommendations[1].subject.id).toBe('3');
-        expect(recommendations[1].reasons[0]).toContain('Título Intermedio');
+        expect(recommendations[1].reasons[0]).toContain('Té­tulo Intermedio');
     });
 
     it('getRecommendationsWithReasons should filter out subjects with unapproved requirements', () => {
@@ -178,11 +178,11 @@ describe('Graph Algorithms', () => {
         // C should come before optional B
         expect(recs[0].subject.id).toBe('3');
         expect(recs[1].subject.id).toBe('2');
-        expect(recs[1].reasons).toContain('⚠️ Materia Optativa (baja prioridad)');
+        expect(recs[1].reasons).toContain('âš ï¸ Materia Optativa (baja prioridad)');
     });
 
     it('getRecommendationsWithReasons promotes Proyecto Final when all scores are zero', () => {
-        // Isolated subjects with no correlatives so no critical path / no unlocks → allScoresZero
+        // Isolated subjects with no correlatives so no critical path / no unlocks â†’ allScoresZero
         const lateSubjects: Subject[] = [
             { ...createMockSubject('2', 'PF', 5, SubjectStatus.DISPONIBLE), name: 'Proyecto Final' },
             { ...createMockSubject('3', 'OT', 5, SubjectStatus.DISPONIBLE), name: 'Otra Materia' },
@@ -191,7 +191,7 @@ describe('Graph Algorithms', () => {
         const recs = getRecommendationsWithReasons(lateSubjects, edges, 5);
         // Proyecto Final should be first (bonus +200 when allScoresZero)
         expect(recs[0].subject.name).toBe('Proyecto Final');
-        expect(recs[0].reasons).toContain('⭐ Proyecto Final');
+        expect(recs[0].reasons).toContain('â­ Proyecto Final');
     });
 
     it('getRecommendationsWithReasons promotes scheduled subjects when all scores are zero', () => {
@@ -204,7 +204,7 @@ describe('Graph Algorithms', () => {
         const recs = getRecommendationsWithReasons(lateSubjects, edges, 5, [], timetables);
         // Mat C should be first because it has scheduled slots when allScoresZero
         expect(recs[0].subject.id).toBe('3');
-        expect(recs[0].reasons).toContain('📅 Horario asignado');
+        expect(recs[0].reasons).toContain('ðŸ“… Horario asignado');
     });
 
     it('getRecommendationsWithReasons returns empty when no subjects available', () => {
@@ -229,16 +229,16 @@ describe('Graph Algorithms', () => {
     });
 
     it('getRecommendationsWithReasons sorts by year when scores are tied', () => {
-        // Two fully isolated DISPONIBLE subjects (no edges) → allScoresZero=true
+        // Two fully isolated DISPONIBLE subjects (no edges) â†’ allScoresZero=true
         // After allScoresZero branch, neither is Proyecto Final and neither has a timetable
-        // so both keep score=0 → sort falls through to year tiebreaker
+        // so both keep score=0 â†’ sort falls through to year tiebreaker
         const tiedSubjects: Subject[] = [
             { ...createMockSubject('2', 'BM', 3, SubjectStatus.DISPONIBLE), name: 'Mat B' },
             { ...createMockSubject('3', 'CM', 1, SubjectStatus.DISPONIBLE), name: 'Mat C' },
         ];
         const edges = buildEdges(tiedSubjects); // no edges (no correlativeIds)
         const recs = getRecommendationsWithReasons(tiedSubjects, edges, 5);
-        // Both have score=0 after allScoresZero processing → sorted by year ascending
+        // Both have score=0 after allScoresZero processing â†’ sorted by year ascending
         // Mat C (year=1) should come before Mat B (year=3)
         const ids = recs.map(r => r.subject.id);
         expect(ids.indexOf('3')).toBeLessThan(ids.indexOf('2'));
@@ -300,3 +300,4 @@ describe('Graph Algorithms', () => {
         expect(recs[0].id).toBe('2');
     });
 });
+

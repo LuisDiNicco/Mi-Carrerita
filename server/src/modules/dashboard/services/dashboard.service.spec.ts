@@ -82,7 +82,7 @@ describe('DashboardService', () => {
 
       const result = await service.getDashboardData('t@t.com');
 
-      expect(result).toBeDefined();
+      expect(result).toHaveProperty('summary');
       expect(result.summary.totalSubjects).toBe(4);
       expect(result.summary.completedSubjects).toBe(3); // Las aprobadas y regularizadas
       expect(result.summary.overallAverageGrade).toBe(85); // (90+80)/2

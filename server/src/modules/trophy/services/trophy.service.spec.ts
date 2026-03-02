@@ -5,6 +5,14 @@ import { Logger } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { SubjectStatus } from '../../../common/constants/academic-enums';
 import { TrophyTier } from '../../../common/constants/trophy-enums';
+import {
+  AverageEvaluator,
+  CompletionEvaluator,
+  HoursEvaluator,
+  ConsistencyEvaluator,
+  ChallengeEvaluator,
+  CountEvaluator,
+} from '../evaluators';
 
 describe('TrophyService', () => {
   let service: TrophyService;
@@ -41,6 +49,12 @@ describe('TrophyService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         TrophyService,
+        AverageEvaluator,
+        CompletionEvaluator,
+        HoursEvaluator,
+        ConsistencyEvaluator,
+        ChallengeEvaluator,
+        CountEvaluator,
         { provide: PrismaService, useValue: mockPrismaService },
         { provide: Logger, useValue: mockLogger },
         { provide: EventEmitter2, useValue: { emit: jest.fn() } },
@@ -77,7 +91,7 @@ describe('TrophyService', () => {
           tier: TrophyTier.BRONZE,
         },
       ];
-      const mockUserTrophies: any[] = []; // Ninguno desbloqueado aún
+      const mockUserTrophies: { trophyId: string, unlockedAt: Date }[] = []; // Ninguno desbloqueado aún
 
       // Mock $transaction retornando los arreglos
       let txCount = 0;
@@ -155,7 +169,7 @@ describe('TrophyService', () => {
       });
 
       const mockTrophies = [{ id: 't-1', code: 'LEGEND' }];
-      const mockUserTrophies: any[] = [];
+      const mockUserTrophies: { trophyId: string, unlockedAt: Date }[] = [];
 
       // Crear 10.000 records
       const massiveRecords = Array.from({ length: 10000 }, (_, i) => ({

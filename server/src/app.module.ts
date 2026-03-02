@@ -1,6 +1,7 @@
-import { Module } from '@nestjs/common';
+import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { ThrottlerModule } from '@nestjs/throttler';
 import * as Joi from 'joi';
 import { PrismaModule } from './prisma/prisma.module';
 import { AcademicCareerModule } from './modules/academic-career/academic-career.module';
@@ -10,6 +11,8 @@ import { ScheduleModule } from './modules/schedule/schedule.module';
 import { AcademicHistoryModule } from './modules/academic-history/academic-history.module';
 import { TrophyModule } from './modules/trophy/trophy.module';
 import { PdfParserModule } from './shared/pdf-parser/pdf-parser.module';
+import { HealthModule } from './modules/health/health.module';
+import { CorrelationIdMiddleware } from './common/middleware/correlation-id.middleware';
 
 @Module({
   imports: [
@@ -29,6 +32,7 @@ import { PdfParserModule } from './shared/pdf-parser/pdf-parser.module';
       }),
     }),
     EventEmitterModule.forRoot(),
+    ThrottlerModule.forRoot([{ ttl: 60000, limit: 10 }]),
     PrismaModule,
     AcademicCareerModule,
     AuthModule,
@@ -37,6 +41,11 @@ import { PdfParserModule } from './shared/pdf-parser/pdf-parser.module';
     AcademicHistoryModule,
     TrophyModule,
     PdfParserModule,
+    HealthModule,
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(CorrelationIdMiddleware).forRoutes('*');
+  }
+}

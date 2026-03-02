@@ -41,7 +41,7 @@ describe('Schedule Helpers', () => {
       };
       const result = isValidTimetable(timetable);
       expect(result.valid).toBe(false);
-      expect(result.error).toBeDefined();
+      expect(typeof result.error).toBe('string');
     });
 
     it('debería ser inválido si dayOfWeek es incorrecto (boundaries)', () => {

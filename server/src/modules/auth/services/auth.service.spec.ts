@@ -36,20 +36,20 @@ describe('AuthService', () => {
   };
 
   const mockConfigService = {
-    get: jest.fn((key: string, defaultValue: any) => {
+    get: jest.fn((key: string, defaultValue: unknown) => {
       const config = {
         ACCESS_TOKEN_TTL: '15m',
         REFRESH_TOKEN_TTL: '7d',
         HASH_SALT: 10,
       };
-      return config[key] || defaultValue;
+      return (config as Record<string, string | number>)[key] || defaultValue;
     }),
     getOrThrow: jest.fn((key: string) => {
       const config = {
         JWT_SECRET: 'secret',
         JWT_REFRESH_SECRET: 'refresh-secret',
       };
-      return config[key];
+      return (config as Record<string, string>)[key];
     }),
   };
 
@@ -231,7 +231,7 @@ describe('AuthService', () => {
       const result = await service.register(validDto);
 
       expect(mockPrismaService.user.create).toHaveBeenCalled();
-      expect(result.accessToken).toBeDefined();
+      expect(typeof result.accessToken).toBe('string');
       expect(result.user.email).toBe(validDto.email);
     });
 

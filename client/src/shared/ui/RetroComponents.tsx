@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+﻿import type { ReactNode } from 'react';
 import { cn } from '../lib/utils';
 
 interface RetroCardProps {
@@ -79,18 +79,18 @@ interface RetroErrorProps {
 }
 
 export const RetroError = ({
-  title = '¡ERROR!',
+  title = 'Â¡ERROR!',
   message,
   onRetry
 }: RetroErrorProps) => {
   return (
     <div className="flex flex-col items-center justify-center space-y-6 p-8">
-      <div className="text-6xl text-red-500 font-retro">
-        ⚠️
+      <div className="text-6xl text-destructive font-retro">
+        âš ï¸
       </div>
 
       <div className="text-center space-y-2">
-        <h2 className="font-retro text-3xl text-red-500 tracking-wider">
+        <h2 className="font-retro text-3xl text-destructive tracking-wider">
           {title}
         </h2>
         <p className="font-retro text-lg text-muted max-w-md">
@@ -102,7 +102,7 @@ export const RetroError = ({
         <button
           onClick={onRetry}
           className="font-retro text-xl px-6 py-3
-                     bg-red-500 border-2 border-red-700 text-white
+                     bg-destructive border-2 border-destructive text-white
                      shadow-subtle
                      transition-all duration-100"
         >
@@ -149,3 +149,4 @@ export const RetroBadge = ({
     </span>
   );
 };
+

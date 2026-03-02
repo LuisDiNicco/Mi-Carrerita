@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { useAuthStore } from '../store/auth-store';
 import { clearAccessToken } from '../lib/auth';
 import { registerUser, loginUser } from '../lib/api';
@@ -43,22 +43,22 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
     }
 
     if (trimmedPassword.length < 8) {
-      setError('La contraseña debe tener al menos 8 caracteres.');
+      setError('La contraseé±a debe tener al menos 8 caracteres.');
       return;
     }
 
     if (mode === 'register' && !/[A-Z]/.test(trimmedPassword)) {
-      setError('La contraseña debe incluir al menos una letra mayúscula.');
+      setError('La contraseé±a debe incluir al menos una letra mayéºscula.');
       return;
     }
 
     if (mode === 'register' && !/[a-z]/.test(trimmedPassword)) {
-      setError('La contraseña debe incluir al menos una letra minúscula.');
+      setError('La contraseé±a debe incluir al menos una letra minéºscula.');
       return;
     }
 
     if (mode === 'register' && !/\d/.test(trimmedPassword)) {
-      setError('La contraseña debe incluir al menos un número.');
+      setError('La contraseé±a debe incluir al menos un néºmero.');
       return;
     }
 
@@ -102,7 +102,7 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
         ? err.message
         : mode === 'register'
           ? 'No se pudo completar el registro. Intentá nuevamente.'
-          : 'No se pudo iniciar sesión. Intentá nuevamente.';
+          : 'No se pudo iniciar sesié³n. Intentá nuevamente.';
       setError(message);
     } finally {
       setIsLoading(false);
@@ -137,10 +137,10 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
       <div className="relative z-10 w-full max-w-lg rounded-2xl border-2 border-app bg-surface p-6 shadow-retro">
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-bold text-app font-retro">
-            {mode === 'login' ? 'Iniciar sesión' : 'Crear cuenta'}
+            {mode === 'login' ? 'Iniciar sesié³n' : 'Crear cuenta'}
           </h2>
           <button className="text-muted" onClick={onClose}>
-            ✕
+            âœ•
           </button>
         </div>
 
@@ -176,7 +176,7 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
                 }`}
                 onClick={() => setMode('login')}
               >
-                Iniciar sesión
+                Iniciar sesié³n
               </button>
               <button
                 className={`rounded-lg border-2 py-2 text-sm font-bold transition-all ${
@@ -214,7 +214,7 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
                 />
               </label>
               <label className="flex flex-col gap-1 text-sm text-muted">
-                <span className="font-bold">Contraseña</span>
+                <span className="font-bold">Contraseé±a</span>
                 <div className="relative">
                   <input
                     type={showPassword ? 'text' : 'password'}
@@ -227,22 +227,22 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
                     type="button"
                     className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-muted hover:text-app"
                     onClick={() => setShowPassword((prev) => !prev)}
-                    title={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                    title={showPassword ? 'Ocultar contraseé±a' : 'Mostrar contraseé±a'}
                   >
                     {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
                 </div>
                 {mode === 'register' && (
                   <p className="text-xs text-muted/70 mt-1">
-                    Debe incluir mínimo 8 caracteres, una mayúscula, una minúscula y un número.
+                    Debe incluir mé­nimo 8 caracteres, una mayéºscula, una minéºscula y un néºmero.
                   </p>
                 )}
               </label>
             </div>
 
             {error && (
-              <div className="mt-4 p-3 bg-red-500/10 border-2 border-red-500/30 rounded-lg">
-                <p className="text-sm text-red-400 font-bold">⛔ {error}</p>
+              <div className="mt-4 p-3 bg-destructive/10 border-2 border-destructive/30 rounded-lg">
+                <p className="text-sm text-destructive font-bold">â›” {error}</p>
               </div>
             )}
 
@@ -277,3 +277,4 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
     </div>
   );
 };
+

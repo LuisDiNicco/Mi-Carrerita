@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { Trophy, Award, Zap, Star } from 'lucide-react';
 import { PROGRESS_CHECKPOINTS } from '../../../shared/lib/graph';
 
@@ -108,3 +108,4 @@ export const ProgressTrack = ({ progress }: ProgressTrackProps) => {
     </div>
   );
 };
+

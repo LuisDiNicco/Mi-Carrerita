@@ -1,14 +1,14 @@
-interface SideNavProps {
+﻿interface SideNavProps {
   active: string;
   onChange: (section: string) => void;
 }
 
 const items = [
-  { id: 'tree', label: 'Árbol de Materias', icon: '🌲' },
-  { id: 'schedule', label: 'Planificador', icon: '📅' },
-  { id: 'dashboard', label: 'Dashboard', icon: '📊' },
-  { id: 'history', label: 'Historia Académica', icon: '📚' },
-  { id: 'trophies', label: 'Sala de Trofeos', icon: '🏆' },
+  { id: 'tree', label: 'érbol de Materias', icon: 'ðŸŒ²' },
+  { id: 'schedule', label: 'Planificador', icon: 'ðŸ“…' },
+  { id: 'dashboard', label: 'Dashboard', icon: 'ðŸ“Š' },
+  { id: 'history', label: 'Historia Acadé©mica', icon: 'ðŸ“š' },
+  { id: 'trophies', label: 'Sala de Trofeos', icon: 'ðŸ†' },
 ];
 
 export const SideNav = ({ active, onChange }: SideNavProps) => {
@@ -35,3 +35,4 @@ export const SideNav = ({ active, onChange }: SideNavProps) => {
     </nav>
   );
 };
+

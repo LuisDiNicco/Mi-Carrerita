@@ -1,4 +1,4 @@
-export const EDGE_STYLES = {
+﻿export const EDGE_STYLES = {
   normal: {
     stroke: "#5BBE63",
     strokeWidth: 2,
@@ -46,3 +46,4 @@ export const SEARCH_ZOOM = 1.2;
 export const FOCUS_TIMEOUT_MS = 2000;
 export const SEARCH_PANEL_WIDTH_PX = 320;
 export const SEARCH_LIST_MAX_HEIGHT_PX = 220;
+

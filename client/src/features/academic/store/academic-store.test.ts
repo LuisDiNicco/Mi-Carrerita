@@ -1,11 +1,11 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+﻿import { describe, it, expect, beforeEach } from 'vitest';
 import { useAcademicStore, recalculateAvailability } from './academic-store';
 import type { Subject } from '../../../shared/types/academic';
 import { SubjectStatus } from '../../../shared/types/academic';
 
 describe('useAcademicStore', () => {
-    // s1: no correlatives → should become DISPONIBLE after recalculation
-    // s2: correlative 'MAT' (s1's planCode) → DISPONIBLE only once s1 is passed
+    // s1: no correlatives â†’ should become DISPONIBLE after recalculation
+    // s2: correlative 'MAT' (s1's planCode) â†’ DISPONIBLE only once s1 is passed
     const s1Base: Subject = {
         id: 's1',
         name: 'Math',
@@ -39,16 +39,16 @@ describe('useAcademicStore', () => {
         sessionStorage.clear();
     });
 
-    it('debería inicializar con subjects vacios', () => {
+    it('deberé­a inicializar con subjects vacios', () => {
         expect(useAcademicStore.getState().subjects.length).toBe(0);
     });
 
     it('setSubjects recalcula DISPONIBLE para materias sin correlativas', () => {
         useAcademicStore.getState().setSubjects([s1Base, s2Base]);
         const { subjects } = useAcademicStore.getState();
-        // s1 has no correlatives → DISPONIBLE
+        // s1 has no correlatives â†’ DISPONIBLE
         expect(subjects.find(s => s.id === 's1')?.status).toBe(SubjectStatus.DISPONIBLE);
-        // s2 requires MAT (s1) which is not yet passed → PENDIENTE
+        // s2 requires MAT (s1) which is not yet passed â†’ PENDIENTE
         expect(subjects.find(s => s.id === 's2')?.status).toBe(SubjectStatus.PENDIENTE);
     });
 
@@ -71,7 +71,7 @@ describe('useAcademicStore', () => {
     it('updateSubject applies partial patch and recalculates cascading availability', () => {
         useAcademicStore.getState().setSubjects([s1Base, s2Base]);
 
-        // Approve s1 (Math) — s2 should become DISPONIBLE
+        // Approve s1 (Math) â€” s2 should become DISPONIBLE
         useAcademicStore.getState().updateSubject('s1', {
             status: SubjectStatus.APROBADA,
             grade: 8,
@@ -152,4 +152,5 @@ describe('recalculateAvailability', () => {
         expect(result[0].status).toBe(SubjectStatus.EN_CURSO);
     });
 });
+
 

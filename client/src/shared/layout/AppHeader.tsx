@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+﻿import { useEffect, useRef, useState } from 'react';
 import { Sun, Moon } from 'lucide-react';
 
 interface AppHeaderProps {
@@ -13,7 +13,7 @@ interface AppHeaderProps {
 
 const NAV_ITEMS = [
   { id: 'home', label: 'Inicio' },
-  { id: 'tree', label: 'Árbol de materias' },
+  { id: 'tree', label: 'érbol de materias' },
   { id: 'dashboard', label: 'Tablero' },
   { id: 'recommendations', label: 'Planificador' },
   { id: 'history', label: 'Historia' },
@@ -58,7 +58,7 @@ export const AppHeader = ({
             className="flex items-center gap-3 transition-transform hover:scale-105"
           >
             <div className="flex h-10 w-10 items-center justify-center rounded-lg border-2 border-app-border bg-unlam-500 text-xl font-bold text-black">
-              🎓
+              ðŸŽ“
             </div>
             <div className="text-left">
               <h1 className="text-xl font-bold leading-none text-app">Mi Carrerita</h1>
@@ -105,11 +105,11 @@ export const AppHeader = ({
                     {userName.charAt(0).toUpperCase()}
                   </span>
                   {userName}
-                  <span className={`transition-transform ${menuOpen ? 'rotate-180' : ''}`}>▾</span>
+                  <span className={`transition-transform ${menuOpen ? 'rotate-180' : ''}`}>â–¾</span>
                 </button>
                 {menuOpen && (
                   <div className="absolute right-0 mt-2 w-60 rounded-lg border-2 border-app-border bg-elevated p-4 shadow-retro">
-                    <p className="text-xs uppercase tracking-wider text-muted">Sesión activa</p>
+                    <p className="text-xs uppercase tracking-wider text-muted">Sesié³n activa</p>
                     <p className="mt-2 text-sm font-medium text-app">{userName}</p>
                     <div className="mt-4 space-y-2">
                       <button
@@ -122,13 +122,13 @@ export const AppHeader = ({
                         Cambiar cuenta
                       </button>
                       <button
-                        className="w-full rounded-lg border-2 border-app-border bg-app-bg px-4 py-2 text-sm font-medium text-app transition-all hover:border-red-500 hover:text-red-500"
+                        className="w-full rounded-lg border-2 border-app-border bg-app-bg px-4 py-2 text-sm font-medium text-app transition-all hover:border-destructive hover:text-destructive"
                         onClick={() => {
                           setMenuOpen(false);
                           onLogout();
                         }}
                       >
-                        Cerrar sesión
+                        Cerrar sesié³n
                       </button>
                     </div>
                   </div>
@@ -139,7 +139,7 @@ export const AppHeader = ({
                 className="rounded-lg border-2 border-unlam-500 bg-unlam-500 px-4 py-2 text-sm font-medium text-black transition-all hover:scale-105"
                 onClick={onAuthClick}
               >
-                Iniciar sesión
+                Iniciar sesié³n
               </button>
             )}
           </div>
@@ -152,7 +152,7 @@ export const AppHeader = ({
             className="flex items-center gap-2"
           >
             <div className="flex h-8 w-8 items-center justify-center rounded-lg border-2 border-app-border bg-unlam-500 text-lg font-bold text-black">
-              🎓
+              ðŸŽ“
             </div>
             <span className="text-lg font-bold text-app">Mi Carrerita</span>
           </button>
@@ -170,7 +170,7 @@ export const AppHeader = ({
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle menu"
             >
-              {mobileMenuOpen ? '✕' : '☰'}
+              {mobileMenuOpen ? 'âœ•' : 'â˜°'}
             </button>
           </div>
         </div>
@@ -220,7 +220,7 @@ export const AppHeader = ({
                       setMobileMenuOpen(false);
                     }}
                   >
-                    Cerrar sesión
+                    Cerrar sesié³n
                   </button>
                 </div>
               ) : (
@@ -231,7 +231,7 @@ export const AppHeader = ({
                     setMobileMenuOpen(false);
                   }}
                 >
-                  Iniciar sesión
+                  Iniciar sesié³n
                 </button>
               )}
             </div>
@@ -241,3 +241,4 @@ export const AppHeader = ({
     </header>
   );
 };
+
