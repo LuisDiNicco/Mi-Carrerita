@@ -18,7 +18,7 @@ import { clearAccessToken, setAccessToken } from '../features/auth/lib/auth';
 import { authFetch } from '../features/auth/lib/api';
 
 // Wire the academic store's auth-awareness at module load time.
-// This avoids a circular import (auth-store â†’ academic-store is already
+// This avoids a circular import (auth-store †’ academic-store is already
 // established; this gives academic-store read-only access to auth state).
 configureAcademicStore({
   isGuestGetter: () => useAuthStore.getState().isGuest,
@@ -61,7 +61,8 @@ function App() {
     setAccessToken(accessToken);
     window.history.replaceState({}, document.title, window.location.pathname);
 
-    authFetch(`${import.meta.env.VITE_API_URL}/auth/me`)
+    const appApiUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
+    authFetch(`${appApiUrl}/auth/me`)
       .then((response) => (response.ok ? response.json() : null))
       .then((user) => {
         if (user?.email) {
@@ -76,7 +77,7 @@ function App() {
 
   const stats = useMemo(() => {
     // Only count non-optional subjects (62 mandatory: 59 + 3 electivas).
-    // Taller de Integracié³n is optional (isOptional:true) and only counts when active.
+    // Taller de Integracií³n is optional (isOptional:true) and only counts when active.
     const inactiveStatuses: string[] = [SubjectStatus.PENDIENTE, SubjectStatus.DISPONIBLE];
     const countableSubjects = subjects.filter(
       (s) => !s.isOptional || !inactiveStatuses.includes(s.status)
@@ -102,7 +103,8 @@ function App() {
 
   const handleLogout = async () => {
     try {
-      await fetch(`${import.meta.env.VITE_API_URL}/auth/logout`, {
+      const appApiUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
+      await fetch(`${appApiUrl}/auth/logout`, {
         method: 'POST',
         credentials: 'include',
       });

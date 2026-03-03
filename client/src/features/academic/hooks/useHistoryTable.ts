@@ -210,7 +210,7 @@ export function useHistoryTable() {
             if (grade.trim() !== '') {
                 const g = Number(grade);
                 if (Number.isNaN(g) || g < 1 || g > 10) {
-                    setError('La nota debe ser un néºmero entre 1 y 10.');
+                    setError('La nota debe ser un níºmero entre 1 y 10.');
                     setIsSaving(false);
                     return;
                 }
@@ -218,7 +218,7 @@ export function useHistoryTable() {
             if (difficulty.trim() !== '') {
                 const d = Number(difficulty);
                 if (Number.isNaN(d) || d < 1 || d > 100) {
-                    setError('La dificultad debe ser un néºmero entre 1 y 100.');
+                    setError('La dificultad debe ser un níºmero entre 1 y 100.');
                     setIsSaving(false);
                     return;
                 }
@@ -283,7 +283,7 @@ export function useHistoryTable() {
         try {
             const result = await uploadHistoriaPdf(file, { guestMode: isGuest });
             if (result.data.length === 0) {
-                setError('No se encontraron registros en el PDF. Verificá que sea un PDF válido de Historia Acadé©mica.');
+                setError('No se encontraron registros en el PDF. Verificá que sea un PDF válido de Historia Acadímica.');
                 return;
             }
             setParsedRecords(result.data);

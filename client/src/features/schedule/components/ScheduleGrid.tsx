@@ -6,7 +6,7 @@ import type { VisualRow } from '../hooks/useSchedulePlanner';
 export const DAYS: { key: DayOfWeek; label: string }[] = [
     { key: 'MONDAY', label: 'Lun' },
     { key: 'TUESDAY', label: 'Mar' },
-    { key: 'WEDNESDAY', label: 'Mié©' },
+    { key: 'WEDNESDAY', label: 'Mií' },
     { key: 'THURSDAY', label: 'Jue' },
     { key: 'FRIDAY', label: 'Vie' },
     { key: 'SATURDAY', label: 'Sáb' },
@@ -59,7 +59,7 @@ export function ScheduleGrid({
                                 <div className="space-y-1">
                                     <div>{row.label}</div>
                                     {!row.isCanonical && (
-                                        <div className="text-[10px] text-amber-300 font-bold uppercase tracking-wider">No estándar</div>
+                                        <div className="text-[10px] text-amber-600 dark:text-amber-300 font-bold uppercase tracking-wider">No estándar</div>
                                     )}
                                 </div>
                             </td>
@@ -75,10 +75,11 @@ export function ScheduleGrid({
                                         key={`${key}-${row.slotRange}`}
                                         className={cn(
                                             "p-0 border-b border-r border-app/30 align-top relative transition-colors duration-200",
-                                            mode === 'AVAILABILITY' && "cursor-pointer hover:bg-white/5",
-                                            mode === 'AVAILABILITY' && isAvailable && "bg-green-500/20 hover:bg-green-500/30",
-                                            mode !== 'AVAILABILITY' && !isAvailable && "bg-app-bg",
-                                            mode === 'OPTIONS' && isAvailable && offersForCell.length > 0 && "cursor-pointer hover:bg-primary/10"
+                                            mode === 'AVAILABILITY' && "cursor-pointer hover:bg-black/5 dark:hover:bg-white/5",
+                                            mode === 'AVAILABILITY' && isAvailable && "bg-green-500/30 hover:bg-green-500/40 dark:bg-green-500/20 dark:hover:bg-green-500/30",
+                                            mode !== 'AVAILABILITY' && !isAvailable && "bg-app-bg opacity-70",
+                                            mode === 'OPTIONS' && isAvailable && offersForCell.length > 0 && "cursor-pointer hover:bg-primary/20",
+                                            mode === 'OPTIONS' && isAvailable && offersForCell.length === 0 && "bg-app-bg opacity-40"
                                         )}
                                         style={{ height: `${cellMinHeight}px` }}
                                         onMouseDown={() => onMouseDown(day.key, row.period)}
@@ -94,7 +95,7 @@ export function ScheduleGrid({
                                         {mode === 'OPTIONS' && offersForCell.length > 0 && (
                                             <div className="absolute inset-0 p-1.5 overflow-hidden">
                                                 <div className="text-[10px] font-bold text-primary mb-1">
-                                                    {offersForCell.length} opcié³n{offersForCell.length > 1 ? 'es' : ''}
+                                                    {offersForCell.length} opción{offersForCell.length > 1 ? 'es' : ''}
                                                 </div>
                                                 <div className="space-y-1">
                                                     {offersForCell.slice(0, 2).map((offer) => (

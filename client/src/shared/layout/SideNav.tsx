@@ -4,11 +4,11 @@
 }
 
 const items = [
-  { id: 'tree', label: 'érbol de Materias', icon: 'ðŸŒ²' },
-  { id: 'schedule', label: 'Planificador', icon: 'ðŸ“…' },
-  { id: 'dashboard', label: 'Dashboard', icon: 'ðŸ“Š' },
-  { id: 'history', label: 'Historia Acadé©mica', icon: 'ðŸ“š' },
-  { id: 'trophies', label: 'Sala de Trofeos', icon: 'ðŸ†' },
+  { id: 'tree', label: 'írbol de Materias', icon: '²' },
+  { id: 'schedule', label: 'Planificador', icon: '📅' },
+  { id: 'dashboard', label: 'Dashboard', icon: '📊' },
+  { id: 'history', label: 'Historia Acadímica', icon: '📚' },
+  { id: 'trophies', label: 'Sala de Trofeos', icon: '†' },
 ];
 
 export const SideNav = ({ active, onChange }: SideNavProps) => {
@@ -20,8 +20,8 @@ export const SideNav = ({ active, onChange }: SideNavProps) => {
           <button
             key={item.id}
             className={`flex items-start gap-3 text-left px-4 py-3 rounded-lg border transition-all duration-200 shadow-subtle hover:shadow-md ${isActive
-                ? 'bg-elevated border-unlam-500 text-app scale-[1.02]'
-                : 'bg-surface border-app text-muted hover:text-app hover:border-unlam-500/50 hover:bg-elevated'
+              ? 'bg-elevated border-unlam-500 text-app scale-[1.02]'
+              : 'bg-surface border-app text-muted hover:text-app hover:border-unlam-500/50 hover:bg-elevated'
               }`}
             onClick={() => onChange(item.id)}
           >

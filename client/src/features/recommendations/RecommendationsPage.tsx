@@ -1,6 +1,6 @@
 ﻿import { useState } from 'react';
 import { useAcademicStore } from '../academic/store/academic-store';
-import { Calendar, List, Upload, CheckCircle, AlertTriangle, Info, Plus, Trash2, RotateCcw, Wand2 } from 'lucide-react';
+import { Calendar, List, Upload, CheckCircle, AlertTriangle, Info, Plus, Trash2, RotateCcw, Wand2, X } from 'lucide-react';
 import { UnifiedSchedulePlanner } from '../schedule/components/UnifiedSchedulePlanner';
 import { SubjectStatus } from '../../shared/types/academic';
 import type { TimePeriod, DayOfWeek } from '../schedule/lib/schedule-api';
@@ -63,13 +63,13 @@ export const RecommendationsPage = () => {
         <div className={`flex items-center gap-2 px-4 py-3 rounded-xl border text-sm font-bold ${ofertaMessage.type === 'success' ? 'bg-green-500/10 border-green-500/30 text-green-500' : 'bg-destructive/10 border-destructive/30 text-destructive'}`}>
           {ofertaMessage.type === 'success' ? <CheckCircle size={16} /> : <AlertTriangle size={16} />}
           {ofertaMessage.text}
-          <button onClick={() => setOfertaMessage(null)} className="ml-auto text-muted hover:text-app">é—</button>
+          <button onClick={() => setOfertaMessage(null)} className="ml-auto text-muted hover:text-app"><X size={14} /></button>
         </div>
       )}
 
       {ofertaData.length > 0 && (
         <div className="flex items-center gap-2 px-4 py-2 rounded-xl border border-app bg-elevated/50 text-xs text-muted">
-          ðŸ“š Oferta cargada: <strong className="text-app">{ofertaData.length}</strong> horarios disponibles.
+          🎉 Oferta cargada: <strong className="text-app">{ofertaData.length}</strong> horarios disponibles.
           <button onClick={() => { setOfertaData([]); localStorage.removeItem('oferta_materias'); }} className="ml-auto text-destructive hover:text-destructive text-[10px] font-bold uppercase">Limpiar</button>
         </div>
       )}
@@ -143,7 +143,7 @@ export const RecommendationsPage = () => {
               <div className={`flex items-center gap-2 px-4 py-2.5 rounded-lg border text-sm font-bold transition-all ${inlineMessage.type === 'success' ? 'bg-green-500/10 border-green-500/30 text-green-400' : inlineMessage.type === 'error' ? 'bg-destructive/10 border-destructive/30 text-destructive' : 'bg-primary/10 border-primary/30 text-primary'}`}>
                 {inlineMessage.type === 'success' ? <CheckCircle size={14} /> : <AlertTriangle size={14} />}
                 {inlineMessage.text}
-                <button onClick={() => setInlineMessage(null)} className="ml-auto text-muted hover:text-app">é—</button>
+                <button onClick={() => setInlineMessage(null)} className="ml-auto text-muted hover:text-app"><X size={14} /></button>
               </div>
             )}
 
@@ -152,7 +152,7 @@ export const RecommendationsPage = () => {
                 <label className="flex flex-col gap-1 text-xs font-bold text-muted uppercase tracking-wider">
                   Materia
                   <select className="bg-app-bg border border-app rounded-lg px-3 py-2 text-app text-sm" value={manualSubjectId} onChange={e => setManualSubjectId(e.target.value)}>
-                    <option value="">â€” Seleccionar â€”</option>
+                    <option value="">- Seleccionar -</option>
                     {subjects.filter(s => s.status === SubjectStatus.DISPONIBLE || s.status === SubjectStatus.RECURSADA).sort((a, b) => a.name.localeCompare(b.name)).map(s => (
                       <option key={s.id} value={s.id}>{s.name}</option>
                     ))}
@@ -185,7 +185,7 @@ export const RecommendationsPage = () => {
                     {offerEntries.map(t => (
                       <div key={t.id} className="flex items-center justify-between px-3 py-1.5 bg-app-bg rounded-lg border border-app/30 text-xs">
                         <span className="font-bold text-app truncate max-w-[60%]">{t.subjectName}</span>
-                        <span className="text-muted font-mono">{t.isRemote ? 'A distancia' : (DAYS_FOR_MANUAL.find(d => d.key === t.dayOfWeek)?.label ?? t.dayOfWeek)} â€” {t.isRemote ? 'Sin franja fija' : (t.slotRange ?? (PERIODS_FOR_MANUAL.find(p => p.key === t.period)?.label ?? t.period))}</span>
+                        <span className="text-muted font-mono">{t.isRemote ? 'A distancia' : (DAYS_FOR_MANUAL.find(d => d.key === t.dayOfWeek)?.label ?? t.dayOfWeek)} - {t.isRemote ? 'Sin franja fija' : (t.slotRange ?? (PERIODS_FOR_MANUAL.find(p => p.key === t.period)?.label ?? t.period))}</span>
                         <button onClick={() => saveOfferEntriesLocal(offerEntries.filter(entry => entry.id !== t.id))} className="ml-2 text-destructive hover:text-destructive transition-colors" title="Eliminar"><Trash2 size={12} /></button>
                       </div>
                     ))}

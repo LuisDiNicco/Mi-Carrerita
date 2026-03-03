@@ -41,10 +41,10 @@ export function ScheduleModal({
 
                 <div className="p-6 space-y-4">
                     <div>
-                        <label className="block text-sm font-bold text-muted mb-2 uppercase tracking-wide">Seleccionar opcié³n de oferta</label>
+                        <label className="block text-sm font-bold text-muted mb-2 uppercase tracking-wide">Seleccionar opción de oferta</label>
                         <input
                             type="text"
-                            placeholder="Buscar opcié³n..."
+                            placeholder="Buscar opción..."
                             className="w-full bg-app-bg border border-app rounded-t-lg px-3 py-2 text-sm focus:ring-1 focus:ring-unlam-500 outline-none mb-1 text-app"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
@@ -72,10 +72,10 @@ export function ScheduleModal({
                                             "font-bold text-sm md:text-base leading-tight",
                                             isRecommended ? "text-unlam-500" : "text-app"
                                         )}>
-                                            {isRecommended ? "â˜… " : ""}{option.subjectName}
+                                            {isRecommended ? "˜… " : ""}{option.subjectName}
                                         </span>
                                         <span className="text-xs text-muted font-mono">
-                                            {option.planCode} Â· {option.slotRange ?? option.period} Â· Comisié³n {option.commission ?? '-'}
+                                            {option.planCode} · {option.slotRange ?? option.period} · Comisión {option.commission ?? '-'}
                                         </span>
                                     </button>
                                 );

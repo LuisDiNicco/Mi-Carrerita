@@ -1,5 +1,7 @@
 // server/src/main.ts
 import { NestFactory } from '@nestjs/core';
+import { WinstonModule } from 'nest-winston';
+import * as winston from 'winston';
 import { AppModule } from './app.module';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -10,7 +12,26 @@ import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import helmet from 'helmet';
 import { Request, Response } from 'express';
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const isProd = process.env.NODE_ENV === 'production';
+
+  const app = await NestFactory.create(AppModule, {
+    logger: WinstonModule.createLogger({
+      level: isProd ? 'info' : 'debug',
+      format: isProd
+        ? winston.format.combine(
+          winston.format.timestamp(),
+          winston.format.json()
+        )
+        : winston.format.combine(
+          winston.format.timestamp(),
+          winston.format.ms(),
+          winston.format.cli()
+        ),
+      transports: [
+        new winston.transports.Console()
+      ],
+    }),
+  });
   const logger = new Logger('Bootstrap');
   const configService = app.get(ConfigService);
 

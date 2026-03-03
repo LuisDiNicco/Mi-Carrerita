@@ -35,7 +35,7 @@ describe('SubjectUpdatePanel', () => {
         vi.clearAllMocks();
     });
 
-    it('no deberé­a renderizar si isOpen es falso', () => {
+    it('no deberí­a renderizar si isOpen es falso', () => {
         render(
             <SubjectUpdatePanel
                 subject={mockPendingSubject}
@@ -47,7 +47,7 @@ describe('SubjectUpdatePanel', () => {
         expect(screen.queryByText('Matematica')).not.toBeInTheDocument();
     });
 
-    it('deberé­a renderizar correctamente si isOpen es true', () => {
+    it('deberí­a renderizar correctamente si isOpen es true', () => {
         render(
             <SubjectUpdatePanel
                 subject={mockPendingSubject}
@@ -57,10 +57,10 @@ describe('SubjectUpdatePanel', () => {
             />
         );
         expect(screen.getByText('Matematica')).toBeInTheDocument();
-        expect(screen.getByText('Cé³digo: MAT')).toBeInTheDocument();
+        expect(screen.getByText('Cí³digo: MAT')).toBeInTheDocument();
     });
 
-    it('deberé­a mostrar alerta de Forzar Cambio si se intenta guardar desde PENDIENTE a otro estado', async () => {
+    it('deberí­a mostrar alerta de Forzar Cambio si se intenta guardar desde PENDIENTE a otro estado', async () => {
         render(
             <SubjectUpdatePanel
                 subject={mockPendingSubject}
@@ -79,7 +79,7 @@ describe('SubjectUpdatePanel', () => {
         fireEvent.click(saveButton);
 
         // Verificamos que se muestre la advertencia
-        expect(await screen.findByText('Â¿Forzar Cambio?')).toBeInTheDocument();
+        expect(await screen.findByText('¿Forzar Cambio?')).toBeInTheDocument();
         expect(mockOnSave).not.toHaveBeenCalled();
 
         // Confirmamos forzar cambio
@@ -97,7 +97,7 @@ describe('SubjectUpdatePanel', () => {
         });
     });
 
-    it('deberé­a autocompletar la nota a 2 al seleccionar RECURSADA', () => {
+    it('deberí­a autocompletar la nota a 2 al seleccionar RECURSADA', () => {
         render(
             <SubjectUpdatePanel
                 subject={mockApprovedSubject}
@@ -115,7 +115,7 @@ describe('SubjectUpdatePanel', () => {
         expect((inputs[0] as HTMLInputElement).value).toBe('2');
     });
 
-    it('deberé­a arrojar error si se intenta guardar APROBADA sin nota', async () => {
+    it('deberí­a arrojar error si se intenta guardar APROBADA sin nota', async () => {
         render(
             <SubjectUpdatePanel
                 subject={mockPendingSubject}
@@ -141,7 +141,7 @@ describe('SubjectUpdatePanel', () => {
         expect(mockOnSave).not.toHaveBeenCalled();
     });
 
-    it('deberé­a mostrar fecha en formato DD/MM/YYYY y guardar en ISO', async () => {
+    it('deberí­a mostrar fecha en formato DD/MM/YYYY y guardar en ISO', async () => {
         render(
             <SubjectUpdatePanel
                 subject={mockApprovedSubject}
@@ -153,7 +153,7 @@ describe('SubjectUpdatePanel', () => {
 
         // The input should now show DD/MM/YYYY (the new user-facing format)
         // mockApprovedSubject has statusDate: '2023-12-10T00:00:00.000Z'
-        // fromISODate('2023-12-10') â†’ '10/12/2023'
+        // fromISODate('2023-12-10') †’ '10/12/2023'
         const inputs = screen.getAllByRole('textbox');
         const dateInput = inputs.find(i => (i as HTMLInputElement).maxLength === 10) as HTMLInputElement;
         expect(dateInput.value).toBe('10/12/2023');
@@ -168,7 +168,7 @@ describe('SubjectUpdatePanel', () => {
         });
     });
 
-    it('deberé­a cerrar la confirmacié³n al hacer clic en Regresar', async () => {
+    it('deberí­a cerrar la confirmacií³n al hacer clic en Regresar', async () => {
         render(
             <SubjectUpdatePanel
                 subject={mockPendingSubject}
@@ -185,7 +185,7 @@ describe('SubjectUpdatePanel', () => {
         fireEvent.click(saveButton);
 
         // Confirm dialog is open
-        expect(await screen.findByText('Â¿Forzar Cambio?')).toBeInTheDocument();
+        expect(await screen.findByText('¿Forzar Cambio?')).toBeInTheDocument();
 
         // Click Regresar
         const regresoButton = screen.getByText('Regresar');
@@ -193,12 +193,12 @@ describe('SubjectUpdatePanel', () => {
 
         // Dialog should close, showing the form again
         await waitFor(() => {
-            expect(screen.queryByText('Â¿Forzar Cambio?')).not.toBeInTheDocument();
+            expect(screen.queryByText('¿Forzar Cambio?')).not.toBeInTheDocument();
         });
         expect(mockOnSave).not.toHaveBeenCalled();
     });
 
-    it('deberé­a arrojar error si la nota ingresada no es un néºmero válido', async () => {
+    it('deberí­a arrojar error si la nota ingresada no es un níºmero válido', async () => {
         render(
             <SubjectUpdatePanel
                 subject={mockApprovedSubject}
@@ -215,11 +215,11 @@ describe('SubjectUpdatePanel', () => {
 
         fireEvent.click(screen.getByText('Guardar Cambios'));
 
-        expect(await screen.findByText(/La nota debe ser un néºmero entre 1 y 10/)).toBeInTheDocument();
+        expect(await screen.findByText(/La nota debe ser un níºmero entre 1 y 10/)).toBeInTheDocument();
         expect(mockOnSave).not.toHaveBeenCalled();
     });
 
-    it('deberé­a arrojar error si la dificultad está fuera de rango', async () => {
+    it('deberí­a arrojar error si la dificultad está fuera de rango', async () => {
         render(
             <SubjectUpdatePanel
                 subject={mockApprovedSubject}
@@ -239,11 +239,11 @@ describe('SubjectUpdatePanel', () => {
 
         fireEvent.click(screen.getByText('Guardar Cambios'));
 
-        expect(await screen.findByText(/La dificultad debe ser un néºmero entre 1 y 100/)).toBeInTheDocument();
+        expect(await screen.findByText(/La dificultad debe ser un níºmero entre 1 y 100/)).toBeInTheDocument();
         expect(mockOnSave).not.toHaveBeenCalled();
     });
 
-    it('deberé­a mostrar error si onSave lanza una excepcié³n', async () => {
+    it('deberí­a mostrar error si onSave lanza una excepcií³n', async () => {
         const errorMessage = 'Error de red al guardar';
         mockOnSave.mockRejectedValueOnce(new Error(errorMessage));
 

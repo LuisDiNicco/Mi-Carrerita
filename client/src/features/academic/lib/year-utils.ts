@@ -18,6 +18,6 @@ export function groupSubjectsByYear(
 
 export function getYearLabel(year: number): string {
   if (year === 0) return "TRANSVERSAL";
-  return `Aé‘O ${year}`;
+  return `Aí‘O ${year}`;
 }
 

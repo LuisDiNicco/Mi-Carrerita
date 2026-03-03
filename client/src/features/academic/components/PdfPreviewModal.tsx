@@ -95,7 +95,7 @@ export const PdfPreviewModal = ({ records, onConfirm, onClose }: PdfPreviewModal
                 <div className="bg-elevated p-5 border-b border-app flex items-center justify-between shrink-0">
                     <div>
                         <h3 className="text-xl font-bold text-app font-retro tracking-wide flex items-center gap-2">
-                            <Upload size={20} /> Vista Previa — Historia Académica
+                            <Upload size={20} /> Vista Previa — Historia Acadímica
                         </h3>
                         <p className="text-sm text-muted mt-1">
                             Se encontraron <strong className="text-app">{records.length}</strong> registros. Revisá y editá antes de guardar.

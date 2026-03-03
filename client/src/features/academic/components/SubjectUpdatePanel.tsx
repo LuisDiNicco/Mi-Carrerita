@@ -83,7 +83,7 @@ export const SubjectUpdatePanel = ({ subject, isOpen, onClose, onSave }: Subject
       if (grade.trim() !== '') {
         const gradeValue = Number(grade);
         if (Number.isNaN(gradeValue) || gradeValue < 1 || gradeValue > 10) {
-          setError("La nota debe ser un néºmero entre 1 y 10.");
+          setError("La nota debe ser un níºmero entre 1 y 10.");
           setIsSaving(false);
           return;
         }
@@ -92,7 +92,7 @@ export const SubjectUpdatePanel = ({ subject, isOpen, onClose, onSave }: Subject
       if (difficulty.trim() !== '') {
         const diffValue = Number(difficulty);
         if (Number.isNaN(diffValue) || diffValue < 1 || diffValue > 100) {
-          setError("La dificultad debe ser un néºmero entre 1 y 100.");
+          setError("La dificultad debe ser un níºmero entre 1 y 100.");
           setIsSaving(false);
           return;
         }
@@ -102,7 +102,7 @@ export const SubjectUpdatePanel = ({ subject, isOpen, onClose, onSave }: Subject
       const normalizedGrade = gradeValue !== null && Number.isNaN(gradeValue) ? null : gradeValue;
       const difficultyValue = difficulty.trim() === '' ? null : Number(difficulty);
       const normalizedDifficulty = difficultyValue !== null && Number.isNaN(difficultyValue) ? null : difficultyValue;
-      // Convert DD/MM/YYYY â†’ ISO before sending to API
+      // Convert DD/MM/YYYY †’ ISO before sending to API
       const isoDate = statusDate.trim() === '' ? null : toISODate(statusDate);
       const statusDateValue = isoDate || null;
       const notesValue = notes.trim() === '' ? null : notes.trim();
@@ -305,7 +305,7 @@ export const SubjectUpdatePanel = ({ subject, isOpen, onClose, onSave }: Subject
               {error && (
                 <div className="p-3 bg-destructive/10 border border-destructive/30 rounded-lg animate-[fadeIn_0.2s_ease-in]">
                   <p className="text-sm text-destructive font-bold flex items-center gap-2">
-                    <span>â›”</span> {error}
+                    <span>›”</span> {error}
                   </p>
                 </div>
               )}

@@ -9,14 +9,14 @@ import { useAcademicStore } from '../../academic/store/academic-store';
 export const DAYS_FOR_MANUAL: { key: DayOfWeek; label: string }[] = [
     { key: 'MONDAY', label: 'Lunes' },
     { key: 'TUESDAY', label: 'Martes' },
-    { key: 'WEDNESDAY', label: 'Miércoles' },
+    { key: 'WEDNESDAY', label: 'Miírcoles' },
     { key: 'THURSDAY', label: 'Jueves' },
     { key: 'FRIDAY', label: 'Viernes' },
     { key: 'SATURDAY', label: 'Sábado' },
 ];
 
 export const PERIODS_FOR_MANUAL: { key: TimePeriod; label: string }[] = [
-    { key: 'M1', label: 'Maé±ana (08:00 - 12:00)' },
+    { key: 'M1', label: 'Mañana (08:00 - 12:00)' },
     { key: 'T1', label: 'Tarde (14:00 - 18:00)' },
     { key: 'N1', label: 'Noche (19:00 - 23:00)' },
 ];
@@ -24,14 +24,14 @@ export const PERIODS_FOR_MANUAL: { key: TimePeriod; label: string }[] = [
 const OFFER_DAY_TO_WEEK: Record<string, DayOfWeek> = {
     Lunes: 'MONDAY',
     Martes: 'TUESDAY',
-    Miércoles: 'WEDNESDAY',
+    Miírcoles: 'WEDNESDAY',
     Jueves: 'THURSDAY',
     Viernes: 'FRIDAY',
     Sábado: 'SATURDAY',
 };
 
 const OFFER_PERIOD_TO_SLOT: Record<string, TimePeriod> = {
-    'Maé±ana': 'M1',
+    'Mañana': 'M1',
     'Tarde': 'T1',
     'Noche': 'N1',
 };
@@ -151,7 +151,7 @@ export function useScheduleOffers(subjects: Subject[]) {
             return { slotRange: 'A distancia', durationHours: 0, isRemote: true };
         }
         const range = daysRaw.match(/(\d{2}a\d{2})$/)?.[1]
-            ?? (offer.periodLabel === 'Maé±ana' ? '08a12' : offer.periodLabel === 'Tarde' ? '14a18' : '19a23');
+            ?? (offer.periodLabel === 'Mañana' ? '08a12' : offer.periodLabel === 'Tarde' ? '14a18' : '19a23');
         const parsed = range.match(/^(\d{2})a(\d{2})$/);
         const durationHours = parsed ? Math.max(0, Number(parsed[2]) - Number(parsed[1])) : 4;
         return { slotRange: range, durationHours, isRemote: false };
@@ -274,7 +274,7 @@ export function useScheduleOffers(subjects: Subject[]) {
             slot => !timetables.some(t => t.dayOfWeek === slot.day && t.period === slot.period)
         );
         if (emptySlots.length === 0) {
-            setInlineMessage({ text: "No hay slots disponibles vacé­os. Configurá tu disponibilidad en la grilla primero.", type: 'info' });
+            setInlineMessage({ text: "No hay slots disponibles vací­os. Configurá tu disponibilidad en la grilla primero.", type: 'info' });
             return;
         }
         const unassignedRecommendations = recommendations.filter(
@@ -316,7 +316,7 @@ export function useScheduleOffers(subjects: Subject[]) {
         }
         if (addedCount > 0) {
             saveTimetablesLocal(newTimetables);
-            setInlineMessage({ text: `Auto-completado: se asignaron ${addedCount} materia${addedCount > 1 ? 's' : ''} a slots vacé­os.`, type: 'success' });
+            setInlineMessage({ text: `Auto-completado: se asignaron ${addedCount} materia${addedCount > 1 ? 's' : ''} a slots vací­os.`, type: 'success' });
             setTimeout(() => setInlineMessage(null), 4000);
         }
     };

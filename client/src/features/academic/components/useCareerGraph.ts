@@ -76,7 +76,7 @@ export const useCareerGraph = () => {
   }, [nodes]);
 
   // ---------------------------------------------------------------------------
-  // buildGraphNodes â€” creates React Flow nodes/edges from subject array.
+  // buildGraphNodes €” creates React Flow nodes/edges from subject array.
   // Extracted so it can be reused without re-fetching from server.
   // ---------------------------------------------------------------------------
   const buildGraphNodes = useCallback(
@@ -177,7 +177,7 @@ export const useCareerGraph = () => {
         }
       }
     },
-    // isGuest intentionally excluded â€” we use isGuestRef inside so this
+    // isGuest intentionally excluded €” we use isGuestRef inside so this
     // callback is stable and doesn't re-run the initial useEffect on auth change.
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [buildGraphNodes, setSubjects, setSubjectsFromServer],
@@ -224,9 +224,9 @@ export const useCareerGraph = () => {
 
   /**
    * Compute which nodes to highlight for a given hovered subject.
-   * - ancestors (prerequisites) â€” shown in orange
-   * - descendants that this hovered subject fully enables (all prereqs met once this is approved) â€” green
-   * - descendants where this hovered subject is only a partial prereq â€” yellow
+   * - ancestors (prerequisites) €” shown in orange
+   * - descendants that this hovered subject fully enables (all prereqs met once this is approved) €” green
+   * - descendants where this hovered subject is only a partial prereq €” yellow
    */
   const hoverHighlight = useMemo(() => {
     if (!hoveredSubjectId) return { ancestors: new Set<string>(), fullUnlocks: new Set<string>(), partialUnlocks: new Set<string>() };
@@ -254,10 +254,10 @@ export const useCareerGraph = () => {
       const prereqCount = prereqs.size;
       
       if (prereqCount === 1 && prereqs.has(hoveredSubjectId)) {
-        // Only requires this node â†’ full unlock
+        // Only requires this node †’ full unlock
         fullUnlocks.add(dependentId);
       } else if (prereqCount > 1 && prereqs.has(hoveredSubjectId)) {
-        // Requires this node + others â†’ partial unlock
+        // Requires this node + others †’ partial unlock
         partialUnlocks.add(dependentId);
       }
     });
@@ -384,7 +384,7 @@ export const useCareerGraph = () => {
 
       if (isGuestRef.current) {
         // Guest mode: apply change locally, recalculate availability, rebuild graph.
-        // No server call needed â€” nothing persists to DB.
+        // No server call needed €” nothing persists to DB.
         updateSubject(activeSubject.id, payload);
         // updateSubject already recalculated availability in the store.
         // Now rebuild the graph nodes from the updated store state.

@@ -11,10 +11,10 @@ type SubjectNodeData = {
   isRecentlyUpdated?: boolean;
   isFocused?: boolean;
   // Hover highlighting flags
-  isPrerequisite?: boolean;   // ancestor of hovered node â€” orange
-  isFullUnlock?: boolean;     // this node fully unlocked by hovered â€” green
-  isPartialUnlock?: boolean;  // partially unlocked by hovered â€” yellow
-  isHoveredNode?: boolean;    // the node being hovered â€” white/bright ring
+  isPrerequisite?: boolean;   // ancestor of hovered node €” orange
+  isFullUnlock?: boolean;     // this node fully unlocked by hovered €” green
+  isPartialUnlock?: boolean;  // partially unlocked by hovered €” yellow
+  isHoveredNode?: boolean;    // the node being hovered €” white/bright ring
 };
 
 export type SubjectNodeType = Node<SubjectNodeData, 'subject'>;
@@ -28,43 +28,43 @@ const STATUS_STYLES: Record<SubjectStatus, {
   [SubjectStatus.EQUIVALENCIA]: {
     container: 'bg-[#B084CC] text-[#291736]',
     badge: 'bg-[#8F66A8] border-[#6D4284] text-white',
-    emoji: 'ðŸ¤',
+    emoji: '¤',
     border: 'border-[#6D4284]',
   },
   [SubjectStatus.PENDIENTE]: {
     container: 'bg-[#353C35] text-[#C5D2C5]',
     badge: 'bg-[#3E4A3E] border-[#2A342A] text-[#E8F2E8]',
-    emoji: 'ðŸ”’',
+    emoji: '🔒',
     border: 'border-[#2A342A]',
   },
   [SubjectStatus.DISPONIBLE]: {
     container: 'bg-[#F7E8A3] text-[#2E3436]',
     badge: 'bg-[#E4C96A] border-[#C4A85B] text-[#2E3436]',
-    emoji: 'ðŸŽ¯',
+    emoji: '📖',
     border: 'border-[#C4A85B]',
   },
   [SubjectStatus.EN_CURSO]: {
     container: 'bg-[#8FB5DD] text-[#1C2B3A]',
     badge: 'bg-[#5F89BF] border-[#3F6FA2] text-white',
-    emoji: 'ðŸ“š',
+    emoji: '📝',
     border: 'border-[#3F6FA2]',
   },
   [SubjectStatus.REGULARIZADA]: {
     container: 'bg-[#B4E6A6] text-[#1F2A1F]',
     badge: 'bg-[#6BBE6E] border-[#4F9C52] text-white',
-    emoji: 'âœ…',
+    emoji: '✅',
     border: 'border-[#4F9C52]',
   },
   [SubjectStatus.APROBADA]: {
     container: 'bg-[#7BCB7A] text-[#0B2A14] font-bold',
     badge: 'bg-[#4FAE59] border-[#2E7D4D] text-[#0B2A14]',
-    emoji: 'ðŸ†',
+    emoji: '†',
     border: 'border-[#2E7D4D]',
   },
   [SubjectStatus.RECURSADA]: {
     container: 'bg-[#E57373] text-[#2C0B0E]',
     badge: 'bg-[#EF5350] border-[#B71C1C] text-[#2C0B0E]',
-    emoji: 'âš ï¸',
+    emoji: 'š ï¸',
     border: 'border-[#B71C1C]',
   },
 };
@@ -163,7 +163,7 @@ const SubjectNodeComponent = ({ data, selected }: NodeProps<SubjectNodeType>) =>
 
         <div className={cn('flex items-center justify-between mt-3 pt-2 border-t-2 border-current/30', META_CLASS)}>
           <div className="flex items-center gap-1">
-            <span>â­</span>
+            <span>­</span>
             <span>{subject.hours || 0}</span>
           </div>
 
@@ -231,10 +231,10 @@ export const SubjectNode = memo(SubjectNodeComponent, (prevProps, nextProps) => 
 function getTooltipText(subject: Subject): string {
   const statusMessages = {
     [SubjectStatus.PENDIENTE]: 'Bloqueada por correlativas',
-    [SubjectStatus.DISPONIBLE]: 'Â¡Podes cursar esta materia!',
+    [SubjectStatus.DISPONIBLE]: '¡Podes cursar esta materia!',
     [SubjectStatus.EN_CURSO]: 'Cursando actualmente',
     [SubjectStatus.REGULARIZADA]: 'Materia regularizada',
-    [SubjectStatus.APROBADA]: 'Â¡Materia aprobada!',
+    [SubjectStatus.APROBADA]: '¡Materia aprobada!',
     [SubjectStatus.RECURSADA]: 'Tendrás que recursar esta materia',
     [SubjectStatus.EQUIVALENCIA]: 'Materia concedida por equivalencia',
   };

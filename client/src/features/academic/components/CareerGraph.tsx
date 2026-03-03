@@ -91,7 +91,7 @@ export const CareerGraph = ({ progress, stats }: CareerGraphProps) => {
   if (error) {
     return (
       <div className="w-full h-[70vh] flex items-center justify-center bg-surface">
-        <RetroError title="Â¡OH NO!" message={error} onRetry={refetch} />
+        <RetroError title="¡OH NO!" message={error} onRetry={refetch} />
       </div>
     );
   }
@@ -135,7 +135,7 @@ export const CareerGraph = ({ progress, stats }: CareerGraphProps) => {
         <div className="flex items-center gap-3 mb-4">
           <div className="w-1.5 h-6 bg-unlam-500 rounded-full"></div>
           <h2 className="text-xl font-bold font-retro text-app uppercase tracking-wide">
-            érbol de Materias
+            Árbol de Materias
           </h2>
         </div>
         <div className={containerClass}>
@@ -307,7 +307,7 @@ export const CareerGraph = ({ progress, stats }: CareerGraphProps) => {
                     title={showCriticalPath ? UI_LABELS.criticalOn : UI_LABELS.criticalOff}
                   >
                     <AlertTriangle size={14} className={showCriticalPath ? "animate-pulse" : ""} />
-                    <span>{showCriticalPath ? 'Ruta Cré­tica' : 'Ruta Cré­tica'}</span>
+                    <span>{showCriticalPath ? 'Ruta Crí­tica' : 'Ruta Crí­tica'}</span>
                   </button>
 
                   <button

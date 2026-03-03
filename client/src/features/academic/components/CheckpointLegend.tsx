@@ -3,7 +3,7 @@
 export const CheckpointLegend = () => {
     const items = [
         { label: 'Inicio', icon: Zap, color: 'text-gray-400' },
-        { label: 'Té­tulo Intermedio', icon: Award, color: 'text-primary' },
+        { label: 'Tí­tulo Intermedio', icon: Award, color: 'text-primary' },
         { label: 'Proyecto Final', icon: Star, color: 'text-yellow-400' },
         { label: 'Ingeniero', icon: Trophy, color: 'text-unlam-500' },
     ];

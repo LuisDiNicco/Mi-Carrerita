@@ -132,10 +132,10 @@ export const UnifiedSchedulePlanner = ({
             <div className="flex justify-center pt-2">
                 <p className="text-[11px] bg-surface border border-app px-4 py-2 text-muted shadow-sm md:rounded-full rounded-md text-center max-w-full">
                     {mode === 'AVAILABILITY'
-                        ? 'ðŸŸ¢ Pulsa o arrastra para marcar disponibilidad.'
+                        ? '🖱️ Pulsa o arrastra para marcar disponibilidad.'
                         : mode === 'OPTIONS'
-                            ? 'ðŸ“š En esta etapa puedes ver opciones solapadas de oferta y elegir una por celda.'
-                            : 'âœ… Esta es tu cursada final elegida. Puedes volver al paso 2 para ajustar.'}
+                            ? '📝 En esta etapa puedes ver opciones solapadas de oferta y elegir una por celda.'
+                            : '✅ Esta es tu cursada final elegida. Puedes volver al paso 2 para ajustar.'}
                 </p>
             </div>
         </div>

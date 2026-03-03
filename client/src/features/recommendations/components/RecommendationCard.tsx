@@ -45,7 +45,7 @@ export function RecommendationCard({
                         </div>
                     </div>
                     <h4 className="text-base font-bold text-app leading-tight mb-1">{rec.subject.name}</h4>
-                    <p className="text-[10px] text-muted font-mono bg-app-bg inline-block px-1.5 rounded">Cé³d: {rec.subject.planCode}</p>
+                    <p className="text-[10px] text-muted font-mono bg-app-bg inline-block px-1.5 rounded">Cód: {rec.subject.planCode}</p>
                 </div>
             </div>
 

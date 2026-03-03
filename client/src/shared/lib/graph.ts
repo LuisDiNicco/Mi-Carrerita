@@ -326,7 +326,7 @@ export function getRecommendationsWithReasons(
     scored.forEach((s) => {
       if (s.subject.name === PROYECTO_FINAL_NAME) {
         s.score += 200;
-        s.reasons.unshift("â­ Proyecto Final");
+        s.reasons.unshift("­ Proyecto Final");
       }
     });
 
@@ -335,7 +335,7 @@ export function getRecommendationsWithReasons(
       scored.forEach((s) => {
         if (scheduledIds.has(s.subject.id)) {
           s.score += 10;
-          s.reasons.push("ðŸ“… Horario asignado");
+          s.reasons.push("“… Horario asignado");
         }
       });
     }

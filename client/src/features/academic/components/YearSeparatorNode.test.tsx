@@ -19,8 +19,8 @@ const makeNodeProps = (label: string, width: number) => ({
 
 describe('YearSeparatorNode', () => {
   it('renders the year label', () => {
-    render(<YearSeparatorNode {...makeNodeProps('Aé‘O 1', 800)} />);
-    expect(screen.getByText('Aé‘O 1')).toBeInTheDocument();
+    render(<YearSeparatorNode {...makeNodeProps('Aí‘O 1', 800)} />);
+    expect(screen.getByText('Aí‘O 1')).toBeInTheDocument();
   });
 
   it('renders TRANSVERSAL label', () => {
@@ -29,7 +29,7 @@ describe('YearSeparatorNode', () => {
   });
 
   it('applies width to the container', () => {
-    const { container } = render(<YearSeparatorNode {...makeNodeProps('Aé‘O 2', 1200)} />);
+    const { container } = render(<YearSeparatorNode {...makeNodeProps('Aí‘O 2', 1200)} />);
     const div = container.firstChild as HTMLElement;
     expect(div.style.width).toBe('1200px');
   });

@@ -79,14 +79,14 @@ interface RetroErrorProps {
 }
 
 export const RetroError = ({
-  title = 'Â¡ERROR!',
+  title = '¡ERROR!',
   message,
   onRetry
 }: RetroErrorProps) => {
   return (
     <div className="flex flex-col items-center justify-center space-y-6 p-8">
       <div className="text-6xl text-destructive font-retro">
-        âš ï¸
+        š ï¸
       </div>
 
       <div className="text-center space-y-2">

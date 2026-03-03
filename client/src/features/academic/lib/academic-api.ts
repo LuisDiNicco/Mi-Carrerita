@@ -13,15 +13,15 @@ export async function fetchAcademicGraph(options?: {
 
   const response = await (options?.guestMode
     ? fetch(endpoint, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
     : authFetch(endpoint, {
-    headers: {
-      "Content-Type": "application/json",
-    },
-  }));
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }));
 
   if (!response.ok) {
     throw new Error(`Error ${response.status}: ${response.statusText}`);
@@ -62,7 +62,7 @@ export async function migrateGuestProgressToAccount(
       difficulty: subject.difficulty ?? null,
       notes: subject.notes ?? null,
       statusDate: subject.statusDate ?? null,
-      // isIntermediate is NOT part of UpdateSubjectRecordDto â€” omitted intentionally
+      // isIntermediate is NOT part of UpdateSubjectRecordDto €” omitted intentionally
     });
   }
 }
@@ -146,7 +146,7 @@ export async function fetchAcademicHistory(params?: {
 // PDF Upload Functions
 // ========================
 
-/** Parsed record returned by the backend after uploading a Historia Acadé©mica PDF */
+/** Parsed record returned by the backend after uploading a Historia Acadímica PDF */
 export interface ParsedAcademicRecord {
   planCode: string;
   name: string;
@@ -156,7 +156,7 @@ export interface ParsedAcademicRecord {
   status?: string;
 }
 
-/** Upload a Historia Acadé©mica PDF and receive parsed records for preview */
+/** Upload a Historia Acadímica PDF and receive parsed records for preview */
 export async function uploadHistoriaPdf(
   file: File,
   options?: { guestMode?: boolean },

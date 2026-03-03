@@ -74,7 +74,7 @@ export const TrophiesPanel = () => {
       const newTrophies = await checkAndUnlockTrophies();
       if (newTrophies.length > 0) {
         await loadData();
-        setTrophyMessage({ text: `Â¡Has desbloqueado ${newTrophies.length} nuevos trofeos!`, type: 'success' });
+        setTrophyMessage({ text: `¡Has desbloqueado ${newTrophies.length} nuevos trofeos!`, type: 'success' });
       } else {
         setTrophyMessage({ text: 'No hay nuevos trofeos desbloqueados por ahora.', type: 'info' });
       }
@@ -134,7 +134,7 @@ export const TrophiesPanel = () => {
           <span className="relative z-10 flex items-center gap-2">
             {checking ? (
               <>
-                <span className="animate-spin">â†»</span> Verificando...
+                <span className="animate-spin">†»</span> Verificando...
               </>
             ) : (
               <>Verificar Trofeos</>
@@ -150,7 +150,7 @@ export const TrophiesPanel = () => {
           }`}>
           {trophyMessage.type === 'success' ? <CheckCircle size={16} /> : trophyMessage.type === 'error' ? <AlertTriangle size={16} /> : <Trophy size={16} />}
           {trophyMessage.text}
-          <button onClick={() => setTrophyMessage(null)} className="ml-auto text-muted hover:text-app">é—</button>
+          <button onClick={() => setTrophyMessage(null)} className="ml-auto text-muted hover:text-app">í—</button>
         </div>
       )}
 

@@ -55,16 +55,16 @@ describe('getYearLabel', () => {
     expect(getYearLabel(0)).toBe('TRANSVERSAL');
   });
 
-  it('should return "Aé‘O 1" for year 1', () => {
-    expect(getYearLabel(1)).toBe('Aé‘O 1');
+  it('should return "Aí‘O 1" for year 1', () => {
+    expect(getYearLabel(1)).toBe('Aí‘O 1');
   });
 
-  it('should return "Aé‘O 5" for year 5', () => {
-    expect(getYearLabel(5)).toBe('Aé‘O 5');
+  it('should return "Aí‘O 5" for year 5', () => {
+    expect(getYearLabel(5)).toBe('Aí‘O 5');
   });
 
   it('should handle any positive integer year', () => {
-    expect(getYearLabel(10)).toBe('Aé‘O 10');
+    expect(getYearLabel(10)).toBe('Aí‘O 10');
   });
 });
 

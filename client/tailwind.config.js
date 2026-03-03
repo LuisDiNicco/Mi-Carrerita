@@ -64,11 +64,11 @@ export default {
 
       // Sombras estilo pixel art
       boxShadow: {
-        'retro': '4px 4px 0px 0px rgba(0, 0, 0, 0.5)',
-        'retro-hover': '2px 2px 0px 0px rgba(0, 0, 0, 0.5)',
-        'retro-inset': 'inset 3px 3px 0px 0px rgba(0, 0, 0, 0.2)',
-        'glow': '0 0 20px rgba(123, 203, 122, 0.4)',
-        'glow-strong': '0 0 30px rgba(123, 203, 122, 0.6)',
+        'retro': '4px 4px 0px 0px var(--retro-shadow-color)',
+        'retro-hover': '2px 2px 0px 0px var(--retro-shadow-color)',
+        'retro-inset': 'inset 3px 3px 0px 0px var(--retro-shadow-inset)',
+        'glow': '0 0 20px var(--retro-glow)',
+        'glow-strong': '0 0 30px var(--retro-glow-strong)',
       },
 
       // Animaciones personalizadas

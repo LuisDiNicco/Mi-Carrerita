@@ -116,7 +116,7 @@ describe('RetroCalendar', () => {
     expect((yearSelect as HTMLSelectElement).value).toBe('2020');
   });
 
-  it('renders 42 cells in the calendar grid (6 rows é— 7 cols)', () => {
+  it('renders 42 cells in the calendar grid (6 rows í— 7 cols)', () => {
     renderCalendar('01/02/2026'); // February 2026
     // Count all buttons that are either day numbers or disabled empty cells
     // We check that the total cell buttons = 42 (7 day-header divs + 42 buttons = 49 total)

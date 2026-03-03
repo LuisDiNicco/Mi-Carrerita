@@ -54,7 +54,7 @@ describe('RetroError', () => {
 
   it('renders the default title', () => {
     render(<RetroError message="Error" />);
-    expect(screen.getByText('Â¡ERROR!')).toBeInTheDocument();
+    expect(screen.getByText('¡ERROR!')).toBeInTheDocument();
   });
 
   it('renders a custom title', () => {

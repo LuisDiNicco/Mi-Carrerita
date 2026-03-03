@@ -84,13 +84,13 @@ describe('buildYearSeparatorNodes', () => {
     expect(sep.position.y).toBeGreaterThan(300);
   });
 
-  it('uses label from getYearLabel (Aé‘O X for year > 0)', () => {
+  it('uses label from getYearLabel (Aí‘O X for year > 0)', () => {
     const subjects = [makeSubject('a', 3)];
     const nodes = [makeNode('a', 0, 100)];
 
     const [sep] = buildYearSeparatorNodes(subjects, nodes);
 
-    expect((sep.data as { label: string }).label).toBe('Aé‘O 3');
+    expect((sep.data as { label: string }).label).toBe('Aí‘O 3');
   });
 
   it('uses TRANSVERSAL label for year 0', () => {

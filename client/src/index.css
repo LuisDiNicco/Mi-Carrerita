@@ -42,28 +42,55 @@
     /* Efectos CRT */
     --crt-curve: 0.02;
     --scanline-opacity: 0.1;
+
+    /* Shadow tokens dynamicos */
+    --retro-shadow-color: rgba(0, 0, 0, 0.6);
+    --retro-shadow-inset: rgba(0, 0, 0, 0.4);
+    --retro-glow: rgba(123, 203, 122, 0.4);
+    --retro-glow-strong: rgba(123, 203, 122, 0.6);
   }
 
   [data-theme="light"] {
-    --app-bg: #FFFFFF;
-    --app-surface: #F5F5F5;
-    --app-elevated: #E8E8E8;
-    --app-text: #1A1A1A;
-    --app-muted: #2D2D2D;
-    --app-border: #4A4A4A;
-    --app-accent: #228B22;
-    --app-accent-strong: #006400;
-    --app-accent-ink: #09090b;
+    /* Fondos suavizados (evitan fatiga visual - "eye strain") */
+    --app-bg: #EAECEE;
+    /* Papel sutil grisáceo */
+    --app-surface: #F4F5F7;
+    /* Ligeramente más claro para tarjetas */
+    --app-elevated: #FFFFFF;
+    /* Blanco puro sólo en modales/popups elevados */
+
+    /* Textos oscurecidos y legibles (Alto contraste estricto WCAG) */
+    --app-text: #111827;
+    /* Slate 900 */
+    --app-muted: #374151;
+    /* Slate 700 - Todavía muy legible, pero distinto al título */
+
+    /* Bordes bien definidos y visibles */
+    --app-border: #9CA3AF;
+    /* Slate 400 - Evita botones flotantes invisibles */
+
+    /* Acento Verde oscuro, vibrante y profesional */
+    --app-accent: #059669;
+    /* Emerald 600 */
+    --app-accent-strong: #047857;
+    /* Emerald 700 */
+    --app-accent-ink: #FFFFFF;
+
+    /* Shadow tokens dynamicos - Sombras duras oscuras, cero verde fluor */
+    --retro-shadow-color: rgba(15, 23, 42, 0.4);
+    /* Slate 900 al 40% */
+    --retro-shadow-inset: rgba(15, 23, 42, 0.2);
 
     /* Semantic Tokens Light Mode (HSL) */
-    --background: 0 0% 100%;
-    --foreground: 240 10% 4%;
-    --primary: 119 59% 35%;
+    --background: 210 20% 92%;
+    --foreground: 222 47% 11%;
+    --primary: 160 84% 30%;
     --primary-foreground: 0 0% 100%;
     --destructive: 0 84% 50%;
-    --destructive-foreground: 0 0% 100%;
-    --success: 142 72% 29%;
-    --info: 217 91% 40%;
+    --destructive-foreground: 210 40% 98%;
+    --success: 142 76% 30%;
+    --info: 217 91% 50%;
+    --info: 217 91% 60%;
   }
 
   * {

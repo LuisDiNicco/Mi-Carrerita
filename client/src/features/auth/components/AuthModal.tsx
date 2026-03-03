@@ -5,7 +5,7 @@ import { registerUser, loginUser } from '../lib/api';
 import { useAcademicStore } from '../../academic/store/academic-store';
 import { migrateGuestProgressToAccount } from '../../academic/lib/academic-api';
 import { RetroButton } from '../../../shared/ui/RetroButton';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, X } from 'lucide-react';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -139,8 +139,8 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
           <h2 className="text-2xl font-bold text-app font-retro">
             {mode === 'login' ? 'Iniciar sesión' : 'Crear cuenta'}
           </h2>
-          <button className="text-muted" onClick={onClose}>
-            âœ•
+          <button className="text-muted hover:text-app" onClick={onClose}>
+            <X size={24} />
           </button>
         </div>
 
@@ -170,8 +170,8 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
             <div className="mt-5 grid grid-cols-2 gap-2">
               <button
                 className={`rounded-lg border-2 py-2 text-sm font-bold transition-all ${mode === 'login'
-                    ? 'border-unlam-500 bg-unlam-500/20 text-app'
-                    : 'border-app-border text-muted hover:border-app'
+                  ? 'border-unlam-500 bg-unlam-500/20 text-app'
+                  : 'border-app-border text-muted hover:border-app'
                   }`}
                 onClick={() => setMode('login')}
               >
@@ -179,8 +179,8 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
               </button>
               <button
                 className={`rounded-lg border-2 py-2 text-sm font-bold transition-all ${mode === 'register'
-                    ? 'border-unlam-500 bg-unlam-500/20 text-app'
-                    : 'border-app-border text-muted hover:border-app'
+                  ? 'border-unlam-500 bg-unlam-500/20 text-app'
+                  : 'border-app-border text-muted hover:border-app'
                   }`}
                 onClick={() => setMode('register')}
               >
@@ -240,7 +240,7 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
 
             {error && (
               <div className="mt-4 p-3 bg-destructive/10 border-2 border-destructive/30 rounded-lg">
-                <p className="text-sm text-destructive font-bold">â›” {error}</p>
+                <p className="text-sm text-destructive font-bold">›” {error}</p>
               </div>
             )}
 

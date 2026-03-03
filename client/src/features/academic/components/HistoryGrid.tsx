@@ -53,7 +53,7 @@ export function HistoryGrid({
                     <div className="flex items-start gap-3">
                         <AlertTriangle size={18} className="text-destructive shrink-0 mt-0.5" />
                         <div>
-                            <p className="font-bold text-app text-sm">Â¿Eliminar historial?</p>
+                            <p className="font-bold text-app text-sm">¿Eliminar historial?</p>
                             <p className="text-xs text-muted mt-0.5">
                                 Se borrará el registro de <strong className="text-app">{pendingDelete.name}</strong> y la materia volverá a estado <strong className="text-app">PENDIENTE</strong>.
                             </p>
@@ -70,7 +70,7 @@ export function HistoryGrid({
                             onClick={confirmDelete}
                             className="px-4 py-1.5 rounded-lg bg-destructive text-white text-xs font-bold hover:bg-destructive transition-colors"
                         >
-                            Confirmar Eliminacié³n
+                            Confirmar Eliminación
                         </button>
                     </div>
                 </div>
@@ -81,7 +81,7 @@ export function HistoryGrid({
                 <div className="flex items-center gap-2 px-4 py-3 rounded-xl border border-destructive/30 bg-destructive/10 text-destructive text-sm font-bold">
                     <AlertTriangle size={16} />
                     {deleteError}
-                    <button onClick={() => setDeleteError(null)} className="ml-auto text-muted hover:text-app">é—</button>
+                    <button onClick={() => setDeleteError(null)} className="ml-auto text-muted hover:text-app">í—</button>
                 </div>
             )}
 
@@ -101,13 +101,13 @@ export function HistoryGrid({
                                     className="py-3 px-4 font-medium cursor-pointer hover:text-app transition-colors select-none group w-20 text-center"
                                     onClick={() => handleSort('planCode')}
                                 >
-                                    <div className="flex items-center gap-1">Cé³digo {sortConfig.key === 'planCode' && <ArrowUpDown size={12} className="text-unlam-500" />}</div>
+                                    <div className="flex items-center gap-1">Código {sortConfig.key === 'planCode' && <ArrowUpDown size={12} className="text-unlam-500" />}</div>
                                 </th>
                                 <th
                                     className="py-3 px-4 font-medium cursor-pointer hover:text-app transition-colors select-none group w-16 text-center"
                                     onClick={() => handleSort('year')}
                                 >
-                                    <div className="flex items-center gap-1">Aé±o {sortConfig.key === 'year' && <ArrowUpDown size={12} className="text-unlam-500" />}</div>
+                                    <div className="flex items-center gap-1">Año {sortConfig.key === 'year' && <ArrowUpDown size={12} className="text-unlam-500" />}</div>
                                 </th>
                                 <th
                                     className="py-3 px-4 font-medium cursor-pointer hover:text-app transition-colors select-none group"
@@ -144,7 +144,7 @@ export function HistoryGrid({
                                     <tr key={row.id} className="hover:bg-unlam-500/5 transition-colors group">
                                         <td className="py-3 px-4 text-app font-mono text-xs">{formatDate(row.date) || '-'}</td>
                                         <td className="py-3 px-4 text-muted font-mono text-xs">{row.planCode}</td>
-                                        <td className="py-3 px-4 text-muted font-mono text-xs text-center">{row.year}Âº</td>
+                                        <td className="py-3 px-4 text-muted font-mono text-xs text-center">{row.year}º</td>
                                         <td className="py-3 px-4 text-app font-bold">{row.name}</td>
                                         <td className="py-3 px-4">
                                             <span className={cn(
@@ -167,11 +167,11 @@ export function HistoryGrid({
                                                         row.difficulty >= 34 ? 'bg-yellow-500/10 text-yellow-400' :
                                                             'bg-green-500/10 text-green-400'
                                                 )}>{row.difficulty}</span>
-                                            ) : <span className="text-muted">â€”</span>}
+                                            ) : <span className="text-muted">€”</span>}
                                         </td>
                                         <td className="py-3 px-4 relative max-w-[200px] group/tooltip">
                                             <div className="truncate text-xs text-muted">
-                                                {row.notes || 'â€”'}
+                                                {row.notes || '€”'}
                                             </div>
                                             {/* Hover Preview Tooltip */}
                                             {row.notes && (

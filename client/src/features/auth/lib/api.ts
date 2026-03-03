@@ -159,7 +159,7 @@ export async function loginUser(dto: {
     throw new Error(
       extractApiMessage(
         errorData,
-        'No se pudo iniciar sesié³n. Verificá tu correo y contraseé±a.',
+        'No se pudo iniciar sesión. Verificá tu correo y contraseña.',
       ),
     );
   }

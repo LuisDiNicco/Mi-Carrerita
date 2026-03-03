@@ -21,13 +21,13 @@ export function truncateSubjectName(name: string, maxLength = 30): string {
  */
 export function getSubjectEmoji(status: string): string {
   const emojiMap: Record<string, string> = {
-    PENDIENTE: "ðŸ”’",
-    DISPONIBLE: "ðŸŽ¯",
-    EN_CURSO: "ðŸ“š",
-    REGULARIZADA: "âœ…",
-    APROBADA: "ðŸ†",
+    PENDIENTE: "”’",
+    DISPONIBLE: "Ž¯",
+    EN_CURSO: "“š",
+    REGULARIZADA: "œ…",
+    APROBADA: "†",
   };
-  return emojiMap[status] || "â“";
+  return emojiMap[status] || "“";
 }
 
 /**
@@ -77,9 +77,9 @@ export function groupBySemester<T extends { semester: number }>(
  * Formatear nota con estilo retro
  */
 export function formatGrade(grade: number | null): string {
-  if (grade === null) return "â€”";
-  if (grade >= 8) return `â­ ${grade}`;
-  if (grade >= 6) return `âœ“ ${grade}`;
+  if (grade === null) return "€”";
+  if (grade >= 8) return `­ ${grade}`;
+  if (grade >= 6) return `œ“ ${grade}`;
   return `${grade}`;
 }
 
@@ -87,7 +87,7 @@ export function formatGrade(grade: number | null): string {
  * Formatear fecha YYYY-MM-DD a formato legible DD/MM/YYYY
  */
 export function formatDate(date: string | null | undefined): string {
-  if (!date) return 'â€”';
+  if (!date) return '€”';
   return new Date(date + 'T00:00:00').toLocaleDateString('es-AR');
 }
 

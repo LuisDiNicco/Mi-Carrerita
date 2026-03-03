@@ -31,7 +31,7 @@ describe('useGraphSearch hook', () => {
         vi.clearAllTimers();
     });
 
-    it('deberé­a filtrar materias basado en el nombre y cé³digo', () => {
+    it('deberí­a filtrar materias basado en el nombre y cí³digo', () => {
         const { result } = renderHook(() => useGraphSearch(mockSubjects, mockNodes, mockFlowInstance, mockSetFocusedId));
 
         act(() => {
@@ -47,7 +47,7 @@ describe('useGraphSearch hook', () => {
         expect(result.current.searchResults[0].id).toBe('2');
     });
 
-    it('no deberé­a buscar si el query es muy corto', () => {
+    it('no deberí­a buscar si el query es muy corto', () => {
         const { result } = renderHook(() => useGraphSearch(mockSubjects, mockNodes, mockFlowInstance, mockSetFocusedId));
 
         act(() => {

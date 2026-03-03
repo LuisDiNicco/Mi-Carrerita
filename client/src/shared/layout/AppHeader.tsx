@@ -16,7 +16,7 @@ const NAV_ITEMS = [
   { id: 'tree', label: 'Árbol de materias' },
   { id: 'dashboard', label: 'Tablero' },
   { id: 'recommendations', label: 'Planificador' },
-  { id: 'history', label: 'Historia Académica', icon: '📚' },
+  { id: 'history', label: 'Historia Acadímica', icon: '📚' },
   { id: 'trophies', label: 'Trofeos' },
 ];
 
@@ -231,7 +231,7 @@ export const AppHeader = ({
                     setMobileMenuOpen(false);
                   }}
                 >
-                  Iniciar sesié³n
+                  Iniciar sesión
                 </button>
               )}
             </div>

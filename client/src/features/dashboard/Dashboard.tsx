@@ -133,7 +133,7 @@ export const Dashboard = () => {
             <span className="text-unlam-500">#</span> Resumen General
           </h3>
           <p className="text-sm text-muted">
-            Métricas clave sobre el estado actual de la cursada.
+            Mítricas clave sobre el estado actual de la cursada.
           </p>
         </div>
 
@@ -286,7 +286,7 @@ export const Dashboard = () => {
         </div>
       </section>
 
-      {/* SUBSECTION: Rendimiento Académico */}
+      {/* SUBSECTION: Rendimiento Acadímico */}
       <section className="space-y-4">
         <div className="border-b-2 border-app-border/50 pb-2">
           <h3 className="text-xl font-jersey tracking-wide text-app uppercase flex items-center gap-2">
@@ -494,8 +494,8 @@ export const Dashboard = () => {
                     </span>
                     <span className="text-muted"> en {projection.quartersWithData} cuatrimestres cursados</span>
                     {projection.historicalPace >= targetLoad
-                      ? <span className="text-green-400"> â€” superás el objetivo âœ“</span>
-                      : <span className="text-yellow-400"> â€” por debajo del objetivo</span>
+                      ? <span className="text-green-400"> - superás el objetivo ✅</span>
+                      : <span className="text-yellow-400"> - por debajo del objetivo</span>
                     }
                   </p>
                 )}
