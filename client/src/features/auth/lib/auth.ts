@@ -1,4 +1,4 @@
-let accessToken: string | null = null;
+﻿let accessToken: string | null = null;
 let refreshToken: string | null = null;
 const REFRESH_TOKEN_KEY = 'refreshToken';
 
@@ -34,3 +34,4 @@ export function clearRefreshToken() {
   refreshToken = null;
   sessionStorage.removeItem(REFRESH_TOKEN_KEY);
 }
+

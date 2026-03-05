@@ -1,4 +1,4 @@
-export const SubjectStatus = {
+﻿export const SubjectStatus = {
   PENDIENTE: "PENDIENTE",
   DISPONIBLE: "DISPONIBLE",
   EN_CURSO: "EN_CURSO",
@@ -33,3 +33,4 @@ export interface Subject {
   correlativeIds: string[];
   isIntermediateDegree: boolean;
 }
+

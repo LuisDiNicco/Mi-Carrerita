@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+﻿import { describe, it, expect, beforeEach } from 'vitest';
 import { setAccessToken, getAccessToken, clearAccessToken } from './auth';
 
 describe('auth token helpers', () => {
@@ -33,3 +33,4 @@ describe('auth token helpers', () => {
     expect(getAccessToken()).toBe('second');
   });
 });
+

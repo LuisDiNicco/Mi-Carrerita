@@ -1,4 +1,4 @@
-import { authFetch } from "../../auth/lib/api";
+﻿import { authFetch } from "../../auth/lib/api";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
@@ -71,3 +71,4 @@ export async function checkAndUnlockTrophies(): Promise<TrophyDto[]> {
     // But checkAndUnlock method in service usually returns newly unlocked.
     return response.json();
 }
+

@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+﻿import { describe, it, expect } from 'vitest';
 import { groupSubjectsByYear, getYearLabel } from './year-utils';
 import type { Subject } from '../../../shared/types/academic';
 import { SubjectStatus } from '../../../shared/types/academic';
@@ -55,15 +55,16 @@ describe('getYearLabel', () => {
     expect(getYearLabel(0)).toBe('TRANSVERSAL');
   });
 
-  it('should return "AÑO 1" for year 1', () => {
-    expect(getYearLabel(1)).toBe('AÑO 1');
+  it('should return "Aí‘O 1" for year 1', () => {
+    expect(getYearLabel(1)).toBe('Aí‘O 1');
   });
 
-  it('should return "AÑO 5" for year 5', () => {
-    expect(getYearLabel(5)).toBe('AÑO 5');
+  it('should return "Aí‘O 5" for year 5', () => {
+    expect(getYearLabel(5)).toBe('Aí‘O 5');
   });
 
   it('should handle any positive integer year', () => {
-    expect(getYearLabel(10)).toBe('AÑO 10');
+    expect(getYearLabel(10)).toBe('Aí‘O 10');
   });
 });
+

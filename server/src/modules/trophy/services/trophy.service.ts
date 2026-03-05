@@ -17,13 +17,32 @@ import {
   AcademicRecordWithSubject,
   TrophyEvaluationContext,
 } from '../types/trophy.types';
+import { TrophyEvaluator } from '../evaluators/base.evaluator';
+import {
+  AverageEvaluator,
+  CompletionEvaluator,
+  HoursEvaluator,
+  ConsistencyEvaluator,
+  ChallengeEvaluator,
+  CountEvaluator,
+} from '../evaluators';
 
 @Injectable()
 export class TrophyService implements OnModuleInit {
+  private evaluators: TrophyEvaluator[];
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly logger: Logger,
-  ) { }
+    average: AverageEvaluator,
+    completion: CompletionEvaluator,
+    hours: HoursEvaluator,
+    consistency: ConsistencyEvaluator,
+    challenge: ChallengeEvaluator,
+    count: CountEvaluator,
+  ) {
+    this.evaluators = [average, completion, hours, consistency, challenge, count];
+  }
 
   /**
    * Initialize trophy definitions on module startup
@@ -126,18 +145,7 @@ export class TrophyService implements OnModuleInit {
           },
         });
 
-        newlyUnlocked.push({
-          id: trophyRecord.id,
-          code: definition.code,
-          name: definition.name,
-          description: definition.description || '',
-          tier: definition.tier,
-          icon: definition.icon,
-          rarity: definition.rarity,
-          unlocked: true,
-          unlockedAt: new Date().toISOString(),
-          progress: 100,
-        });
+        newlyUnlocked.push(TrophyDto.fromEntity(trophyRecord, { unlockedAt: new Date(), progress: 100 }));
       }
     }
 
@@ -157,8 +165,8 @@ export class TrophyService implements OnModuleInit {
           `User ${payload.userEmail} unlocked ${unlocked.length} new trophies.`,
         );
       }
-    } catch (err: any) {
-      this.logger.error(`Error checking trophies on event: ${err.message}`);
+    } catch (err: unknown) {
+      this.logger.error(`Error checking trophies on event: ${err instanceof Error ? err.message : String(err)}`);
     }
   }
 
@@ -190,19 +198,7 @@ export class TrophyService implements OnModuleInit {
 
     const trophyDtos: TrophyDto[] = allTrophies.map((t) => {
       const userStatus = t.userTrophies[0];
-      return {
-        id: t.id,
-        code: t.code,
-        name: t.name,
-        description: t.description || '',
-        tier: t.tier as TrophyTier,
-        icon: t.icon,
-        rarity: t.rarity,
-        unlocked: !!userStatus?.unlockedAt,
-        unlockedAt: userStatus?.unlockedAt?.toISOString(),
-        progress: userStatus?.progress || 0,
-        criteria: t.criteria || undefined,
-      };
+      return TrophyDto.fromEntity(t, userStatus);
     });
 
     // Count by tier
@@ -298,19 +294,7 @@ export class TrophyService implements OnModuleInit {
     }
 
     const userStatus = trophy.userTrophies[0];
-    return {
-      id: trophy.id,
-      code: trophy.code,
-      name: trophy.name,
-      description: trophy.description || '',
-      tier: trophy.tier as TrophyTier,
-      icon: trophy.icon,
-      rarity: trophy.rarity,
-      unlocked: !!userStatus?.unlockedAt,
-      unlockedAt: userStatus?.unlockedAt?.toISOString(),
-      progress: userStatus?.progress || 0,
-      criteria: trophy.criteria || undefined,
-    };
+    return TrophyDto.fromEntity(trophy, userStatus);
   }
 
   /**
@@ -320,71 +304,12 @@ export class TrophyService implements OnModuleInit {
     code: string,
     context: TrophyEvaluationContext,
   ): Promise<boolean> {
-    const records = context.subjectRecords;
-    // EQUIVALENCIA counts the same as APROBADA for trophy purposes
-    const completedSubjects = records.filter(
-      (r) =>
-        r.status === SubjectStatus.APROBADA ||
-        r.status === SubjectStatus.REGULARIZADA ||
-        r.status === SubjectStatus.EQUIVALENCIA,
-    );
-    const completionPercentage =
-      context.totalSubjects > 0
-        ? (completedSubjects.length / context.totalSubjects) * 100
-        : 0;
-
-    // Define criteria evaluation
-    // Notas van de 0 a 10 (no de 0 a 100). Thresholds ajustados correctamente.
-    const passedRecords = records.filter(
-      (r) => r.status === SubjectStatus.APROBADA || r.status === SubjectStatus.EQUIVALENCIA,
-    );
-
-    const criteriaMap: Record<string, boolean> = {
-      // BRONZE
-      FIRST_SUBJECT_COMPLETED: completedSubjects.length >= 1,
-      PERFECT_SCORE_10: records.some((r) => r.finalGrade === 10),        // nota máxima = 10
-      TEN_SUBJECTS_PASSED: passedRecords.length >= 10,
-      YEAR_1_COMPLETION: this.checkYearCompletion(records, 1),
-      YEAR_2_COMPLETION: this.checkYearCompletion(records, 2),
-      DIFFICULT_SUBJECT_PASSED: passedRecords.some((r) => (r.difficulty ?? 0) >= 80),
-      HOURS_100_COMPLETED: this.checkHoursCompleted(records, 100),
-      CONSISTENCY_BRONZE: this.checkConsistency(records, 4),
-      AVERAGE_80_OVERALL: this.checkOverallAverage(records, 8),          // 8/10
-      SEMESTER_AVERAGE_NINE: this.checkSemesterAverageThreshold(records, 9), // 9/10
-      MIXED_STATUS_PASS: this.checkMixedStatus(records),
-      SUMMER_WARRIOR: this.checkSummerWarrior(records),
-      DIFFICULTY_RESEARCHER: records.filter((r) => r.difficulty !== null && r.difficulty !== undefined).length >= 5,
-      DIVERSIFIED_YEARS: this.checkDiversifiedYears(passedRecords),
-      ALL_OPTIONALS_COMPLETED: this.checkAllOptionalsCompleted(records),
-
-      // SILVER
-      HALFWAY_COMPLETION: completionPercentage >= 50,
-      INTERMEDIATE_DEGREE: this.checkIntermediateDegree(records),
-      CONSISTENCY_SILVER: this.checkConsistency(records, 8),
-      HIGH_DIFFICULTY_MASTERY: passedRecords.filter((r) => (r.difficulty ?? 0) >= 70).length >= 5,
-      QUICK_PROGRESS: this.checkQuickProgress(records),
-      EXCELLENCE_85_PLUS: this.checkOverallAverage(records, 8.5),        // 8.5/10
-      YEAR_3_COMPLETION: this.checkYearCompletion(records, 3),
-      GROWING_AVERAGE: this.checkGrowingAverage(records, 3),
-      HOURS_200_COMPLETED: this.checkHoursCompleted(records, 200),
-      ALL_ENGLISH_COMPLETED: this.checkAllEnglishCompleted(records),
-
-      // GOLD
-      YEAR_4_COMPLETION: this.checkYearCompletion(records, 4),
-      PERFECT_AVERAGE: this.checkOverallAverage(records, 9),             // 9/10
-      CONSISTENT_EXCELLENCE: this.checkConsistentExcellence(records),
-      CHALLENGE_ACCEPTED: passedRecords.filter((r) => (r.difficulty ?? 0) >= 70).length >= 10,
-      MARATHON_CHAMPION: this.checkHoursCompleted(records, 350),
-      CONSISTENCY_GOLD: this.checkConsistency(records, 12),
-      CAREER_COMPLETION: completionPercentage >= 100,
-
-      // PLATINUM
-      LEGEND:
-        completionPercentage >= 100 &&
-        this.checkOverallAverage(records, 9),                            // 9/10, no retake requirement
-    };
-
-    return criteriaMap[code] ?? false;
+    const evaluator = this.evaluators.find(e => e.supportedCodes.includes(code));
+    if (!evaluator) {
+      this.logger.warn(`No evaluator found for trophy ${code}`);
+      return false;
+    }
+    return evaluator.evaluate(code, context);
   }
 
   private async buildEvaluationContext(
@@ -424,369 +349,5 @@ export class TrophyService implements OnModuleInit {
       hasIntermediateDegree: records.some((record) => record.isIntermediate),
       subjectRecords: records,
     };
-  }
-
-  // Helper methods for complex criteria evaluation
-
-  private checkAllOptionalsCompleted(
-    records: AcademicRecordWithSubject[],
-  ): boolean {
-    const optionals = records.filter((r) => r.subject.isOptional);
-    const completedOptionals = optionals.filter(
-      (r) =>
-        r.status === SubjectStatus.APROBADA ||
-        r.status === SubjectStatus.REGULARIZADA,
-    );
-    return (
-      optionals.length > 0 && optionals.length === completedOptionals.length
-    );
-  }
-
-  /**
-   * Check if any semester average reaches the given threshold (1-10 scale)
-   */
-  private checkSemesterAverageThreshold(
-    records: AcademicRecordWithSubject[],
-    threshold: number,
-  ): boolean {
-    const semesterGroups = this.groupBySemester(records);
-    for (const semesterRecords of semesterGroups.values()) {
-      const grades = semesterRecords
-        .map((r) => r.finalGrade)
-        .filter((grade): grade is number => typeof grade === 'number');
-      if (grades.length === 0) continue;
-      const average = grades.reduce((sum, grade) => sum + grade, 0) / grades.length;
-      if (average >= threshold) return true;
-    }
-    return false;
-  }
-
-  /** @deprecated No failure tracking available. Left as stub for backward compat. */
-  private checkYearNoFailures(records: AcademicRecordWithSubject[]): boolean {
-    return false;
-  }
-
-  private checkConsistency(
-    records: AcademicRecordWithSubject[],
-    minSemesters: number,
-  ): boolean {
-    const semesterGroups = this.groupBySemester(records);
-    let count = 0;
-    for (const semesterRecords of semesterGroups.values()) {
-      if (semesterRecords.some((r) => this.isPassed(r))) {
-        count += 1;
-      }
-    }
-    return count >= minSemesters;
-  }
-
-  private checkOverallAverage(
-    records: AcademicRecordWithSubject[],
-    threshold: number, // escala 0-10
-  ): boolean {
-    const grades = records
-      .map((r) => r.finalGrade)
-      .filter((grade): grade is number => typeof grade === 'number' && grade > 0);
-    if (grades.length === 0) return false;
-    const average =
-      grades.reduce((sum, grade) => sum + grade, 0) / grades.length;
-    return average >= threshold;
-  }
-
-  private checkMixedStatus(records: AcademicRecordWithSubject[]): boolean {
-    const hasRegularized = records.some(
-      (r) => r.status === SubjectStatus.REGULARIZADA,
-    );
-    const hasFinal = records.some((r) => r.status === SubjectStatus.APROBADA);
-    return hasRegularized && hasFinal;
-  }
-
-  private checkHoursCompleted(
-    records: AcademicRecordWithSubject[],
-    minHours: number,
-  ): boolean {
-    const completed = records
-      .filter(
-        (r) =>
-          r.status === SubjectStatus.APROBADA ||
-          r.status === SubjectStatus.REGULARIZADA,
-      )
-      .reduce((sum, r) => sum + (r.subject.hours || 0), 0);
-    return completed >= minHours;
-  }
-
-  private checkConsecutiveCleanSemesters(
-    records: AcademicRecordWithSubject[],
-    minSemesters: number,
-  ): boolean {
-    const semesterGroups = this.groupBySemester(records);
-    const semesters = Array.from(semesterGroups.entries())
-      .map(([key, value]) => ({ key, value }))
-      .sort((a, b) => this.semesterIndex(a.key) - this.semesterIndex(b.key));
-
-    let streak = 0;
-    let lastIndex: number | null = null;
-    for (const { key, value } of semesters) {
-      const isClean = value.length > 0 && value.every((r) => this.isPassed(r));
-      const index = this.semesterIndex(key);
-      if (isClean && (lastIndex === null || index === lastIndex + 1)) {
-        streak += 1;
-      } else if (isClean) {
-        streak = 1;
-      } else {
-        streak = 0;
-      }
-      lastIndex = isClean ? index : lastIndex;
-
-      if (streak >= minSemesters) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  private checkIntermediateDegree(
-    records: AcademicRecordWithSubject[],
-  ): boolean {
-    return records.some((r) => r.isIntermediate && this.isPassed(r));
-  }
-
-  private checkPerfectSemester(records: AcademicRecordWithSubject[]): boolean {
-    const semesterGroups = this.groupBySemester(records);
-    for (const semesterRecords of semesterGroups.values()) {
-      if (semesterRecords.length === 0) continue;
-      if (!semesterRecords.every((r) => this.isPassed(r))) continue;
-      const grades = semesterRecords
-        .map((r) => r.finalGrade)
-        .filter((grade): grade is number => typeof grade === 'number' && grade > 0);
-      if (grades.length === 0) continue;
-      const average =
-        grades.reduce((sum, grade) => sum + grade, 0) / grades.length;
-      if (average >= 9) { // 9/10 (notas van de 0 a 10)
-        return true;
-      }
-    }
-    return false;
-  }
-
-  private checkQuickProgress(records: AcademicRecordWithSubject[]): boolean {
-    const semesterGroups = this.groupBySemester(records);
-    for (const semesterRecords of semesterGroups.values()) {
-      const completedHours = semesterRecords
-        .filter((r) => this.isPassed(r))
-        .reduce((sum, r) => sum + (r.subject.hours || 0), 0);
-      if (completedHours >= 15) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  private checkConsistentExcellence(
-    records: AcademicRecordWithSubject[],
-  ): boolean {
-    const semesterGroups = this.groupBySemester(records);
-    const semesterAverages: number[] = [];
-
-    for (const semesterRecords of semesterGroups.values()) {
-      const grades = semesterRecords
-        .map((r) => r.finalGrade)
-        .filter((grade): grade is number => typeof grade === 'number' && grade > 0);
-      if (grades.length === 0) continue;
-      const average =
-        grades.reduce((sum, grade) => sum + grade, 0) / grades.length;
-      semesterAverages.push(average);
-    }
-
-    if (semesterAverages.length === 0) {
-      return false;
-    }
-
-    const excellentCount = semesterAverages.filter((avg) => avg >= 8.5).length; // 8.5/10
-    return excellentCount / semesterAverages.length >= 0.8;
-  }
-
-  private checkComebackPass(records: AcademicRecordWithSubject[]): boolean {
-    // Deprecated logic, simplified to checking if any difficult subject is passed as fallback
-    // But since we changed the trophy definition to YEAR_1_COMPLETION, we should check that instead
-    // However, the caller maps by code.
-    // If the code in DB matches the code in definitions, good.
-    return false;
-  }
-
-  private checkRetrySuccess(records: AcademicRecordWithSubject[]): boolean {
-    return false;
-  }
-
-  /**
-   * Helper: Check if record is passed
-   */
-  private isPassed(r: AcademicRecordWithSubject): boolean {
-    // EQUIVALENCIA también cuenta como aprobada para propósitos de trofeos
-    return r.status === SubjectStatus.APROBADA || r.status === SubjectStatus.EQUIVALENCIA;
-  }
-
-  /**
-   * Helper: Group records by semester (e.g., "1-1", "1-2")
-   */
-  private groupBySemester(
-    records: AcademicRecordWithSubject[],
-  ): Map<string, AcademicRecordWithSubject[]> {
-    const groups = new Map<string, AcademicRecordWithSubject[]>();
-    for (const r of records) {
-      // Assuming subject has semester field, default to 1 if not present (or use planCode if needed)
-      // We'll use year and semester from subject assuming they exist on the model
-      const semester = (r.subject as any).semester || 1;
-      const key = `${r.subject.year}-${semester}`;
-      if (!groups.has(key)) {
-        groups.set(key, []);
-      }
-      groups.get(key)!.push(r);
-    }
-    return groups;
-  }
-
-  /**
-   * Helper: Group records by year
-   */
-  private groupByYear(
-    records: AcademicRecordWithSubject[],
-  ): Map<number, AcademicRecordWithSubject[]> {
-    const groups = new Map<number, AcademicRecordWithSubject[]>();
-    for (const r of records) {
-      const key = r.subject.year;
-      if (!groups.has(key)) {
-        groups.set(key, []);
-      }
-      groups.get(key)!.push(r);
-    }
-    return groups;
-  }
-
-  /**
-   * Helper: Calculate sortable index from semester key "year-semester"
-   */
-  private semesterIndex(key: string): number {
-    const [year, semester] = key.split('-').map(Number);
-    return year * 10 + (semester || 0);
-  }
-
-  /**
-   * Check Early Bird: Pass a subject from a higher year while lower years are incomplete?
-   * Simplified: Pass a subject from year > 1.
-   */
-  private checkEarlyBird(records: AcademicRecordWithSubject[]): boolean {
-    return records.some((r) => r.subject.year > 1 && this.isPassed(r));
-  }
-
-  /**
-   * Check Speed Runner: Complete all subjects in < 2.5 years from first passed subject
-   */
-  private checkSpeedRunner(
-    records: AcademicRecordWithSubject[],
-    completionPercentage: number,
-  ): boolean {
-    if (completionPercentage < 100) return false;
-
-    const passedDates = records
-      .filter((r) => this.isPassed(r) && r.updatedAt) // using updatedAt as proxy for passedAt if passedAt missing
-      .map((r) => new Date(r.updatedAt).getTime());
-
-    if (passedDates.length < 2) return false;
-
-    const start = Math.min(...passedDates);
-    const end = Math.max(...passedDates);
-    const years = (end - start) / (1000 * 60 * 60 * 24 * 365);
-
-    return years < 2.5;
-  }
-
-  /**
-   * Check SUMMER_WARRIOR: ≥1 subject approved in a summer semester (Q3)
-   */
-  private checkSummerWarrior(records: AcademicRecordWithSubject[]): boolean {
-    return records.some((r) => {
-      if (!this.isPassed(r) || !r.statusDate) return false;
-      const month = new Date(r.statusDate).getMonth() + 1; // 1-12
-      // December/January/February → summer in southern hemisphere
-      return month === 12 || month === 1 || month === 2;
-    });
-  }
-
-  /**
-   * Check DIVERSIFIED_YEARS: approvals across 4+ different plan years
-   */
-  private checkDiversifiedYears(passedRecords: AcademicRecordWithSubject[]): boolean {
-    const years = new Set(passedRecords.map((r) => r.subject.year));
-    return years.size >= 4;
-  }
-
-  /**
-   * Check GROWING_AVERAGE: rising semester average for N consecutive semesters
-   */
-  private checkGrowingAverage(
-    records: AcademicRecordWithSubject[],
-    minConsecutive: number,
-  ): boolean {
-    const semesterGroups = this.groupBySemester(records);
-    const sorted = Array.from(semesterGroups.entries())
-      .map(([key, recs]) => ({
-        index: this.semesterIndex(key),
-        avg: (() => {
-          const grades = recs
-            .map((r) => r.finalGrade)
-            .filter((g): g is number => typeof g === 'number' && g > 0);
-          return grades.length > 0 ? grades.reduce((a, b) => a + b, 0) / grades.length : null;
-        })(),
-      }))
-      .filter((s) => s.avg !== null)
-      .sort((a, b) => a.index - b.index);
-
-    let streak = 1;
-    for (let i = 1; i < sorted.length; i++) {
-      if (sorted[i].avg! > sorted[i - 1].avg!) {
-        streak++;
-        if (streak >= minConsecutive) return true;
-      } else {
-        streak = 1;
-      }
-    }
-    return false;
-  }
-
-  /**
-   * Check ALL_ENGLISH_COMPLETED: all 4 English Transversal subjects approved
-   */
-  private checkAllEnglishCompleted(records: AcademicRecordWithSubject[]): boolean {
-    const ENGLISH_CODES = ['901', '902', '903', '904'];
-    return ENGLISH_CODES.every((code) =>
-      records.some((r) => r.subject.planCode === code && this.isPassed(r)),
-    );
-  }
-
-  private checkYearCompletion(
-    records: AcademicRecordWithSubject[],
-    year: number,
-  ): boolean {
-    const yearSubjects = records.filter((r) => r.subject.year === year);
-    if (yearSubjects.length === 0) return false;
-
-    // We need to know TOTAL subjects for that year to be sure we completed ALL.
-    // The records only show what the user has interacted with (or seeded).
-    // If we assume records contains all subjects because of seed, then:
-    // But records are usually user's interaction.
-    // Wait, the context has 'totalSubjects' but not by year.
-    // Ideally we'd need to query all subjects of that year.
-    // For simplicity, we can check if all records OF THAT YEAR that exist are passed?
-    // No, that's cheating if they haven't started one.
-    // We should assume 'records' contains the user's progress.
-    // If the system seeds all subjects as PENDING for a new user, then records contains all.
-    // Let's assume the user has records for all subjects (seeded).
-    // If not, we might need a better check.
-
-    // Let's check the implementation of seed.
-    // Assuming records contains all subjects in the plan:
-    return yearSubjects.every((r) => this.isPassed(r));
   }
 }

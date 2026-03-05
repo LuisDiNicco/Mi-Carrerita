@@ -7,6 +7,13 @@ import {
   Logger,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
+import {
+  DomainError,
+  EntityNotFoundError,
+  InvalidInputError,
+  ConflictError,
+  BusinessRuleViolationError,
+} from '../errors/domain-errors';
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
@@ -17,15 +24,20 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
 
-    const status =
-      exception instanceof HttpException
-        ? exception.getStatus()
-        : HttpStatus.INTERNAL_SERVER_ERROR;
+    let status = HttpStatus.INTERNAL_SERVER_ERROR;
+    let message: string | object = 'Internal Server Error';
 
-    const message =
-      exception instanceof HttpException
-        ? exception.getResponse()
-        : 'Internal Server Error';
+    if (exception instanceof HttpException) {
+      status = exception.getStatus();
+      message = exception.getResponse();
+    } else if (exception instanceof DomainError) {
+      message = exception.message;
+      if (exception instanceof EntityNotFoundError) status = HttpStatus.NOT_FOUND;
+      else if (exception instanceof InvalidInputError) status = HttpStatus.BAD_REQUEST;
+      else if (exception instanceof ConflictError) status = HttpStatus.CONFLICT;
+      else if (exception instanceof BusinessRuleViolationError) status = HttpStatus.UNPROCESSABLE_ENTITY;
+      else status = HttpStatus.BAD_REQUEST;
+    }
 
     // Logueamos el error real en el servidor para debugging
     this.logger.error(

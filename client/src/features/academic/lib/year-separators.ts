@@ -1,4 +1,4 @@
-import type { Node } from "@xyflow/react";
+﻿import type { Node } from "@xyflow/react";
 import type { Subject } from "../../../shared/types/academic";
 import { GRAPH_LAYOUT } from "./graph-layout";
 import { getYearLabel, groupSubjectsByYear } from "./year-utils";
@@ -57,3 +57,4 @@ export function buildYearSeparatorNodes(
     ];
   });
 }
+

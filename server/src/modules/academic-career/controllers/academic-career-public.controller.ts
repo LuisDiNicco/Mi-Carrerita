@@ -1,8 +1,9 @@
 import { Controller, Get } from '@nestjs/common';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {  ApiOperation, ApiResponse , ApiTags } from '@nestjs/swagger';
 import { AcademicCareerService } from '../services/academic-career.service';
 import { SubjectNodeDto } from '../dto/subject-node.dto';
 
+@ApiTags('Academic Career Public')
 @Controller('academic-career')
 export class AcademicCareerPublicController {
   constructor(private readonly academicCareerService: AcademicCareerService) {}

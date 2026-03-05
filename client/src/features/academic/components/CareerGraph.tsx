@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+﻿import { useMemo, useState } from 'react';
 import {
   ReactFlow,
   Background,
@@ -307,7 +307,7 @@ export const CareerGraph = ({ progress, stats }: CareerGraphProps) => {
                     title={showCriticalPath ? UI_LABELS.criticalOn : UI_LABELS.criticalOff}
                   >
                     <AlertTriangle size={14} className={showCriticalPath ? "animate-pulse" : ""} />
-                    <span>{showCriticalPath ? 'Ruta Crítica' : 'Ruta Crítica'}</span>
+                    <span>{showCriticalPath ? 'Ruta Crí­tica' : 'Ruta Crí­tica'}</span>
                   </button>
 
                   <button
@@ -336,3 +336,4 @@ export const CareerGraph = ({ progress, stats }: CareerGraphProps) => {
     </div>
   );
 };
+

@@ -1,4 +1,12 @@
-import { useState, memo } from 'react';
+﻿import { useState, memo } from 'react';
+import { Lock, BookOpen, PenTool, CheckCircle, GraduationCap, ShieldCheck, AlertTriangle } from 'lucide-react';
+import {
+  NODE_LAYOUT,
+  NODE_TYPOGRAPHY,
+  NODE_EFFECTS,
+  STATUS_UI_STYLES,
+  TOOLTIP_STYLES
+} from '../../../styles/design-constants';
 import { Handle, Position } from '@xyflow/react';
 import type { Node, NodeProps } from '@xyflow/react';
 import { SubjectStatus } from '../../../shared/types/academic';
@@ -19,79 +27,54 @@ type SubjectNodeData = {
 
 export type SubjectNodeType = Node<SubjectNodeData, 'subject'>;
 
-const STATUS_STYLES: Record<SubjectStatus, {
-  container: string;
-  badge: string;
-  emoji: string;
-  border: string;
-}> = {
+const STATUS_STYLES_WITH_ICONS = {
   [SubjectStatus.EQUIVALENCIA]: {
-    container: 'bg-[#B084CC] text-[#291736]',
-    badge: 'bg-[#8F66A8] border-[#6D4284] text-white',
-    emoji: '🤝',
-    border: 'border-[#6D4284]',
+    ...STATUS_UI_STYLES[SubjectStatus.EQUIVALENCIA],
+    icon: <ShieldCheck size={36} strokeWidth={2.5} />,
   },
   [SubjectStatus.PENDIENTE]: {
-    container: 'bg-[#353C35] text-[#C5D2C5]',
-    badge: 'bg-[#3E4A3E] border-[#2A342A] text-[#E8F2E8]',
-    emoji: '🔒',
-    border: 'border-[#2A342A]',
+    ...STATUS_UI_STYLES[SubjectStatus.PENDIENTE],
+    icon: <Lock size={36} strokeWidth={2.5} />,
   },
   [SubjectStatus.DISPONIBLE]: {
-    container: 'bg-[#F7E8A3] text-[#2E3436]',
-    badge: 'bg-[#E4C96A] border-[#C4A85B] text-[#2E3436]',
-    emoji: '🎯',
-    border: 'border-[#C4A85B]',
+    ...STATUS_UI_STYLES[SubjectStatus.DISPONIBLE],
+    icon: <BookOpen size={36} strokeWidth={2.5} />,
   },
   [SubjectStatus.EN_CURSO]: {
-    container: 'bg-[#8FB5DD] text-[#1C2B3A]',
-    badge: 'bg-[#5F89BF] border-[#3F6FA2] text-white',
-    emoji: '📚',
-    border: 'border-[#3F6FA2]',
+    ...STATUS_UI_STYLES[SubjectStatus.EN_CURSO],
+    icon: <PenTool size={36} strokeWidth={2.5} />,
   },
   [SubjectStatus.REGULARIZADA]: {
-    container: 'bg-[#B4E6A6] text-[#1F2A1F]',
-    badge: 'bg-[#6BBE6E] border-[#4F9C52] text-white',
-    emoji: '✅',
-    border: 'border-[#4F9C52]',
+    ...STATUS_UI_STYLES[SubjectStatus.REGULARIZADA],
+    icon: <CheckCircle size={36} strokeWidth={2.5} />,
   },
   [SubjectStatus.APROBADA]: {
-    container: 'bg-[#7BCB7A] text-[#0B2A14] font-bold',
-    badge: 'bg-[#4FAE59] border-[#2E7D4D] text-[#0B2A14]',
-    emoji: '🏆',
-    border: 'border-[#2E7D4D]',
+    ...STATUS_UI_STYLES[SubjectStatus.APROBADA],
+    icon: <GraduationCap size={36} strokeWidth={2.5} />,
   },
   [SubjectStatus.RECURSADA]: {
-    container: 'bg-[#E57373] text-[#2C0B0E]',
-    badge: 'bg-[#EF5350] border-[#B71C1C] text-[#2C0B0E]',
-    emoji: '⚠️',
-    border: 'border-[#B71C1C]',
+    ...STATUS_UI_STYLES[SubjectStatus.RECURSADA],
+    icon: <AlertTriangle size={36} strokeWidth={2.5} />,
   },
 };
-
-const NODE_WIDTH_PX = 280;
-const SUBJECT_NAME_MAX = 48;
-const TITLE_CLASS = 'text-xl leading-tight';
-const META_CLASS = 'text-lg';
-const BADGE_CLASS = 'text-base';
 
 const SubjectNodeComponent = ({ data, selected }: NodeProps<SubjectNodeType>) => {
   const subject = data.subject;
   const [isHovered, setIsHovered] = useState(false);
 
   if (!subject) {
-    return <div className="p-4 bg-red-500 text-white">ERROR: Materia no encontrada</div>;
+    return <div className="p-4 bg-destructive text-white">ERROR: Materia no encontrada</div>;
   }
 
-  const statusConfig = STATUS_STYLES[subject.status];
-  const emoji = statusConfig.emoji;
+  const statusConfig = STATUS_STYLES_WITH_ICONS[subject.status];
+  const renderedIcon = statusConfig.icon;
   const isCritical = Boolean(data.isCritical);
   const isRecentlyUpdated = Boolean(data.isRecentlyUpdated);
   const isFocused = Boolean(data.isFocused);
-  const isPrerequisite = Boolean((data as any).isPrerequisite);
-  const isFullUnlock = Boolean((data as any).isFullUnlock);
-  const isPartialUnlock = Boolean((data as any).isPartialUnlock);
-  const isHoveredNode = Boolean((data as any).isHoveredNode);
+  const isPrerequisite = Boolean((data as Record<string, unknown>).isPrerequisite);
+  const isFullUnlock = Boolean((data as Record<string, unknown>).isFullUnlock);
+  const isPartialUnlock = Boolean((data as Record<string, unknown>).isPartialUnlock);
+  const isHoveredNode = Boolean((data as Record<string, unknown>).isHoveredNode);
   const isHighlighted = isPrerequisite || isFullUnlock || isPartialUnlock || isHoveredNode;
 
   // The tooltip scale scales naturally with the node.
@@ -104,7 +87,7 @@ const SubjectNodeComponent = ({ data, selected }: NodeProps<SubjectNodeType>) =>
       )}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      style={{ imageRendering: 'pixelated', width: NODE_WIDTH_PX }}
+      style={{ imageRendering: 'pixelated', width: NODE_LAYOUT.WIDTH_PX }}
     >
       <Handle
         type="target"
@@ -122,23 +105,23 @@ const SubjectNodeComponent = ({ data, selected }: NodeProps<SubjectNodeType>) =>
           isHovered && 'shadow-soft translate-x-[2px] translate-y-[2px]',
           statusConfig.container,
           statusConfig.border,
-          isCritical && 'border-red-400 critical-glow',
-          isFocused && 'ring-4 ring-red-400/60',
+          isCritical && 'border-destructive critical-glow',
+          isFocused && 'ring-4 ring-destructive/60',
           subject.status === SubjectStatus.PENDIENTE && !isHighlighted && 'opacity-60',
           subject.status === SubjectStatus.DISPONIBLE && 'ring-2 ring-yellow-300/40',
           subject.status === SubjectStatus.APROBADA && 'ring-2 ring-green-300/40',
           subject.status === SubjectStatus.EQUIVALENCIA && 'ring-2 ring-purple-300/40',
           isRecentlyUpdated && 'subject-update-flash subject-update-fill',
           // Hover highlights override all other rings
-          isHoveredNode && 'ring-4 ring-white/80 scale-105 z-50 shadow-lg',
-          isPrerequisite && '!ring-4 !ring-orange-400/90 opacity-100',
-          isFullUnlock && '!ring-4 !ring-green-400/90 opacity-100',
-          isPartialUnlock && '!ring-4 !ring-yellow-300/90 opacity-90',
+          isHoveredNode && NODE_EFFECTS.HOVERED_NODE,
+          isPrerequisite && NODE_EFFECTS.PREREQUISITE,
+          isFullUnlock && NODE_EFFECTS.FULL_UNLOCK,
+          isPartialUnlock && NODE_EFFECTS.PARTIAL_UNLOCK,
         )}
       >
         <div className="flex items-center justify-between mb-2">
           <span className={cn(
-            BADGE_CLASS,
+            NODE_TYPOGRAPHY.BADGE_CLASS,
             'font-bold uppercase tracking-wider px-2 py-1 rounded',
             'border-2',
             statusConfig.badge
@@ -146,24 +129,24 @@ const SubjectNodeComponent = ({ data, selected }: NodeProps<SubjectNodeType>) =>
             {subject.planCode}
           </span>
 
-          <span className="text-4xl" role="img" aria-label={subject.status}>
-            {emoji}
-          </span>
+          <div className="text-4xl" role="img" aria-label={subject.status}>
+            {renderedIcon}
+          </div>
         </div>
 
         <h3 className={cn(
-          TITLE_CLASS,
+          NODE_TYPOGRAPHY.TITLE_CLASS,
           'mb-3 min-h-[56px]',
           'flex items-center justify-center',
           subject.status === SubjectStatus.APROBADA && 'text-[#0B2A14]',
           subject.status === SubjectStatus.EQUIVALENCIA && 'text-[#291736]'
         )}>
-          {truncateSubjectName(subject.name, SUBJECT_NAME_MAX)}
+          {truncateSubjectName(subject.name, NODE_LAYOUT.SUBJECT_NAME_MAX)}
         </h3>
 
-        <div className={cn('flex items-center justify-between mt-3 pt-2 border-t-2 border-current/30', META_CLASS)}>
+        <div className={cn('flex items-center justify-between mt-3 pt-2 border-t-2 border-current/30', NODE_TYPOGRAPHY.META_CLASS)}>
           <div className="flex items-center gap-1">
-            <span>⭐</span>
+            <span>Hs</span>
             <span>{subject.hours || 0}</span>
           </div>
 
@@ -179,17 +162,17 @@ const SubjectNodeComponent = ({ data, selected }: NodeProps<SubjectNodeType>) =>
         </div>
 
         {isHovered && (
-          <div className="absolute -top-14 left-1/2 -translate-x-1/2 z-50 origin-bottom
-                          bg-[#1C2B1F] text-white px-4 py-2 rounded-lg
-                          border-2 border-app
+          <div className={`absolute -top-14 left-1/2 -translate-x-1/2 z-50 origin-bottom
+                          ${TOOLTIP_STYLES.BACKGROUND} ${TOOLTIP_STYLES.TEXT} px-4 py-2 rounded-lg
+                          border-2 ${TOOLTIP_STYLES.BORDER}
                           whitespace-nowrap font-bold
                           shadow-lg tracking-wide
-                          animate-[fadeIn_0.2s_ease-out]"
+                          animate-[fadeIn_0.2s_ease-out]`}
             style={{ transform: `translateX(-50%)` }}>
             {getTooltipText(subject)}
-            <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2
-                            w-3 h-3 bg-[#1C2B1F] border-r-2 border-b-2 border-app
-                            rotate-45" />
+            <div className={`absolute -bottom-1.5 left-1/2 -translate-x-1/2
+                            w-3 h-3 ${TOOLTIP_STYLES.BACKGROUND} border-r-2 border-b-2 ${TOOLTIP_STYLES.BORDER}
+                            rotate-45`} />
           </div>
         )}
       </div>
@@ -221,10 +204,10 @@ export const SubjectNode = memo(SubjectNodeComponent, (prevProps, nextProps) => 
     prevProps.data.isFocused === nextProps.data.isFocused &&
     prevProps.data.subject.status === nextProps.data.subject.status &&
     prevProps.data.subject.grade === nextProps.data.subject.grade &&
-    (prevProps.data as any).isPrerequisite === (nextProps.data as any).isPrerequisite &&
-    (prevProps.data as any).isFullUnlock === (nextProps.data as any).isFullUnlock &&
-    (prevProps.data as any).isPartialUnlock === (nextProps.data as any).isPartialUnlock &&
-    (prevProps.data as any).isHoveredNode === (nextProps.data as any).isHoveredNode
+    (prevProps.data as Record<string, unknown>).isPrerequisite === (nextProps.data as Record<string, unknown>).isPrerequisite &&
+    (prevProps.data as Record<string, unknown>).isFullUnlock === (nextProps.data as Record<string, unknown>).isFullUnlock &&
+    (prevProps.data as Record<string, unknown>).isPartialUnlock === (nextProps.data as Record<string, unknown>).isPartialUnlock &&
+    (prevProps.data as Record<string, unknown>).isHoveredNode === (nextProps.data as Record<string, unknown>).isHoveredNode
   );
 });
 
@@ -241,3 +224,4 @@ function getTooltipText(subject: Subject): string {
 
   return statusMessages[subject.status as keyof typeof statusMessages] || subject.name;
 }
+

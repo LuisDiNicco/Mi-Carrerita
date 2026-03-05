@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+﻿import { useMemo, useState } from 'react';
 import {
   ResponsiveContainer,
   PieChart,
@@ -16,6 +16,7 @@ import {
   LineChart,
   Line,
 } from 'recharts';
+import { CheckCircle } from 'lucide-react';
 import { useAcademicStore } from '../academic/store/academic-store';
 import { SubjectStatus } from '../../shared/types/academic';
 import { calculateDashboardData } from './lib/dashboard-logic';
@@ -99,7 +100,9 @@ export const Dashboard = () => {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h2 className="text-3xl font-jersey text-app uppercase">Dashboard</h2>
-          <p className="text-muted text-sm">Análisis en tiempo real de tu progreso académico.</p>
+          <p className="text-muted text-sm">
+            Análisis en tiempo real de tu progreso académico.
+          </p>
         </div>
 
         <div className="flex items-center gap-2 bg-elevated p-1 rounded-lg border border-app shadow-subtle">
@@ -115,7 +118,7 @@ export const Dashboard = () => {
           <button
             onClick={() => setScope('INTERMEDIATE')}
             className={`px-4 py-1.5 rounded-md text-sm font-bold transition-all ${scope === 'INTERMEDIATE'
-              ? 'bg-blue-500 text-white shadow-sm scale-105'
+              ? 'bg-primary text-white shadow-sm scale-105'
               : 'text-muted hover:text-app'
               }`}
           >
@@ -130,7 +133,9 @@ export const Dashboard = () => {
           <h3 className="text-xl font-jersey tracking-wide text-app uppercase flex items-center gap-2">
             <span className="text-unlam-500">#</span> Resumen General
           </h3>
-          <p className="text-sm text-muted">Métricas clave sobre el estado actual de la cursada.</p>
+          <p className="text-sm text-muted">
+            Métricas clave sobre el estado actual de la cursada.
+          </p>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -186,7 +191,9 @@ export const Dashboard = () => {
             <h3 className="text-xl font-jersey tracking-wide text-app uppercase flex items-center gap-2">
               <span className="text-unlam-500">#</span> Análisis de Progreso
             </h3>
-            <p className="text-sm text-muted">Mide tu velocidad de avance académico y carga por año del plan.</p>
+            <p className="text-sm text-muted">
+              Mide tu velocidad de avance académico y carga por aío del plan.
+            </p>
           </div>
         </div>
 
@@ -206,7 +213,7 @@ export const Dashboard = () => {
                     stroke="var(--app-muted)"
                     tick={{ fontSize: 10 }}
                     tickMargin={10}
-                    label={{ value: 'Período (Año-Cuatrimestre)', position: 'insideBottom', offset: -15, fill: 'var(--app-muted)', fontSize: 11 }}
+                    label={{ value: 'Período (Aío-Cuatrimestre)', position: 'insideBottom', offset: -15, fill: 'var(--app-muted)', fontSize: 11 }}
                   />
                   <YAxis
                     domain={[0, 100]}
@@ -234,9 +241,9 @@ export const Dashboard = () => {
 
           {/* Progress By Year Chart */}
           <div className="rounded-2xl border border-app bg-elevated p-5 shadow-subtle hover:shadow-md transition-shadow">
-            <h4 className="text-lg font-bold text-app mb-1">Avance por Año del Plan</h4>
+            <h4 className="text-lg font-bold text-app mb-1">Avance por Aío del Plan</h4>
             <p className="text-xs text-muted mb-6 h-8">
-              Muestra cuántas materias aprobadas tenés sobre el total de materias que conforman cada año del plan.
+              Muestra cuántas materias aprobadas tenés sobre el total de materias que conforman cada aío del plan.
             </p>
             <div style={{ height: CHART_HEIGHTS.line }}>
               <ResponsiveContainer width="100%" height="100%">
@@ -253,7 +260,7 @@ export const Dashboard = () => {
                     stroke="var(--app-muted)"
                     tick={{ fontSize: 10 }}
                     tickMargin={10}
-                    label={{ value: 'Año del Plan de Estudios', position: 'insideBottom', offset: -15, fill: 'var(--app-muted)', fontSize: 11 }}
+                    label={{ value: 'Aío del Plan de Estudios', position: 'insideBottom', offset: -15, fill: 'var(--app-muted)', fontSize: 11 }}
                   />
                   <YAxis
                     domain={[0, 100]}
@@ -270,7 +277,7 @@ export const Dashboard = () => {
                     stroke={CHART_COLORS.inProgress}
                     fillOpacity={1}
                     fill="url(#colorYear)"
-                    name="% Completado del Año"
+                    name="% Completado del Aío"
                     strokeWidth={2}
                   />
                 </AreaChart>
@@ -363,14 +370,14 @@ export const Dashboard = () => {
                     cursor={{ strokeDasharray: '3 3' }}
                     content={({ payload }) => {
                       if (payload && payload.length) {
-                        const data = payload[0].payload as any;
+                        const data = payload[0].payload as Record<string, unknown>;
                         return (
                           <div className="bg-surface border border-app p-3 rounded-lg shadow-lg text-xs z-50">
-                            <p className="font-bold text-app mb-1 text-sm">{data.subjectName}</p>
+                            <p className="font-bold text-app mb-1 text-sm">{String(data.subjectName)}</p>
                             <div className="space-y-1 text-muted">
-                              <p>Dificultad: <span className="text-app">{data.userPerceivedDifficulty}</span></p>
-                              <p>Nota: <span className="text-app">{data.actualGrade}</span></p>
-                              <p>Año: <span className="text-app">{data.year}</span></p>
+                              <p>Dificultad: <span className="text-app">{String(data.userPerceivedDifficulty)}</span></p>
+                              <p>Nota: <span className="text-app">{String(data.actualGrade)}</span></p>
+                              <p>Aío: <span className="text-app">{String(data.year)}</span></p>
                             </div>
                           </div>
                         );
@@ -466,7 +473,7 @@ export const Dashboard = () => {
                 <p className="text-sm text-muted mb-1 font-bold">Restarían aproximadamente</p>
                 <p className="text-5xl font-bold text-app font-jersey text-shadow mt-2 mb-2 tracking-wide">{projection.semesters}</p>
                 <p className="text-sm font-bold text-unlam-500 uppercase tracking-widest mt-1">Cuatrimestres</p>
-                <p className="text-xs text-muted mt-2 block font-mono">({(projection.semesters / 2).toFixed(1)} años de cursada regular)</p>
+                <p className="text-xs text-muted mt-2 block font-mono">({(projection.semesters / 2).toFixed(1)} aíos de cursada regular)</p>
               </div>
 
               {/* How the projection is calculated */}
@@ -475,6 +482,8 @@ export const Dashboard = () => {
                 <p className="text-xs text-muted leading-relaxed">
                   <span className="text-app font-semibold">{projection.remaining} materias restantes</span> ÷{' '}
                   <span className="text-unlam-500 font-semibold">{targetLoad} por cuatrimestre</span> (objetivo del slider).
+                </p>
+                <p className="text-xs text-muted leading-relaxed">
                   Es una estimación lineal y no contempla correlatividades ni oferta de materias.
                 </p>
                 {projection.quartersWithData > 0 && (
@@ -486,8 +495,8 @@ export const Dashboard = () => {
                     </span>
                     <span className="text-muted"> en {projection.quartersWithData} cuatrimestres cursados</span>
                     {projection.historicalPace >= targetLoad
-                      ? <span className="text-green-400"> — superás el objetivo ✓</span>
-                      : <span className="text-yellow-400"> — por debajo del objetivo</span>
+                      ? <span className="text-green-400 flex items-center gap-1"> - superás el objetivo <CheckCircle size={14} /></span>
+                      : <span className="text-yellow-400 flex items-center gap-1"> - por debajo del objetivo</span>
                     }
                   </p>
                 )}
@@ -500,3 +509,4 @@ export const Dashboard = () => {
     </div>
   );
 };
+

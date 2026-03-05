@@ -1,11 +1,11 @@
-import { create } from "zustand";
+﻿import { create } from "zustand";
 import type { Subject } from "../../../shared/types/academic";
 import { SubjectStatus } from "../../../shared/types/academic";
 
 const ACADEMIC_STORAGE_KEY = "mi-carrerita-academic-guest";
 
 // ---------------------------------------------------------------------------
-// Auth getter — injected from outside to avoid circular imports.
+// Auth getter €” injected from outside to avoid circular imports.
 // Defaults to "guest" so that if not configured the app is safe.
 // ---------------------------------------------------------------------------
 let _isGuestGetter: () => boolean = () => true;
@@ -131,7 +131,7 @@ export const useAcademicStore = create<AcademicState>((set, get) => ({
   },
 
   setSubjectsFromServer: (subjects) => {
-    // Server already resolved availability — no recalculation needed.
+    // Server already resolved availability €” no recalculation needed.
     // Never persists to sessionStorage (authenticated users rely on DB).
     set({ subjects });
   },
@@ -165,4 +165,5 @@ export const useAcademicStore = create<AcademicState>((set, get) => ({
     }
   },
 }));
+
 

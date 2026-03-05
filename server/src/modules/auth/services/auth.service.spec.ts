@@ -3,7 +3,11 @@ import { AuthService } from './auth.service';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { UnauthorizedException, BadRequestException, ConflictException } from '@nestjs/common';
+import {
+  UnauthorizedException,
+  BadRequestException,
+  ConflictException,
+} from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 
 jest.mock('bcryptjs', () => ({
@@ -32,20 +36,20 @@ describe('AuthService', () => {
   };
 
   const mockConfigService = {
-    get: jest.fn((key: string, defaultValue: any) => {
+    get: jest.fn((key: string, defaultValue: unknown) => {
       const config = {
         ACCESS_TOKEN_TTL: '15m',
         REFRESH_TOKEN_TTL: '7d',
         HASH_SALT: 10,
       };
-      return config[key] || defaultValue;
+      return (config as Record<string, string | number>)[key] || defaultValue;
     }),
     getOrThrow: jest.fn((key: string) => {
       const config = {
         JWT_SECRET: 'secret',
         JWT_REFRESH_SECRET: 'refresh-secret',
       };
-      return config[key];
+      return (config as Record<string, string>)[key];
     }),
   };
 
@@ -70,7 +74,7 @@ describe('AuthService', () => {
   });
 
   describe('validateGoogleUser', () => {
-    it('debería hacer upsert del usuario de Google', async () => {
+    it('deberña hacer upsert del usuario de Google', async () => {
       const profile = { googleId: '123', email: 'test@test.com', name: 'Test' };
       mockPrismaService.user.upsert.mockResolvedValue({ id: 'u1', ...profile });
 
@@ -95,7 +99,7 @@ describe('AuthService', () => {
   });
 
   describe('issueTokens', () => {
-    it('debería generar y devolver tokens y hashear el refreshToken', async () => {
+    it('deberña generar y devolver tokens y hashear el refreshToken', async () => {
       const user = { id: 'u1', email: 't@t.com' };
       mockJwtService.sign
         .mockReturnValueOnce('access_token')
@@ -116,13 +120,13 @@ describe('AuthService', () => {
   });
 
   describe('refreshAccessToken', () => {
-    it('debería lanzar Unauthorized si no se provee refreshToken', async () => {
+    it('deberña lanzar Unauthorized si no se provee refreshToken', async () => {
       await expect(service.refreshAccessToken()).rejects.toThrow(
         UnauthorizedException,
       );
     });
 
-    it('debería lanzar Unauthorized si falla validacion JWT del refresh token', async () => {
+    it('deberña lanzar Unauthorized si falla validacion JWT del refresh token', async () => {
       mockJwtService.verify.mockImplementation(() => {
         throw new Error('Invalid');
       });
@@ -131,7 +135,7 @@ describe('AuthService', () => {
       );
     });
 
-    it('debería lanzar Unauthorized si el user no existe o no tiene refreshTokenHash', async () => {
+    it('deberña lanzar Unauthorized si el user no existe o no tiene refreshTokenHash', async () => {
       mockJwtService.verify.mockReturnValue({ sub: 'u1' });
       mockPrismaService.user.findUnique.mockResolvedValue(null);
       await expect(service.refreshAccessToken('token')).rejects.toThrow(
@@ -139,7 +143,7 @@ describe('AuthService', () => {
       );
     });
 
-    it('debería lanzar Unauthorized si el bcrypt compare falla', async () => {
+    it('deberña lanzar Unauthorized si el bcrypt compare falla', async () => {
       mockJwtService.verify.mockReturnValue({ sub: 'u1' });
       mockPrismaService.user.findUnique.mockResolvedValue({
         id: 'u1',
@@ -152,7 +156,7 @@ describe('AuthService', () => {
       );
     });
 
-    it('debería retornar nuevos access y refresh token si todo esta correcto', async () => {
+    it('deberña retornar nuevos access y refresh token si todo esta correcto', async () => {
       mockJwtService.verify.mockReturnValue({ sub: 'u1' });
       mockPrismaService.user.findUnique.mockResolvedValue({
         id: 'u1',
@@ -182,12 +186,12 @@ describe('AuthService', () => {
   });
 
   describe('revokeRefreshToken', () => {
-    it('no debería hacer nada si no se provee refresh token', async () => {
+    it('no deberña hacer nada si no se provee refresh token', async () => {
       await service.revokeRefreshToken();
       expect(mockJwtService.verify).not.toHaveBeenCalled();
     });
 
-    it('debería anular el token (setear null en user) de la DB', async () => {
+    it('deberña anular el token (setear null en user) de la DB', async () => {
       mockJwtService.verify.mockReturnValue({ sub: 'u1' });
       await service.revokeRefreshToken('token');
       expect(mockPrismaService.user.update).toHaveBeenCalledWith({
@@ -196,7 +200,7 @@ describe('AuthService', () => {
       });
     });
 
-    it('debería ignorar la devolucion (warn de logger) si verify falla en revocacion', async () => {
+    it('deberña ignorar la devolucion (warn de logger) si verify falla en revocacion', async () => {
       mockJwtService.verify.mockImplementation(() => {
         throw new Error('Bad token');
       });
@@ -205,9 +209,13 @@ describe('AuthService', () => {
   });
 
   describe('register', () => {
-    const validDto = { email: 'new@test.com', password: 'ValidPass1', name: 'Test' };
+    const validDto = {
+      email: 'new@test.com',
+      password: 'ValidPass1',
+      name: 'Test',
+    };
 
-    it('debería registrar un nuevo usuario exitosamente', async () => {
+    it('deberña registrar un nuevo usuario exitosamente', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
       mockPrismaService.user.create.mockResolvedValue({
         id: 'new-id',
@@ -223,44 +231,52 @@ describe('AuthService', () => {
       const result = await service.register(validDto);
 
       expect(mockPrismaService.user.create).toHaveBeenCalled();
-      expect(result.accessToken).toBeDefined();
+      expect(typeof result.accessToken).toBe('string');
       expect(result.user.email).toBe(validDto.email);
     });
 
-    it('debería lanzar ConflictException si el email ya existe', async () => {
+    it('deberña lanzar ConflictException si el email ya existe', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue({ id: 'existing' });
 
-      await expect(service.register(validDto)).rejects.toThrow('ya está registrado');
+      await expect(service.register(validDto)).rejects.toThrow(
+        'ya está registrado',
+      );
     });
 
-    it('debería lanzar BadRequestException si la contraseña es demasiado corta', async () => {
+    it('deberña lanzar BadRequestException si la contraseña es demasiado corta', async () => {
       await expect(
-        service.register({ email: 'x@x.com', password: 'Sh0rt' })
+        service.register({ email: 'x@x.com', password: 'Sh0rt' }),
       ).rejects.toThrow('8 caracteres');
     });
 
-    it('debería lanzar BadRequestException si falta mayúscula', async () => {
+    it('deberña lanzar BadRequestException si falta mayúscula', async () => {
       await expect(
-        service.register({ email: 'x@x.com', password: 'nouppercase1' })
+        service.register({ email: 'x@x.com', password: 'nouppercase1' }),
       ).rejects.toThrow('mayúscula');
     });
 
-    it('debería lanzar BadRequestException si falta minúscula', async () => {
+    it('deberña lanzar BadRequestException si falta minúscula', async () => {
       await expect(
-        service.register({ email: 'x@x.com', password: 'NOLOWERCASE1' })
+        service.register({ email: 'x@x.com', password: 'NOLOWERCASE1' }),
       ).rejects.toThrow('minúscula');
     });
 
-    it('debería lanzar BadRequestException si falta dígito', async () => {
+    it('deberña lanzar BadRequestException si falta dñgito', async () => {
       await expect(
-        service.register({ email: 'x@x.com', password: 'NoDigitPwd' })
-      ).rejects.toThrow('dígito');
+        service.register({ email: 'x@x.com', password: 'NoDigitPwd' }),
+      ).rejects.toThrow('dñgito');
     });
   });
 
   describe('login', () => {
-    it('debería autenticar un usuario correctamente', async () => {
-      const user = { id: 'u1', email: 'u@t.com', name: 'U', avatarUrl: null, passwordHash: 'hash' };
+    it('deberña autenticar un usuario correctamente', async () => {
+      const user = {
+        id: 'u1',
+        email: 'u@t.com',
+        name: 'U',
+        avatarUrl: null,
+        passwordHash: 'hash',
+      };
       mockPrismaService.user.findUnique.mockResolvedValue(user);
       (bcrypt.compare as jest.Mock).mockResolvedValue(true);
       mockJwtService.sign
@@ -268,38 +284,45 @@ describe('AuthService', () => {
         .mockReturnValueOnce('ref-tok');
       (bcrypt.hash as jest.Mock).mockResolvedValue('hashed-ref');
 
-      const result = await service.login({ email: 'u@t.com', password: 'Pass1' });
+      const result = await service.login({
+        email: 'u@t.com',
+        password: 'Pass1',
+      });
 
       expect(result.accessToken).toBe('acc-tok');
       expect(result.user.email).toBe('u@t.com');
     });
 
-    it('debería lanzar UnauthorizedException si el usuario no existe', async () => {
+    it('deberña lanzar UnauthorizedException si el usuario no existe', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
 
       await expect(
-        service.login({ email: 'noexist@t.com', password: 'Pass1' })
+        service.login({ email: 'noexist@t.com', password: 'Pass1' }),
       ).rejects.toThrow(UnauthorizedException);
     });
 
-    it('debería lanzar UnauthorizedException si el usuario no tiene passwordHash (solo Google)', async () => {
+    it('deberña lanzar UnauthorizedException si el usuario no tiene passwordHash (solo Google)', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue({
-        id: 'u2', email: 'g@t.com', passwordHash: null,
+        id: 'u2',
+        email: 'g@t.com',
+        passwordHash: null,
       });
 
       await expect(
-        service.login({ email: 'g@t.com', password: 'any' })
+        service.login({ email: 'g@t.com', password: 'any' }),
       ).rejects.toThrow(UnauthorizedException);
     });
 
-    it('debería lanzar UnauthorizedException si la contraseña es incorrecta', async () => {
+    it('deberña lanzar UnauthorizedException si la contraseña es incorrecta', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue({
-        id: 'u3', email: 'u@t.com', passwordHash: 'hash',
+        id: 'u3',
+        email: 'u@t.com',
+        passwordHash: 'hash',
       });
       (bcrypt.compare as jest.Mock).mockResolvedValue(false);
 
       await expect(
-        service.login({ email: 'u@t.com', password: 'WrongPass1' })
+        service.login({ email: 'u@t.com', password: 'WrongPass1' }),
       ).rejects.toThrow(UnauthorizedException);
     });
   });
@@ -308,9 +331,11 @@ describe('AuthService', () => {
     const userId = 'uid-1';
     const dto = { currentPassword: 'OldPass1', newPassword: 'NewPass1' };
 
-    it('debería cambiar la contraseña correctamente', async () => {
+    it('deberña cambiar la contraseña correctamente', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue({
-        id: userId, email: 'u@t.com', passwordHash: 'old-hash',
+        id: userId,
+        email: 'u@t.com',
+        passwordHash: 'old-hash',
       });
       (bcrypt.compare as jest.Mock).mockResolvedValue(true);
       (bcrypt.hash as jest.Mock).mockResolvedValue('new-hash');
@@ -318,29 +343,38 @@ describe('AuthService', () => {
       const result = await service.changePassword(userId, dto);
 
       expect(mockPrismaService.user.update).toHaveBeenCalledWith(
-        expect.objectContaining({ data: { passwordHash: 'new-hash' } })
+        expect.objectContaining({ data: { passwordHash: 'new-hash' } }),
       );
       expect(result.ok).toBe(true);
     });
 
-    it('debería lanzar UnauthorizedException si el usuario no existe', async () => {
+    it('deberña lanzar UnauthorizedException si el usuario no existe', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
 
-      await expect(service.changePassword(userId, dto)).rejects.toThrow(UnauthorizedException);
+      await expect(service.changePassword(userId, dto)).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
 
-    it('debería lanzar UnauthorizedException si la contraseña actual es incorrecta', async () => {
+    it('deberña lanzar UnauthorizedException si la contraseña actual es incorrecta', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue({
-        id: userId, email: 'u@t.com', passwordHash: 'hash',
+        id: userId,
+        email: 'u@t.com',
+        passwordHash: 'hash',
       });
       (bcrypt.compare as jest.Mock).mockResolvedValue(false);
 
-      await expect(service.changePassword(userId, dto)).rejects.toThrow(UnauthorizedException);
+      await expect(service.changePassword(userId, dto)).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
 
-    it('debería lanzar BadRequestException si la nueva contraseña no cumple los requisitos', async () => {
+    it('deberña lanzar BadRequestException si la nueva contraseña no cumple los requisitos', async () => {
       await expect(
-        service.changePassword(userId, { currentPassword: 'OldPass1', newPassword: 'weak' })
+        service.changePassword(userId, {
+          currentPassword: 'OldPass1',
+          newPassword: 'weak',
+        }),
       ).rejects.toThrow(BadRequestException);
     });
   });

@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+﻿import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { SubjectUpdatePanel } from './SubjectUpdatePanel';
 import { SubjectStatus } from '../../../shared/types/academic';
@@ -153,7 +153,7 @@ describe('SubjectUpdatePanel', () => {
 
         // The input should now show DD/MM/YYYY (the new user-facing format)
         // mockApprovedSubject has statusDate: '2023-12-10T00:00:00.000Z'
-        // fromISODate('2023-12-10') → '10/12/2023'
+        // fromISODate('2023-12-10') †’ '10/12/2023'
         const inputs = screen.getAllByRole('textbox');
         const dateInput = inputs.find(i => (i as HTMLInputElement).maxLength === 10) as HTMLInputElement;
         expect(dateInput.value).toBe('10/12/2023');
@@ -261,3 +261,4 @@ describe('SubjectUpdatePanel', () => {
         expect(await screen.findByText(errorMessage)).toBeInTheDocument();
     });
 });
+

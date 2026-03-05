@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+﻿import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { RetroCard, RetroLoading, RetroError, RetroBadge } from './RetroComponents';
 
@@ -123,3 +123,4 @@ describe('RetroBadge', () => {
     expect(badge).toHaveClass('extra-class');
   });
 });
+

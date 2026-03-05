@@ -8,7 +8,7 @@ import { TimePeriod } from '../../../common/constants/schedule-enums';
 
 describe('Schedule Helpers', () => {
   describe('isValidTimetable', () => {
-    it('debería ser válido para datos correctos', () => {
+    it('deberña ser válido para datos correctos', () => {
       const timetable = {
         subjectId: 'id1',
         subjectName: 'Matemáticas',
@@ -20,7 +20,7 @@ describe('Schedule Helpers', () => {
       expect(result.valid).toBe(true);
     });
 
-    it('debería ser válido para datos correctos', () => {
+    it('deberña ser válido para datos correctos', () => {
       const timetable: TimetableCheck = {
         subjectId: 'sub-1',
         subjectName: 'Test Subject',
@@ -31,7 +31,7 @@ describe('Schedule Helpers', () => {
       const result = isValidTimetable(timetable);
       expect(result.valid).toBe(true);
     });
-    it('debería ser inválido si falta información', () => {
+    it('deberña ser inválido si falta información', () => {
       const timetable = {
         subjectId: '',
         subjectName: '',
@@ -41,10 +41,10 @@ describe('Schedule Helpers', () => {
       };
       const result = isValidTimetable(timetable);
       expect(result.valid).toBe(false);
-      expect(result.error).toBeDefined();
+      expect(typeof result.error).toBe('string');
     });
 
-    it('debería ser inválido si dayOfWeek es incorrecto (boundaries)', () => {
+    it('deberña ser inválido si dayOfWeek es incorrecto (boundaries)', () => {
       const timetable = {
         subjectId: 'id1',
         subjectName: 'M',
@@ -55,7 +55,7 @@ describe('Schedule Helpers', () => {
       const result = isValidTimetable(timetable);
       expect(result.valid).toBe(false);
     });
-    it('debería ser inválido si dayOfWeek es incorrecto (boundaries)', () => {
+    it('deberña ser inválido si dayOfWeek es incorrecto (boundaries)', () => {
       const timetable: TimetableCheck = {
         subjectId: 'sub-1',
         subjectName: 'Test Subject',
@@ -86,7 +86,7 @@ describe('Schedule Helpers', () => {
       },
     ];
 
-    it('no debería detectar conflicto si es distinto día o turno', () => {
+    it('no deberña detectar conflicto si es distinto dña o turno', () => {
       const nuevo: TimetableCheck = {
         subjectId: 'id3',
         subjectName: 'Quimica',
@@ -98,7 +98,7 @@ describe('Schedule Helpers', () => {
       expect(conflicts.length).toBe(0);
     });
 
-    it('debería detectar conflicto si mismo dia y turno', () => {
+    it('deberña detectar conflicto si mismo dia y turno', () => {
       const nuevo: TimetableCheck = {
         subjectId: 'id3',
         subjectName: 'Quimica',
@@ -111,7 +111,7 @@ describe('Schedule Helpers', () => {
       expect(conflicts[0].subject1Id).toBe('id1'); // Mate
       expect(conflicts[0].subject2Id).toBe('id3'); // Quimica
     });
-    it('debería detectar conflicto si mismo dia y turno', () => {
+    it('deberña detectar conflicto si mismo dia y turno', () => {
       const existing = [
         {
           subjectId: 's1',
@@ -137,8 +137,8 @@ describe('Schedule Helpers', () => {
     });
   });
 
-  describe('detectConflicts (Múltiples Entradas al unísono)', () => {
-    it('no debería retornar vacío si todos están okay', () => {
+  describe('detectConflicts (Múltiples Entradas al unñsono)', () => {
+    it('no deberña retornar vacño si todos están okay', () => {
       const horarios: TimetableCheck[] = [
         {
           subjectId: '1',
@@ -164,7 +164,7 @@ describe('Schedule Helpers', () => {
       ];
       expect(detectConflicts(horarios).length).toBe(0);
     });
-    it('no debería detectar conflicto si es distinto día o turno', () => {
+    it('no deberña detectar conflicto si es distinto dña o turno', () => {
       const existing = [
         {
           subjectId: 's1',
@@ -186,7 +186,7 @@ describe('Schedule Helpers', () => {
       expect(conflicts).toHaveLength(0);
     });
 
-    it('debería identificar múltiples conflictos bidireccionales evitando duplicados exactos', () => {
+    it('deberña identificar múltiples conflictos bidireccionales evitando duplicados exactos', () => {
       const horarios: TimetableCheck[] = [
         {
           subjectId: '1',
@@ -213,7 +213,7 @@ describe('Schedule Helpers', () => {
       const conflicts = detectConflicts(horarios);
       expect(conflicts.length).toBe(3); // A-B, A-C, B-C
     });
-    it('debería identificar múltiples conflictos bidireccionales evitando duplicados exactos', () => {
+    it('deberña identificar múltiples conflictos bidireccionales evitando duplicados exactos', () => {
       const timetables = [
         {
           subjectId: 's1',

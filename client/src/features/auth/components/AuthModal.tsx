@@ -1,11 +1,11 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { useAuthStore } from '../store/auth-store';
 import { clearAccessToken } from '../lib/auth';
 import { registerUser, loginUser } from '../lib/api';
 import { useAcademicStore } from '../../academic/store/academic-store';
 import { migrateGuestProgressToAccount } from '../../academic/lib/academic-api';
 import { RetroButton } from '../../../shared/ui/RetroButton';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, X, AlertTriangle } from 'lucide-react';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -43,22 +43,22 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
     }
 
     if (trimmedPassword.length < 8) {
-      setError('La contraseña debe tener al menos 8 caracteres.');
+      setError('La contraseía debe tener al menos 8 caracteres.');
       return;
     }
 
     if (mode === 'register' && !/[A-Z]/.test(trimmedPassword)) {
-      setError('La contraseña debe incluir al menos una letra mayúscula.');
+      setError('La contraseía debe incluir al menos una letra mayúscula.');
       return;
     }
 
     if (mode === 'register' && !/[a-z]/.test(trimmedPassword)) {
-      setError('La contraseña debe incluir al menos una letra minúscula.');
+      setError('La contraseía debe incluir al menos una letra minúscula.');
       return;
     }
 
     if (mode === 'register' && !/\d/.test(trimmedPassword)) {
-      setError('La contraseña debe incluir al menos un número.');
+      setError('La contraseía debe incluir al menos un número.');
       return;
     }
 
@@ -73,14 +73,14 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
 
       const result = mode === 'register'
         ? await registerUser({
-            email: trimmedEmail,
-            password: trimmedPassword,
-            name: trimmedName || undefined,
-          })
+          email: trimmedEmail,
+          password: trimmedPassword,
+          name: trimmedName || undefined,
+        })
         : await loginUser({
-            email: trimmedEmail,
-            password: trimmedPassword,
-          });
+          email: trimmedEmail,
+          password: trimmedPassword,
+        });
 
       if (mode === 'register' && isGuest) {
         // Best-effort migration: if it fails, registration still completes.
@@ -101,7 +101,7 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
       const message = err instanceof Error
         ? err.message
         : mode === 'register'
-          ? 'No se pudo completar el registro. Intentá nuevamente.'
+          ? 'El correo ya se encuentra registrado.'
           : 'No se pudo iniciar sesión. Intentá nuevamente.';
       setError(message);
     } finally {
@@ -139,8 +139,8 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
           <h2 className="text-2xl font-bold text-app font-retro">
             {mode === 'login' ? 'Iniciar sesión' : 'Crear cuenta'}
           </h2>
-          <button className="text-muted" onClick={onClose}>
-            ✕
+          <button className="text-muted hover:text-app" onClick={onClose}>
+            <X size={24} />
           </button>
         </div>
 
@@ -169,21 +169,19 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
           <>
             <div className="mt-5 grid grid-cols-2 gap-2">
               <button
-                className={`rounded-lg border-2 py-2 text-sm font-bold transition-all ${
-                  mode === 'login'
-                    ? 'border-unlam-500 bg-unlam-500/20 text-app'
-                    : 'border-app-border text-muted hover:border-app'
-                }`}
+                className={`rounded-lg border-2 py-2 text-sm font-bold transition-all ${mode === 'login'
+                  ? 'border-unlam-500 bg-unlam-500/20 text-app'
+                  : 'border-app-border text-muted hover:border-app'
+                  }`}
                 onClick={() => setMode('login')}
               >
                 Iniciar sesión
               </button>
               <button
-                className={`rounded-lg border-2 py-2 text-sm font-bold transition-all ${
-                  mode === 'register'
-                    ? 'border-unlam-500 bg-unlam-500/20 text-app'
-                    : 'border-app-border text-muted hover:border-app'
-                }`}
+                className={`rounded-lg border-2 py-2 text-sm font-bold transition-all ${mode === 'register'
+                  ? 'border-unlam-500 bg-unlam-500/20 text-app'
+                  : 'border-app-border text-muted hover:border-app'
+                  }`}
                 onClick={() => setMode('register')}
               >
                 Registrarse
@@ -214,7 +212,7 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
                 />
               </label>
               <label className="flex flex-col gap-1 text-sm text-muted">
-                <span className="font-bold">Contraseña</span>
+                <span className="font-bold">Contraseía</span>
                 <div className="relative">
                   <input
                     type={showPassword ? 'text' : 'password'}
@@ -227,7 +225,7 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
                     type="button"
                     className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-muted hover:text-app"
                     onClick={() => setShowPassword((prev) => !prev)}
-                    title={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                    title={showPassword ? 'Ocultar contraseía' : 'Mostrar contraseía'}
                   >
                     {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
@@ -241,8 +239,8 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
             </div>
 
             {error && (
-              <div className="mt-4 p-3 bg-red-500/10 border-2 border-red-500/30 rounded-lg">
-                <p className="text-sm text-red-400 font-bold">⛔ {error}</p>
+              <div className="mt-4 p-3 bg-destructive/10 border-2 border-destructive/30 rounded-lg">
+                <p className="text-sm text-destructive font-bold flex items-center gap-1"><AlertTriangle size={16} /> {error}</p>
               </div>
             )}
 
@@ -277,3 +275,4 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
     </div>
   );
 };
+

@@ -68,9 +68,11 @@ export function calculateSuccessPercentage(statuses: string[]): number {
 
 /** Check if a subject is considered "passed" */
 export function isSubjectPassed(status: string): boolean {
-  return [SubjectStatus.APROBADA, SubjectStatus.REGULARIZADA, SubjectStatus.EQUIVALENCIA].includes(
-    status as SubjectStatus,
-  );
+  return [
+    SubjectStatus.APROBADA,
+    SubjectStatus.REGULARIZADA,
+    SubjectStatus.EQUIVALENCIA,
+  ].includes(status as SubjectStatus);
 }
 
 /** Calculate completed hours (only for passed subjects) */

@@ -5,6 +5,14 @@ import { Logger } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { SubjectStatus } from '../../../common/constants/academic-enums';
 import { TrophyTier } from '../../../common/constants/trophy-enums';
+import {
+  AverageEvaluator,
+  CompletionEvaluator,
+  HoursEvaluator,
+  ConsistencyEvaluator,
+  ChallengeEvaluator,
+  CountEvaluator,
+} from '../evaluators';
 
 describe('TrophyService', () => {
   let service: TrophyService;
@@ -41,6 +49,12 @@ describe('TrophyService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         TrophyService,
+        AverageEvaluator,
+        CompletionEvaluator,
+        HoursEvaluator,
+        ConsistencyEvaluator,
+        ChallengeEvaluator,
+        CountEvaluator,
         { provide: PrismaService, useValue: mockPrismaService },
         { provide: Logger, useValue: mockLogger },
         { provide: EventEmitter2, useValue: { emit: jest.fn() } },
@@ -56,14 +70,14 @@ describe('TrophyService', () => {
   });
 
   describe('checkAndUnlockTrophies', () => {
-    it('debería lanzar NotFoundException si el usuario no existe', async () => {
+    it('deberña lanzar NotFoundException si el usuario no existe', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
       await expect(
         service.checkAndUnlockTrophies('test@test.com'),
       ).rejects.toThrow('Usuario no encontrado.');
     });
 
-    it('debería desbloquear el trofeo FIRST_SUBJECT_COMPLETED si se aprueba la primera materia', async () => {
+    it('deberña desbloquear el trofeo FIRST_SUBJECT_COMPLETED si se aprueba la primera materia', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue({
         id: 'user-1',
         email: 'test@test.com',
@@ -77,7 +91,7 @@ describe('TrophyService', () => {
           tier: TrophyTier.BRONZE,
         },
       ];
-      const mockUserTrophies: any[] = []; // Ninguno desbloqueado aún
+      const mockUserTrophies: { trophyId: string, unlockedAt: Date }[] = []; // Ninguno desbloqueado aún
 
       // Mock $transaction retornando los arreglos
       let txCount = 0;
@@ -109,7 +123,7 @@ describe('TrophyService', () => {
       expect(mockPrismaService.userTrophy.upsert).toHaveBeenCalledTimes(1);
     });
 
-    it('no debería re-desbloquear un trofeo ya desbloqueado', async () => {
+    it('no deberña re-desbloquear un trofeo ya desbloqueado', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue({
         id: 'user-1',
         email: 'test@test.com',
@@ -147,7 +161,7 @@ describe('TrophyService', () => {
   });
 
   describe('Efficiency and Resource Checks', () => {
-    it('debería procesar grandes volúmenes de materias (10.000 records ficticios) sin memory limit excedido e iterador', async () => {
+    it('deberña procesar grandes volúmenes de materias (10.000 records ficticios) sin memory limit excedido e iterador', async () => {
       const startMem = process.memoryUsage().heapUsed;
       mockPrismaService.user.findUnique.mockResolvedValue({
         id: 'user-1',
@@ -155,7 +169,7 @@ describe('TrophyService', () => {
       });
 
       const mockTrophies = [{ id: 't-1', code: 'LEGEND' }];
-      const mockUserTrophies: any[] = [];
+      const mockUserTrophies: { trophyId: string, unlockedAt: Date }[] = [];
 
       // Crear 10.000 records
       const massiveRecords = Array.from({ length: 10000 }, (_, i) => ({
@@ -187,7 +201,7 @@ describe('TrophyService', () => {
 
       const endMem = process.memoryUsage().heapUsed;
       const diffMb = (endMem - startMem) / 1024 / 1024;
-      expect(diffMb).toBeLessThan(50); // No debería haber una fuga masiva al iterar (>50mb)
+      expect(diffMb).toBeLessThan(50); // No deberña haber una fuga masiva al iterar (>50mb)
     });
   });
 });

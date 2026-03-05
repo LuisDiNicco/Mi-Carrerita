@@ -1,4 +1,4 @@
-import { authFetch } from "../../auth/lib/api";
+﻿import { authFetch } from "../../auth/lib/api";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
@@ -124,3 +124,4 @@ export async function fetchDashboardData(): Promise<DashboardDataDto> {
     const data = await response.json();
     return data;
 }
+

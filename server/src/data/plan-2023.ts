@@ -63,7 +63,7 @@ export const PLAN_2023: SubjectData[] = [
   },
   {
     planCode: '3627',
-    name: 'Álgebra y Geometría Analítica I',
+    name: 'Álgebra y Geometrña Analñtica I',
     year: 1,
     hours: 4,
     isOptional: false,
@@ -71,7 +71,7 @@ export const PLAN_2023: SubjectData[] = [
   },
   {
     planCode: '3628',
-    name: 'Física I',
+    name: 'Fñsica I',
     year: 1,
     hours: 4,
     isOptional: false,
@@ -155,7 +155,7 @@ export const PLAN_2023: SubjectData[] = [
   },
   {
     planCode: '3634',
-    name: 'Física II',
+    name: 'Fñsica II',
     year: 2,
     hours: 4,
     isOptional: false,
@@ -279,7 +279,7 @@ export const PLAN_2023: SubjectData[] = [
   // =======================================================
   {
     planCode: '3645',
-    name: 'Álgebra y Geometría Analítica II',
+    name: 'Álgebra y Geometrña Analñtica II',
     year: 3,
     hours: 4,
     isOptional: false,
@@ -327,7 +327,7 @@ export const PLAN_2023: SubjectData[] = [
   },
   {
     planCode: '3651',
-    name: 'Probabilidad y Estadística',
+    name: 'Probabilidad y Estadñstica',
     year: 3,
     hours: 4,
     isOptional: false,
@@ -359,7 +359,7 @@ export const PLAN_2023: SubjectData[] = [
   },
   {
     planCode: '3655',
-    name: 'Auditoría y Legislación',
+    name: 'Auditorña y Legislación',
     year: 3,
     hours: 4,
     isOptional: false,
@@ -379,7 +379,7 @@ export const PLAN_2023: SubjectData[] = [
   // =======================================================
   {
     planCode: '3656',
-    name: 'Estadística Aplicada',
+    name: 'Estadñstica Aplicada',
     year: 4,
     hours: 4,
     isOptional: false,

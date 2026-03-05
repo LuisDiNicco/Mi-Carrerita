@@ -1,4 +1,4 @@
-import { authFetch } from "../../auth/lib/api";
+﻿import { authFetch } from "../../auth/lib/api";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
@@ -17,6 +17,10 @@ export interface TimetableDto {
     period: TimePeriod;
     dayOfWeek: DayOfWeek;
     dayLabel: string;
+    commission?: string;
+    slotRange?: string;
+    durationHours?: number;
+    isRemote?: boolean;
 }
 
 export interface CreateTimetableDto {
@@ -90,7 +94,7 @@ export async function checkConflicts(): Promise<ConflictDto[]> {
 }
 
 export interface RecommendationResultDto {
-    recommendedSubjects: any[]; // refine if needed
+    recommendedSubjects: unknown[];
     conflicts: ConflictDto[];
     hasConflicts: boolean;
 }
@@ -116,6 +120,8 @@ export interface ParsedTimetableOffer {
     commission: string;
     modality: string;
     location: string;
+    days?: string;
+    shift?: string;
 }
 
 /** Upload an Oferta de Materias PDF and receive parsed offerings */
@@ -137,3 +143,4 @@ export async function uploadOfertaPdf(
 
     return response.json();
 }
+

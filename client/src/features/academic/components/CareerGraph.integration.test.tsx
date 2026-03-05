@@ -1,4 +1,4 @@
-import { render, screen, act, fireEvent, waitFor } from '@testing-library/react';
+﻿import { render, screen, act, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { CareerGraph } from './CareerGraph';
 import * as academicApi from '../lib/academic-api';
@@ -154,3 +154,4 @@ describe('CareerGraph Integration Flow', () => {
         expect(academicApi.fetchAcademicGraph).toHaveBeenCalledTimes(2);
     });
 });
+

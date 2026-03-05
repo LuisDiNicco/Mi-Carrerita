@@ -14,7 +14,7 @@ import {
   FileTypeValidator,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {  ApiOperation, ApiResponse , ApiTags } from '@nestjs/swagger';
 import { ScheduleService } from '../services/schedule.service';
 import { RecommendationService } from '../services/recommendation.service';
 import {
@@ -29,6 +29,7 @@ import { EnvironmentAuthGuard } from '../../../common/guards/environment-auth.gu
 import { CurrentUser } from '../../../common/decorators/current-user.decorator';
 import { PdfParserService } from '../../../shared/pdf-parser/pdf-parser.service';
 
+@ApiTags('Schedule')
 @Controller('schedule')
 @UseGuards(EnvironmentAuthGuard)
 export class ScheduleController {
@@ -36,7 +37,7 @@ export class ScheduleController {
     private readonly scheduleService: ScheduleService,
     private readonly recommendationService: RecommendationService,
     private readonly pdfParserService: PdfParserService,
-  ) { }
+  ) {}
 
   // ========================
   // Timetable Endpoints
@@ -81,7 +82,9 @@ export class ScheduleController {
     )
     file: Express.Multer.File,
   ) {
-    const parsedData = await this.pdfParserService.parseOfertaMaterias(file.buffer);
+    const parsedData = await this.pdfParserService.parseOfertaMaterias(
+      file.buffer,
+    );
     return { data: parsedData };
   }
 

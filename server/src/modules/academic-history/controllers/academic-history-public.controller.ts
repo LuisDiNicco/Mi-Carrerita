@@ -8,16 +8,20 @@ import {
   FileTypeValidator,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {  ApiOperation, ApiResponse , ApiTags } from '@nestjs/swagger';
 import { PdfParserService } from '../../../shared/pdf-parser/pdf-parser.service';
 
+@ApiTags('Academic History Public')
 @Controller('history')
 export class AcademicHistoryPublicController {
   constructor(private readonly pdfParserService: PdfParserService) {}
 
   @Post('public-upload')
   @ApiOperation({ summary: 'Parsear PDF de Historia Académica para invitados' })
-  @ApiResponse({ status: 200, description: 'Parsed PDF data ready for preview' })
+  @ApiResponse({
+    status: 200,
+    description: 'Parsed PDF data ready for preview',
+  })
   @UseInterceptors(FileInterceptor('file'))
   async uploadPdfPublic(
     @UploadedFile(

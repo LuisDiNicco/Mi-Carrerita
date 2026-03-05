@@ -1,8 +1,7 @@
-import { describe, it, expect, vi } from 'vitest';
+﻿import { describe, it, expect, vi } from 'vitest';
 import {
     cn,
     truncateSubjectName,
-    getSubjectEmoji,
     getRandomRetroColor,
     calculateProgress,
     groupBySemester,
@@ -14,19 +13,13 @@ import {
 
 describe('Shared Utils', () => {
     it('cn combina clases de Tailwind correctamente', () => {
-        expect(cn('bg-red-500', 'text-white')).toBe('bg-red-500 text-white');
-        expect(cn('bg-red-500', false, null, undefined, 'p-4')).toBe('bg-red-500 p-4');
+        expect(cn('bg-destructive', 'text-white')).toBe('bg-destructive text-white');
+        expect(cn('bg-destructive', false, null, undefined, 'p-4')).toBe('bg-destructive p-4');
     });
 
     it('truncateSubjectName trunca nombres largos', () => {
         expect(truncateSubjectName('Corta')).toBe('Corta');
         expect(truncateSubjectName('Esta es una materia con un nombre muy pero muy largo', 20)).toBe('Esta es una mater...');
-    });
-
-    it('getSubjectEmoji retorna emojis adecudos según el estado', () => {
-        expect(getSubjectEmoji('APROBADA')).toBe('🏆');
-        expect(getSubjectEmoji('PENDIENTE')).toBe('🔒');
-        expect(getSubjectEmoji('INEXISTENTE')).toBe('❓');
     });
 
     it('getRandomRetroColor genera un color retro', () => {
@@ -55,10 +48,10 @@ describe('Shared Utils', () => {
 
     it('formatGrade formatea la nota correctamente', () => {
         expect(formatGrade(null)).toBe('—');
-        expect(formatGrade(9)).toBe('⭐ 9');
-        expect(formatGrade(8)).toBe('⭐ 8');
-        expect(formatGrade(7)).toBe('✓ 7');
-        expect(formatGrade(6)).toBe('✓ 6');
+        expect(formatGrade(9)).toBe('9');
+        expect(formatGrade(8)).toBe('8');
+        expect(formatGrade(7)).toBe('7');
+        expect(formatGrade(6)).toBe('6');
         expect(formatGrade(4)).toBe('4');
     });
 
@@ -95,3 +88,4 @@ describe('Shared Utils', () => {
         vi.useRealTimers();
     });
 });
+

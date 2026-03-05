@@ -42,14 +42,14 @@ describe('ScheduleService', () => {
   });
 
   describe('setMultipleTimetables', () => {
-    it('debería lanzar NotFound si no se encuentra el usuario', async () => {
+    it('deberña lanzar NotFound si no se encuentra el usuario', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
       await expect(
         service.setMultipleTimetables('test@test.com', []),
       ).rejects.toThrow(NotFoundException);
     });
 
-    it('debería rechazar si la validación falla (ej. día inválido)', async () => {
+    it('deberña rechazar si la validación falla (ej. dña inválido)', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue({ id: 'u1' });
       mockPrismaService.subject.findMany.mockResolvedValue([
         { id: 's1', name: 'Materia 1', planCode: 'M1' },
@@ -63,7 +63,7 @@ describe('ScheduleService', () => {
       ).rejects.toThrow(BadRequestException);
     });
 
-    it('debería rechazar si hay un conflicto', async () => {
+    it('deberña rechazar si hay un conflicto', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue({ id: 'u1' });
 
       // Simulamos materias
@@ -88,7 +88,7 @@ describe('ScheduleService', () => {
       ).rejects.toThrow(BadRequestException);
     });
 
-    it('debería procesar en bulk sin N+1 usando el pre-fetch refactorizado', async () => {
+    it('deberña procesar en bulk sin N+1 usando el pre-fetch refactorizado', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue({ id: 'u1' });
       mockPrismaService.subject.findMany.mockResolvedValue([
         { id: 's1', name: 'Materia 1', planCode: 'M1' },

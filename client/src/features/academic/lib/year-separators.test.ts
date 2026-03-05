@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+﻿import { describe, it, expect } from 'vitest';
 import { buildYearSeparatorNodes } from './year-separators';
 import type { Subject } from '../../../shared/types/academic';
 import { SubjectStatus } from '../../../shared/types/academic';
@@ -84,13 +84,13 @@ describe('buildYearSeparatorNodes', () => {
     expect(sep.position.y).toBeGreaterThan(300);
   });
 
-  it('uses label from getYearLabel (AÑO X for year > 0)', () => {
+  it('uses label from getYearLabel (Aí‘O X for year > 0)', () => {
     const subjects = [makeSubject('a', 3)];
     const nodes = [makeNode('a', 0, 100)];
 
     const [sep] = buildYearSeparatorNodes(subjects, nodes);
 
-    expect((sep.data as { label: string }).label).toBe('AÑO 3');
+    expect((sep.data as { label: string }).label).toBe('Aí‘O 3');
   });
 
   it('uses TRANSVERSAL label for year 0', () => {
@@ -135,3 +135,4 @@ describe('buildYearSeparatorNodes', () => {
     expect(ids).toEqual(['year-separator-1', 'year-separator-2', 'year-separator-3']);
   });
 });
+

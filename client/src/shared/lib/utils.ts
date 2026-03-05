@@ -1,4 +1,4 @@
-import { type ClassValue, clsx } from "clsx";
+﻿import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
 /**
@@ -16,19 +16,6 @@ export function truncateSubjectName(name: string, maxLength = 30): string {
   return name.slice(0, maxLength - 3) + "...";
 }
 
-/**
- * Obtener emoji basado en el estado de la materia
- */
-export function getSubjectEmoji(status: string): string {
-  const emojiMap: Record<string, string> = {
-    PENDIENTE: "🔒",
-    DISPONIBLE: "🎯",
-    EN_CURSO: "📚",
-    REGULARIZADA: "✅",
-    APROBADA: "🏆",
-  };
-  return emojiMap[status] || "❓";
-}
 
 /**
  * Generar color aleatorio para efectos visuales
@@ -78,8 +65,6 @@ export function groupBySemester<T extends { semester: number }>(
  */
 export function formatGrade(grade: number | null): string {
   if (grade === null) return "—";
-  if (grade >= 8) return `⭐ ${grade}`;
-  if (grade >= 6) return `✓ ${grade}`;
   return `${grade}`;
 }
 
@@ -140,3 +125,4 @@ export function debounce<T extends (...args: unknown[]) => unknown>(
 /**
  * Validar estructura de Subject
  */
+

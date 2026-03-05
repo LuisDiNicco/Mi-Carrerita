@@ -21,4 +21,4 @@ import { PdfParserModule } from '../../shared/pdf-parser/pdf-parser.module';
   controllers: [ScheduleController],
   exports: [ScheduleService, RecommendationService],
 })
-export class ScheduleModule { }
+export class ScheduleModule {}

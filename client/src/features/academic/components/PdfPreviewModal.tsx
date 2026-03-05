@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { X, Upload, Check, AlertTriangle, Trash2, Edit2 } from 'lucide-react';
 import type { ParsedAcademicRecord, BatchAcademicRecordPayload } from '../lib/academic-api';
 import { SubjectStatus } from '../../../shared/types/academic';
@@ -101,7 +101,7 @@ export const PdfPreviewModal = ({ records, onConfirm, onClose }: PdfPreviewModal
                             Se encontraron <strong className="text-app">{records.length}</strong> registros. Revisá y editá antes de guardar.
                         </p>
                     </div>
-                    <button onClick={onClose} className="p-2 text-muted hover:text-red-500 transition-colors">
+                    <button onClick={onClose} className="p-2 text-muted hover:text-destructive transition-colors">
                         <X size={20} />
                     </button>
                 </div>
@@ -126,7 +126,7 @@ export const PdfPreviewModal = ({ records, onConfirm, onClose }: PdfPreviewModal
                                     className={cn(
                                         "transition-colors",
                                         record.excluded
-                                            ? "opacity-40 bg-red-500/5 line-through"
+                                            ? "opacity-40 bg-destructive/5 line-through"
                                             : "hover:bg-unlam-500/5"
                                     )}
                                 >
@@ -172,7 +172,7 @@ export const PdfPreviewModal = ({ records, onConfirm, onClose }: PdfPreviewModal
                                                 "p-1.5 rounded-lg transition-colors",
                                                 record.excluded
                                                     ? "text-green-500 hover:bg-green-500/10"
-                                                    : "text-red-400 hover:bg-red-500/10"
+                                                    : "text-destructive hover:bg-destructive/10"
                                             )}
                                             title={record.excluded ? "Incluir" : "Excluir"}
                                         >
@@ -192,7 +192,7 @@ export const PdfPreviewModal = ({ records, onConfirm, onClose }: PdfPreviewModal
                     </div>
 
                     {error && (
-                        <p className="text-sm text-red-500 flex items-center gap-1">
+                        <p className="text-sm text-destructive flex items-center gap-1">
                             <AlertTriangle size={14} /> {error}
                         </p>
                     )}
@@ -218,3 +218,4 @@ export const PdfPreviewModal = ({ records, onConfirm, onClose }: PdfPreviewModal
         </div>
     );
 };
+

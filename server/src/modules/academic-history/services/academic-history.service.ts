@@ -24,13 +24,21 @@ import {
   buildOrderByClause,
   inferSemesterFromDate,
 } from '../helpers/history.helpers';
+import { SubjectStatus } from '../../../common/constants/academic-enums';
+
+const ELECTIVE_SOURCE_PLAN_CODES = ['3599', '3677', '3678', '3679'];
+const ELECTIVE_TARGET_PLAN_CODES = ['3672', '3673', '3674'];
+const ELECTIVE_COMPLETION_STATUSES = new Set<string>([
+  SubjectStatus.APROBADA,
+  SubjectStatus.EQUIVALENCIA,
+]);
 
 @Injectable()
 export class AcademicHistoryService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly eventEmitter: EventEmitter2,
-  ) { }
+  ) {}
 
   private readonly recordWithSubjectSelect =
     Prisma.validator<Prisma.AcademicRecordDefaultArgs>()({
@@ -107,7 +115,10 @@ export class AcademicHistoryService {
   /**
    * Batch update or insert multiple records safely
    */
-  async batchUpdateRecords(userEmail: string, records: BatchAcademicRecordDto[]): Promise<{ count: number }> {
+  async batchUpdateRecords(
+    userEmail: string,
+    records: BatchAcademicRecordDto[],
+  ): Promise<{ count: number }> {
     const user = await this.prisma.user.findUnique({
       where: { email: userEmail },
     });
@@ -142,7 +153,9 @@ export class AcademicHistoryService {
             data: {
               status: record.status,
               finalGrade: record.finalGrade ?? null,
-              statusDate: record.statusDate ? parseIsolatedDate(record.statusDate) : null,
+              statusDate: record.statusDate
+                ? parseIsolatedDate(record.statusDate)
+                : null,
             },
           });
         } else {
@@ -152,16 +165,95 @@ export class AcademicHistoryService {
               subjectId: subject.id,
               status: record.status,
               finalGrade: record.finalGrade ?? null,
-              statusDate: record.statusDate ? parseIsolatedDate(record.statusDate) : null,
+              statusDate: record.statusDate
+                ? parseIsolatedDate(record.statusDate)
+                : null,
             },
           });
         }
         updatedCount++;
       }
+
+      await this.syncElectiveEquivalences(tx, user.id);
     });
 
     this.eventEmitter.emit('subject.status.updated', { userEmail });
     return { count: updatedCount };
+  }
+
+  private async syncElectiveEquivalences(
+    tx: Prisma.TransactionClient,
+    userId: string,
+  ): Promise<void> {
+    const sourceSubjects = await tx.subject.findMany({
+      where: { planCode: { in: ELECTIVE_SOURCE_PLAN_CODES } },
+      select: { id: true },
+    });
+
+    if (sourceSubjects.length === 0) return;
+
+    const sourceRecords = await tx.academicRecord.findMany({
+      where: {
+        userId,
+        subjectId: { in: sourceSubjects.map((subject) => subject.id) },
+      },
+      select: {
+        status: true,
+        statusDate: true,
+      },
+    });
+
+    const approvedSourceCount = sourceRecords.filter((record) =>
+      ELECTIVE_COMPLETION_STATUSES.has(record.status),
+    ).length;
+
+    if (approvedSourceCount === 0) return;
+
+    const targetSubjects = await tx.subject.findMany({
+      where: { planCode: { in: ELECTIVE_TARGET_PLAN_CODES } },
+      select: { id: true, planCode: true },
+    });
+
+    const targetSubjectByCode = new Map(
+      targetSubjects.map((subject) => [subject.planCode, subject.id]),
+    );
+
+    const firstStatusDate = sourceRecords
+      .filter((record) => ELECTIVE_COMPLETION_STATUSES.has(record.status))
+      .map((record) => record.statusDate)
+      .filter((date): date is Date => Boolean(date))
+      .sort((left, right) => left.getTime() - right.getTime())[0] ?? null;
+
+    const targetToApproveCount = Math.min(
+      approvedSourceCount,
+      ELECTIVE_TARGET_PLAN_CODES.length,
+    );
+
+    for (let index = 0; index < targetToApproveCount; index += 1) {
+      const planCode = ELECTIVE_TARGET_PLAN_CODES[index];
+      const targetSubjectId = targetSubjectByCode.get(planCode);
+      if (!targetSubjectId) continue;
+
+      await tx.academicRecord.upsert({
+        where: {
+          userId_subjectId: {
+            userId,
+            subjectId: targetSubjectId,
+          },
+        },
+        create: {
+          userId,
+          subjectId: targetSubjectId,
+          status: SubjectStatus.APROBADA,
+          finalGrade: null,
+          statusDate: firstStatusDate,
+        },
+        update: {
+          status: SubjectStatus.APROBADA,
+          statusDate: firstStatusDate,
+        },
+      });
+    }
   }
 
   /**

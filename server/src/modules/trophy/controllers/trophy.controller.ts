@@ -1,10 +1,11 @@
 import { Controller, Get, Post, Param, UseGuards } from '@nestjs/common';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {  ApiOperation, ApiResponse , ApiTags } from '@nestjs/swagger';
 import { TrophyService } from '../services/trophy.service';
 import { TrophyCaseDto, TrophyDto, TrophyCheckResultDto } from '../dto';
 import { EnvironmentAuthGuard } from '../../../common/guards/environment-auth.guard';
 import { CurrentUser } from '../../../common/decorators/current-user.decorator';
 
+@ApiTags('Trophy')
 @Controller('trophies')
 @UseGuards(EnvironmentAuthGuard)
 export class TrophyController {
@@ -23,7 +24,7 @@ export class TrophyController {
   }
 
   @Get(':code')
-  @ApiOperation({ summary: 'Obtener detalles de un trofeo específico' })
+  @ApiOperation({ summary: 'Obtener detalles de un trofeo especñfico' })
   @ApiResponse({ status: 200, description: 'Trophy details' })
   @ApiResponse({ status: 404, description: 'Trophy not found' })
   async getTrophy(

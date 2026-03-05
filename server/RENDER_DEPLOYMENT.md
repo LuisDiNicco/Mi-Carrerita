@@ -1,4 +1,4 @@
-# 🚀 Guía Rápida de Despliegue en Render
+# 🚀 Guña Rápida de Despliegue en Render
 
 ## ✅ Checklist Pre-Despliegue
 

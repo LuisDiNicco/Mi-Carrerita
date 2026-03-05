@@ -1,4 +1,4 @@
-import dagre from "dagre";
+﻿import dagre from "dagre";
 import type { Subject } from "../../../shared/types/academic";
 
 export const GRAPH_LAYOUT = {
@@ -51,3 +51,4 @@ export function layoutNodesByYear(
     };
   });
 }
+

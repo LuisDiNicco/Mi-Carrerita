@@ -1,0 +1,94 @@
+/* ========================================
+   COMPONENTES PERSONALIZADOS
+   ======================================== */
+@layer components {
+  .crt-screen {
+    background-color: var(--app-surface);
+    border: 2px solid var(--app-border);
+    @apply rounded-2xl;
+    box-shadow:
+      inset 0 0 40px rgba(0, 0, 0, 0.2),
+      0 0 30px rgba(123, 203, 122, 0.15);
+    background-image: var(--scanlines);
+  }
+
+  .pixel-text {
+    @apply font-retro tracking-wider;
+    text-shadow: none;
+    image-rendering: pixelated;
+  }
+
+  .btn-retro {
+    @apply font-retro font-bold uppercase tracking-wider;
+    @apply px-6 py-3 border-4;
+    @apply shadow-retro hover:shadow-retro-hover;
+    @apply transition-all duration-100;
+    @apply active:translate-x-1 active:translate-y-1 active:shadow-none;
+    image-rendering: pixelated;
+  }
+
+  .game-panel {
+    background-color: var(--app-surface);
+    border: 2px solid var(--app-border);
+    @apply p-4 rounded-lg;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+    background-image: var(--scanlines);
+  }
+
+  .pixel-badge {
+    @apply inline-block px-2 py-1 text-xs font-retro font-bold;
+    @apply border-2 uppercase tracking-wider;
+    @apply shadow-[2px_2px_0px_rgba(0, 0, 0, 0.8)];
+    image-rendering: pixelated;
+  }
+}
+
+/* Custom Date Picker Styles */
+input[type="date"] {
+  position: relative;
+  padding-right: 20px;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  background: transparent;
+  bottom: 0;
+  color: transparent;
+  cursor: pointer;
+  height: auto;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: auto;
+  z-index: 10;
+}
+
+input[type="date"]::after {
+  content: '';
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="gray" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>');
+  background-repeat: no-repeat;
+  background-position: center;
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  width: 14px;
+  height: 14px;
+}
+
+/* Custom Number Input Arrows */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+  position: relative;
+}
+
+.custom-number-input {
+  position: relative;
+}

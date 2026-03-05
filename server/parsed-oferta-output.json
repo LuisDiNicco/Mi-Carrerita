@@ -1,0 +1,2962 @@
+[
+  {
+    "planCode": "0901",
+    "description": "INGLES NIVEL I",
+    "dayLabel": "Lunes",
+    "periodLabel": "Mañana",
+    "commission": "1300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "0901",
+    "description": "INGLES NIVEL I",
+    "dayLabel": "Lunes",
+    "periodLabel": "Tarde",
+    "commission": "1600",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "14a18"
+  },
+  {
+    "planCode": "0901",
+    "description": "INGLES NIVEL I",
+    "dayLabel": "Lunes",
+    "periodLabel": "Noche",
+    "commission": "1900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "0901",
+    "description": "INGLES NIVEL I",
+    "dayLabel": "Martes",
+    "periodLabel": "Mañana",
+    "commission": "2300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "0901",
+    "description": "INGLES NIVEL I",
+    "dayLabel": "Martes",
+    "periodLabel": "Tarde",
+    "commission": "2600",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "14a18"
+  },
+  {
+    "planCode": "0901",
+    "description": "INGLES NIVEL I",
+    "dayLabel": "Martes",
+    "periodLabel": "Noche",
+    "commission": "2900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "0901",
+    "description": "INGLES NIVEL I",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Mañana",
+    "commission": "3300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "0901",
+    "description": "INGLES NIVEL I",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Tarde",
+    "commission": "3600",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "14a18"
+  },
+  {
+    "planCode": "0901",
+    "description": "INGLES NIVEL I",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Noche",
+    "commission": "3900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "0901",
+    "description": "INGLES NIVEL I",
+    "dayLabel": "Jueves",
+    "periodLabel": "Mañana",
+    "commission": "4300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "0901",
+    "description": "INGLES NIVEL I",
+    "dayLabel": "Jueves",
+    "periodLabel": "Tarde",
+    "commission": "4600",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "14a18"
+  },
+  {
+    "planCode": "0901",
+    "description": "INGLES NIVEL I",
+    "dayLabel": "Jueves",
+    "periodLabel": "Noche",
+    "commission": "4900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "0901",
+    "description": "INGLES NIVEL I",
+    "dayLabel": "Viernes",
+    "periodLabel": "Mañana",
+    "commission": "5300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "0901",
+    "description": "INGLES NIVEL I",
+    "dayLabel": "Viernes",
+    "periodLabel": "Tarde",
+    "commission": "5600",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "14a18"
+  },
+  {
+    "planCode": "0901",
+    "description": "INGLES NIVEL I",
+    "dayLabel": "Viernes",
+    "periodLabel": "Noche",
+    "commission": "5900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "0901",
+    "description": "INGLES NIVEL I",
+    "dayLabel": "Viernes",
+    "periodLabel": "Noche",
+    "commission": "5900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "0901",
+    "description": "INGLES NIVEL I",
+    "dayLabel": "Sábado",
+    "periodLabel": "Mañana",
+    "commission": "6300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "0901",
+    "description": "INGLES NIVEL I",
+    "dayLabel": "Martes",
+    "periodLabel": "Tarde",
+    "commission": "7224",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "12a16"
+  },
+  {
+    "planCode": "0901",
+    "description": "INGLES NIVEL I",
+    "dayLabel": "Martes y Viernes",
+    "periodLabel": "Tarde",
+    "commission": "7275",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "12a14"
+  },
+  {
+    "planCode": "0901",
+    "description": "INGLES NIVEL I",
+    "dayLabel": "Sábado",
+    "periodLabel": "Tarde",
+    "commission": "7664",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "12a16"
+  },
+  {
+    "planCode": "0902",
+    "description": "INGLES NIVEL II",
+    "dayLabel": "Lunes",
+    "periodLabel": "Mañana",
+    "commission": "1300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "0902",
+    "description": "INGLES NIVEL II",
+    "dayLabel": "Lunes",
+    "periodLabel": "Tarde",
+    "commission": "1600",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "14a18"
+  },
+  {
+    "planCode": "0902",
+    "description": "INGLES NIVEL II",
+    "dayLabel": "Lunes",
+    "periodLabel": "Noche",
+    "commission": "1900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "0902",
+    "description": "INGLES NIVEL II",
+    "dayLabel": "Martes",
+    "periodLabel": "Mañana",
+    "commission": "2300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "0902",
+    "description": "INGLES NIVEL II",
+    "dayLabel": "Martes",
+    "periodLabel": "Tarde",
+    "commission": "2600",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "14a18"
+  },
+  {
+    "planCode": "0902",
+    "description": "INGLES NIVEL II",
+    "dayLabel": "Martes",
+    "periodLabel": "Noche",
+    "commission": "2900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "0902",
+    "description": "INGLES NIVEL II",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Mañana",
+    "commission": "3300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "0902",
+    "description": "INGLES NIVEL II",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Tarde",
+    "commission": "3600",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "14a18"
+  },
+  {
+    "planCode": "0902",
+    "description": "INGLES NIVEL II",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Noche",
+    "commission": "3900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "0902",
+    "description": "INGLES NIVEL II",
+    "dayLabel": "Jueves",
+    "periodLabel": "Mañana",
+    "commission": "4300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "0902",
+    "description": "INGLES NIVEL II",
+    "dayLabel": "Jueves",
+    "periodLabel": "Tarde",
+    "commission": "4600",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "14a18"
+  },
+  {
+    "planCode": "0902",
+    "description": "INGLES NIVEL II",
+    "dayLabel": "Jueves",
+    "periodLabel": "Noche",
+    "commission": "4900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "0902",
+    "description": "INGLES NIVEL II",
+    "dayLabel": "Viernes",
+    "periodLabel": "Mañana",
+    "commission": "5300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "0902",
+    "description": "INGLES NIVEL II",
+    "dayLabel": "Viernes",
+    "periodLabel": "Mañana",
+    "commission": "5300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "0902",
+    "description": "INGLES NIVEL II",
+    "dayLabel": "Viernes",
+    "periodLabel": "Tarde",
+    "commission": "5600",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "14a18"
+  },
+  {
+    "planCode": "0902",
+    "description": "INGLES NIVEL II",
+    "dayLabel": "Viernes",
+    "periodLabel": "Noche",
+    "commission": "5900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "0902",
+    "description": "INGLES NIVEL II",
+    "dayLabel": "Sábado",
+    "periodLabel": "Mañana",
+    "commission": "6300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "0902",
+    "description": "INGLES NIVEL II",
+    "dayLabel": "Lunes y Viernes",
+    "periodLabel": "Tarde",
+    "commission": "7175",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "12a14"
+  },
+  {
+    "planCode": "0902",
+    "description": "INGLES NIVEL II",
+    "dayLabel": "Jueves",
+    "periodLabel": "Tarde",
+    "commission": "7444",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "12a16"
+  },
+  {
+    "planCode": "0902",
+    "description": "INGLES NIVEL II",
+    "dayLabel": "Sábado",
+    "periodLabel": "Tarde",
+    "commission": "7664",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "12a16"
+  },
+  {
+    "planCode": "0903",
+    "description": "INGLES NIVEL III",
+    "dayLabel": "Lunes",
+    "periodLabel": "Mañana",
+    "commission": "1200",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "10a12"
+  },
+  {
+    "planCode": "0903",
+    "description": "INGLES NIVEL III",
+    "dayLabel": "Lunes",
+    "periodLabel": "Tarde",
+    "commission": "1500",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "16a18"
+  },
+  {
+    "planCode": "0903",
+    "description": "INGLES NIVEL III",
+    "dayLabel": "Lunes",
+    "periodLabel": "Noche",
+    "commission": "1700",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a21"
+  },
+  {
+    "planCode": "0903",
+    "description": "INGLES NIVEL III",
+    "dayLabel": "Martes",
+    "periodLabel": "Mañana",
+    "commission": "2100",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a10"
+  },
+  {
+    "planCode": "0903",
+    "description": "INGLES NIVEL III",
+    "dayLabel": "Martes",
+    "periodLabel": "Mañana",
+    "commission": "2200",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "10a12"
+  },
+  {
+    "planCode": "0903",
+    "description": "INGLES NIVEL III",
+    "dayLabel": "Martes",
+    "periodLabel": "Tarde",
+    "commission": "2400",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "14a16"
+  },
+  {
+    "planCode": "0903",
+    "description": "INGLES NIVEL III",
+    "dayLabel": "Martes",
+    "periodLabel": "Tarde",
+    "commission": "2500",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "16a18"
+  },
+  {
+    "planCode": "0903",
+    "description": "INGLES NIVEL III",
+    "dayLabel": "Martes",
+    "periodLabel": "Noche",
+    "commission": "2700",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a21"
+  },
+  {
+    "planCode": "0903",
+    "description": "INGLES NIVEL III",
+    "dayLabel": "Martes",
+    "periodLabel": "Noche",
+    "commission": "2800",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "21a23"
+  },
+  {
+    "planCode": "0903",
+    "description": "INGLES NIVEL III",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Mañana",
+    "commission": "3100",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a10"
+  },
+  {
+    "planCode": "0903",
+    "description": "INGLES NIVEL III",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Mañana",
+    "commission": "3200",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "10a12"
+  },
+  {
+    "planCode": "0903",
+    "description": "INGLES NIVEL III",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Tarde",
+    "commission": "3500",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "16a18"
+  },
+  {
+    "planCode": "0903",
+    "description": "INGLES NIVEL III",
+    "dayLabel": "Jueves",
+    "periodLabel": "Mañana",
+    "commission": "4200",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "10a12"
+  },
+  {
+    "planCode": "0903",
+    "description": "INGLES NIVEL III",
+    "dayLabel": "Jueves",
+    "periodLabel": "Tarde",
+    "commission": "4400",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "14a16"
+  },
+  {
+    "planCode": "0903",
+    "description": "INGLES NIVEL III",
+    "dayLabel": "Jueves",
+    "periodLabel": "Tarde",
+    "commission": "4500",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "16a18"
+  },
+  {
+    "planCode": "0903",
+    "description": "INGLES NIVEL III",
+    "dayLabel": "Jueves",
+    "periodLabel": "Noche",
+    "commission": "4700",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a21"
+  },
+  {
+    "planCode": "0903",
+    "description": "INGLES NIVEL III",
+    "dayLabel": "Jueves",
+    "periodLabel": "Noche",
+    "commission": "4800",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "21a23"
+  },
+  {
+    "planCode": "0903",
+    "description": "INGLES NIVEL III",
+    "dayLabel": "Viernes",
+    "periodLabel": "Mañana",
+    "commission": "5100",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a10"
+  },
+  {
+    "planCode": "0903",
+    "description": "INGLES NIVEL III",
+    "dayLabel": "Viernes",
+    "periodLabel": "Tarde",
+    "commission": "5500",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "16a18"
+  },
+  {
+    "planCode": "0903",
+    "description": "INGLES NIVEL III",
+    "dayLabel": "Viernes",
+    "periodLabel": "Noche",
+    "commission": "5700",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a21"
+  },
+  {
+    "planCode": "0903",
+    "description": "INGLES NIVEL III",
+    "dayLabel": "Viernes",
+    "periodLabel": "Noche",
+    "commission": "5800",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "21a23"
+  },
+  {
+    "planCode": "0903",
+    "description": "INGLES NIVEL III",
+    "dayLabel": "Sábado",
+    "periodLabel": "Mañana",
+    "commission": "6100",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a10"
+  },
+  {
+    "planCode": "0903",
+    "description": "INGLES NIVEL III",
+    "dayLabel": "Sábado",
+    "periodLabel": "Mañana",
+    "commission": "6200",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "10a12"
+  },
+  {
+    "planCode": "0903",
+    "description": "INGLES NIVEL III",
+    "dayLabel": "Sábado",
+    "periodLabel": "Tarde",
+    "commission": "6400",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "14a16"
+  },
+  {
+    "planCode": "0903",
+    "description": "INGLES NIVEL III",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Tarde",
+    "commission": "7300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "12a14"
+  },
+  {
+    "planCode": "0903",
+    "description": "INGLES NIVEL III",
+    "dayLabel": "Sábado",
+    "periodLabel": "Tarde",
+    "commission": "7600",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "12a14"
+  },
+  {
+    "planCode": "0904",
+    "description": "INGLES NIVEL IV",
+    "dayLabel": "Lunes",
+    "periodLabel": "Mañana",
+    "commission": "1100",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a10"
+  },
+  {
+    "planCode": "0904",
+    "description": "INGLES NIVEL IV",
+    "dayLabel": "Lunes",
+    "periodLabel": "Tarde",
+    "commission": "1400",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "14a16"
+  },
+  {
+    "planCode": "0904",
+    "description": "INGLES NIVEL IV",
+    "dayLabel": "Lunes",
+    "periodLabel": "Tarde",
+    "commission": "1500",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "16a18"
+  },
+  {
+    "planCode": "0904",
+    "description": "INGLES NIVEL IV",
+    "dayLabel": "Lunes",
+    "periodLabel": "Noche",
+    "commission": "1800",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "21a23"
+  },
+  {
+    "planCode": "0904",
+    "description": "INGLES NIVEL IV",
+    "dayLabel": "Martes",
+    "periodLabel": "Mañana",
+    "commission": "2100",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a10"
+  },
+  {
+    "planCode": "0904",
+    "description": "INGLES NIVEL IV",
+    "dayLabel": "Martes",
+    "periodLabel": "Mañana",
+    "commission": "2200",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "10a12"
+  },
+  {
+    "planCode": "0904",
+    "description": "INGLES NIVEL IV",
+    "dayLabel": "Martes",
+    "periodLabel": "Tarde",
+    "commission": "2500",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "16a18"
+  },
+  {
+    "planCode": "0904",
+    "description": "INGLES NIVEL IV",
+    "dayLabel": "Martes",
+    "periodLabel": "Noche",
+    "commission": "2700",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a21"
+  },
+  {
+    "planCode": "0904",
+    "description": "INGLES NIVEL IV",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Mañana",
+    "commission": "3100",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a10"
+  },
+  {
+    "planCode": "0904",
+    "description": "INGLES NIVEL IV",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Mañana",
+    "commission": "3200",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "10a12"
+  },
+  {
+    "planCode": "0904",
+    "description": "INGLES NIVEL IV",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Tarde",
+    "commission": "3400",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "14a16"
+  },
+  {
+    "planCode": "0904",
+    "description": "INGLES NIVEL IV",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Noche",
+    "commission": "3700",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a21"
+  },
+  {
+    "planCode": "0904",
+    "description": "INGLES NIVEL IV",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Noche",
+    "commission": "3800",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "21a23"
+  },
+  {
+    "planCode": "0904",
+    "description": "INGLES NIVEL IV",
+    "dayLabel": "Jueves",
+    "periodLabel": "Mañana",
+    "commission": "4100",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a10"
+  },
+  {
+    "planCode": "0904",
+    "description": "INGLES NIVEL IV",
+    "dayLabel": "Jueves",
+    "periodLabel": "Tarde",
+    "commission": "4400",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "14a16"
+  },
+  {
+    "planCode": "0904",
+    "description": "INGLES NIVEL IV",
+    "dayLabel": "Jueves",
+    "periodLabel": "Tarde",
+    "commission": "4500",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "16a18"
+  },
+  {
+    "planCode": "0904",
+    "description": "INGLES NIVEL IV",
+    "dayLabel": "Jueves",
+    "periodLabel": "Noche",
+    "commission": "4700",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a21"
+  },
+  {
+    "planCode": "0904",
+    "description": "INGLES NIVEL IV",
+    "dayLabel": "Jueves",
+    "periodLabel": "Noche",
+    "commission": "4800",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "21a23"
+  },
+  {
+    "planCode": "0904",
+    "description": "INGLES NIVEL IV",
+    "dayLabel": "Viernes",
+    "periodLabel": "Mañana",
+    "commission": "5200",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "10a12"
+  },
+  {
+    "planCode": "0904",
+    "description": "INGLES NIVEL IV",
+    "dayLabel": "Viernes",
+    "periodLabel": "Noche",
+    "commission": "5700",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a21"
+  },
+  {
+    "planCode": "0904",
+    "description": "INGLES NIVEL IV",
+    "dayLabel": "Viernes",
+    "periodLabel": "Noche",
+    "commission": "5800",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "21a23"
+  },
+  {
+    "planCode": "0904",
+    "description": "INGLES NIVEL IV",
+    "dayLabel": "Sábado",
+    "periodLabel": "Mañana",
+    "commission": "6100",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a10"
+  },
+  {
+    "planCode": "0904",
+    "description": "INGLES NIVEL IV",
+    "dayLabel": "Sábado",
+    "periodLabel": "Mañana",
+    "commission": "6200",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "10a12"
+  },
+  {
+    "planCode": "0904",
+    "description": "INGLES NIVEL IV",
+    "dayLabel": "Sábado",
+    "periodLabel": "Tarde",
+    "commission": "6400",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "14a16"
+  },
+  {
+    "planCode": "0904",
+    "description": "INGLES NIVEL IV",
+    "dayLabel": "Sábado",
+    "periodLabel": "Tarde",
+    "commission": "7600",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "12a14"
+  },
+  {
+    "planCode": "0911",
+    "description": "COMPUTACION NIVEL I",
+    "dayLabel": "Lunes",
+    "periodLabel": "Mañana",
+    "commission": "1300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "0911",
+    "description": "COMPUTACION NIVEL I",
+    "dayLabel": "Lunes",
+    "periodLabel": "Tarde",
+    "commission": "1600",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "14a18"
+  },
+  {
+    "planCode": "0911",
+    "description": "COMPUTACION NIVEL I",
+    "dayLabel": "Lunes",
+    "periodLabel": "Noche",
+    "commission": "1900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "0911",
+    "description": "COMPUTACION NIVEL I",
+    "dayLabel": "Martes",
+    "periodLabel": "Mañana",
+    "commission": "2300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "0911",
+    "description": "COMPUTACION NIVEL I",
+    "dayLabel": "Martes",
+    "periodLabel": "Tarde",
+    "commission": "2600",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "14a18"
+  },
+  {
+    "planCode": "0911",
+    "description": "COMPUTACION NIVEL I",
+    "dayLabel": "Martes",
+    "periodLabel": "Noche",
+    "commission": "2900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "0911",
+    "description": "COMPUTACION NIVEL I",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Mañana",
+    "commission": "3300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "0911",
+    "description": "COMPUTACION NIVEL I",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Tarde",
+    "commission": "3600",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "14a18"
+  },
+  {
+    "planCode": "0911",
+    "description": "COMPUTACION NIVEL I",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Noche",
+    "commission": "3900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "0911",
+    "description": "COMPUTACION NIVEL I",
+    "dayLabel": "Jueves",
+    "periodLabel": "Mañana",
+    "commission": "4300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "0911",
+    "description": "COMPUTACION NIVEL I",
+    "dayLabel": "Jueves",
+    "periodLabel": "Tarde",
+    "commission": "4600",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "14a18"
+  },
+  {
+    "planCode": "0911",
+    "description": "COMPUTACION NIVEL I",
+    "dayLabel": "Jueves",
+    "periodLabel": "Noche",
+    "commission": "4900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "0911",
+    "description": "COMPUTACION NIVEL I",
+    "dayLabel": "Viernes",
+    "periodLabel": "Tarde",
+    "commission": "5600",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "14a18"
+  },
+  {
+    "planCode": "0911",
+    "description": "COMPUTACION NIVEL I",
+    "dayLabel": "Viernes",
+    "periodLabel": "Noche",
+    "commission": "5900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "0911",
+    "description": "COMPUTACION NIVEL I",
+    "dayLabel": "Sábado",
+    "periodLabel": "Mañana",
+    "commission": "6300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "0911",
+    "description": "COMPUTACION NIVEL I",
+    "dayLabel": "A distancia",
+    "periodLabel": "Virtual",
+    "commission": "6900",
+    "modality": "A distancia",
+    "location": "UADE",
+    "schedule": ""
+  },
+  {
+    "planCode": "0912",
+    "description": "COMPUTACION NIVEL II",
+    "dayLabel": "Lunes",
+    "periodLabel": "Mañana",
+    "commission": "1300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "0912",
+    "description": "COMPUTACION NIVEL II",
+    "dayLabel": "Lunes",
+    "periodLabel": "Tarde",
+    "commission": "1600",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "14a18"
+  },
+  {
+    "planCode": "0912",
+    "description": "COMPUTACION NIVEL II",
+    "dayLabel": "Lunes",
+    "periodLabel": "Noche",
+    "commission": "1900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "0912",
+    "description": "COMPUTACION NIVEL II",
+    "dayLabel": "Martes",
+    "periodLabel": "Mañana",
+    "commission": "2300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "0912",
+    "description": "COMPUTACION NIVEL II",
+    "dayLabel": "Martes",
+    "periodLabel": "Tarde",
+    "commission": "2600",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "14a18"
+  },
+  {
+    "planCode": "0912",
+    "description": "COMPUTACION NIVEL II",
+    "dayLabel": "Martes",
+    "periodLabel": "Noche",
+    "commission": "2900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "0912",
+    "description": "COMPUTACION NIVEL II",
+    "dayLabel": "Martes",
+    "periodLabel": "Noche",
+    "commission": "2900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "0912",
+    "description": "COMPUTACION NIVEL II",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Mañana",
+    "commission": "3300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "0912",
+    "description": "COMPUTACION NIVEL II",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Tarde",
+    "commission": "3600",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "14a18"
+  },
+  {
+    "planCode": "0912",
+    "description": "COMPUTACION NIVEL II",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Noche",
+    "commission": "3900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "0912",
+    "description": "COMPUTACION NIVEL II",
+    "dayLabel": "Jueves",
+    "periodLabel": "Mañana",
+    "commission": "4300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "0912",
+    "description": "COMPUTACION NIVEL II",
+    "dayLabel": "Jueves",
+    "periodLabel": "Tarde",
+    "commission": "4600",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "14a18"
+  },
+  {
+    "planCode": "0912",
+    "description": "COMPUTACION NIVEL II",
+    "dayLabel": "Jueves",
+    "periodLabel": "Noche",
+    "commission": "4900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "0912",
+    "description": "COMPUTACION NIVEL II",
+    "dayLabel": "Viernes",
+    "periodLabel": "Tarde",
+    "commission": "5600",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "14a18"
+  },
+  {
+    "planCode": "0912",
+    "description": "COMPUTACION NIVEL II",
+    "dayLabel": "Viernes",
+    "periodLabel": "Noche",
+    "commission": "5900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "0912",
+    "description": "COMPUTACION NIVEL II",
+    "dayLabel": "Sábado",
+    "periodLabel": "Mañana",
+    "commission": "6300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "0912",
+    "description": "COMPUTACION NIVEL II",
+    "dayLabel": "A distancia",
+    "periodLabel": "Virtual",
+    "commission": "6900",
+    "modality": "A distancia",
+    "location": "UADE",
+    "schedule": ""
+  },
+  {
+    "planCode": "3599",
+    "description": "REDES MOVILES E IOT",
+    "dayLabel": "Lunes",
+    "periodLabel": "Noche",
+    "commission": "1900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3621",
+    "description": "MATEMATICA DISCRETA",
+    "dayLabel": "Martes",
+    "periodLabel": "Noche",
+    "commission": "2900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3621",
+    "description": "MATEMATICA DISCRETA",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Mañana",
+    "commission": "3300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "3621",
+    "description": "MATEMATICA DISCRETA",
+    "dayLabel": "Jueves",
+    "periodLabel": "Tarde",
+    "commission": "4600",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "14a18"
+  },
+  {
+    "planCode": "3621",
+    "description": "MATEMATICA DISCRETA",
+    "dayLabel": "Jueves",
+    "periodLabel": "Noche",
+    "commission": "4900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3621",
+    "description": "MATEMATICA DISCRETA",
+    "dayLabel": "Jueves",
+    "periodLabel": "Noche",
+    "commission": "4900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3622",
+    "description": "ANALISIS MATEMATICO I",
+    "dayLabel": "Lunes",
+    "periodLabel": "Noche",
+    "commission": "1900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3622",
+    "description": "ANALISIS MATEMATICO I",
+    "dayLabel": "Martes",
+    "periodLabel": "Mañana",
+    "commission": "2300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "3622",
+    "description": "ANALISIS MATEMATICO I",
+    "dayLabel": "Martes",
+    "periodLabel": "Noche",
+    "commission": "2900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3622",
+    "description": "ANALISIS MATEMATICO I",
+    "dayLabel": "Jueves",
+    "periodLabel": "Mañana",
+    "commission": "4300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "3622",
+    "description": "ANALISIS MATEMATICO I",
+    "dayLabel": "Jueves",
+    "periodLabel": "Noche",
+    "commission": "4900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3622",
+    "description": "ANALISIS MATEMATICO I",
+    "dayLabel": "Viernes",
+    "periodLabel": "Tarde",
+    "commission": "5600",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "14a18"
+  },
+  {
+    "planCode": "3622",
+    "description": "ANALISIS MATEMATICO I",
+    "dayLabel": "Viernes",
+    "periodLabel": "Noche",
+    "commission": "5900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3623",
+    "description": "PROGRAMACION INICIAL",
+    "dayLabel": "Lunes",
+    "periodLabel": "Mañana",
+    "commission": "1300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "3623",
+    "description": "PROGRAMACION INICIAL",
+    "dayLabel": "Lunes",
+    "periodLabel": "Tarde",
+    "commission": "1600",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "14a18"
+  },
+  {
+    "planCode": "3623",
+    "description": "PROGRAMACION INICIAL",
+    "dayLabel": "Martes",
+    "periodLabel": "Mañana",
+    "commission": "2300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "3623",
+    "description": "PROGRAMACION INICIAL",
+    "dayLabel": "Martes",
+    "periodLabel": "Noche",
+    "commission": "2900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3623",
+    "description": "PROGRAMACION INICIAL",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Mañana",
+    "commission": "3300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "3623",
+    "description": "PROGRAMACION INICIAL",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Noche",
+    "commission": "3900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3623",
+    "description": "PROGRAMACION INICIAL",
+    "dayLabel": "Jueves",
+    "periodLabel": "Noche",
+    "commission": "4900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3624",
+    "description": "INTRODUCCION A LOS SISTEMAS DE INFORMACION",
+    "dayLabel": "Lunes",
+    "periodLabel": "Noche",
+    "commission": "1900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3624",
+    "description": "INTRODUCCION A LOS SISTEMAS DE INFORMACION",
+    "dayLabel": "Martes",
+    "periodLabel": "Noche",
+    "commission": "2900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3624",
+    "description": "INTRODUCCION A LOS SISTEMAS DE INFORMACION",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Mañana",
+    "commission": "3300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "3624",
+    "description": "INTRODUCCION A LOS SISTEMAS DE INFORMACION",
+    "dayLabel": "Jueves",
+    "periodLabel": "Mañana",
+    "commission": "4300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "3625",
+    "description": "SISTEMAS DE NUMERACION",
+    "dayLabel": "Lunes",
+    "periodLabel": "Noche",
+    "commission": "1900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3625",
+    "description": "SISTEMAS DE NUMERACION",
+    "dayLabel": "Martes",
+    "periodLabel": "Mañana",
+    "commission": "2300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "3625",
+    "description": "SISTEMAS DE NUMERACION",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Mañana",
+    "commission": "3300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "3625",
+    "description": "SISTEMAS DE NUMERACION",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Noche",
+    "commission": "3900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3626",
+    "description": "PRINCIPIOS DE CALIDAD DE SOFTWARE",
+    "dayLabel": "Jueves",
+    "periodLabel": "Noche",
+    "commission": "4900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3626",
+    "description": "PRINCIPIOS DE CALIDAD DE SOFTWARE",
+    "dayLabel": "Martes",
+    "periodLabel": "Mañana",
+    "commission": "2300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "3626",
+    "description": "PRINCIPIOS DE CALIDAD DE SOFTWARE",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Noche",
+    "commission": "3900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3626",
+    "description": "PRINCIPIOS DE CALIDAD DE SOFTWARE",
+    "dayLabel": "Jueves",
+    "periodLabel": "Noche",
+    "commission": "4900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3626",
+    "description": "PRINCIPIOS DE CALIDAD DE SOFTWARE",
+    "dayLabel": "Viernes",
+    "periodLabel": "Noche",
+    "commission": "5900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3627",
+    "description": "ALGEBRA Y GEOMETRIA ANALITICA I",
+    "dayLabel": "Lunes",
+    "periodLabel": "Mañana",
+    "commission": "1300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "3627",
+    "description": "ALGEBRA Y GEOMETRIA ANALITICA I",
+    "dayLabel": "Lunes",
+    "periodLabel": "Noche",
+    "commission": "1900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3627",
+    "description": "ALGEBRA Y GEOMETRIA ANALITICA I",
+    "dayLabel": "Martes",
+    "periodLabel": "Tarde",
+    "commission": "2600",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "14a18"
+  },
+  {
+    "planCode": "3627",
+    "description": "ALGEBRA Y GEOMETRIA ANALITICA I",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Noche",
+    "commission": "3900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3627",
+    "description": "ALGEBRA Y GEOMETRIA ANALITICA I",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Noche",
+    "commission": "3900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3627",
+    "description": "ALGEBRA Y GEOMETRIA ANALITICA I",
+    "dayLabel": "Jueves",
+    "periodLabel": "Mañana",
+    "commission": "4300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "3627",
+    "description": "ALGEBRA Y GEOMETRIA ANALITICA I",
+    "dayLabel": "Jueves",
+    "periodLabel": "Tarde",
+    "commission": "4600",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "14a18"
+  },
+  {
+    "planCode": "3627",
+    "description": "ALGEBRA Y GEOMETRIA ANALITICA I",
+    "dayLabel": "Viernes",
+    "periodLabel": "Mañana",
+    "commission": "5300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "3627",
+    "description": "ALGEBRA Y GEOMETRIA ANALITICA I",
+    "dayLabel": "Viernes",
+    "periodLabel": "Noche",
+    "commission": "5900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3628",
+    "description": "FISICA I",
+    "dayLabel": "Martes",
+    "periodLabel": "Mañana",
+    "commission": "2300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "3628",
+    "description": "FISICA I",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Tarde",
+    "commission": "3600",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "14a18"
+  },
+  {
+    "planCode": "3628",
+    "description": "FISICA I",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Noche",
+    "commission": "3900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3628",
+    "description": "FISICA I",
+    "dayLabel": "Jueves",
+    "periodLabel": "Mañana",
+    "commission": "4300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "3629",
+    "description": "PROGRAMACION ESTRUCTURADA BASICA",
+    "dayLabel": "Lunes",
+    "periodLabel": "Mañana",
+    "commission": "1300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "3629",
+    "description": "PROGRAMACION ESTRUCTURADA BASICA",
+    "dayLabel": "Lunes",
+    "periodLabel": "Tarde",
+    "commission": "1600",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "14a18"
+  },
+  {
+    "planCode": "3629",
+    "description": "PROGRAMACION ESTRUCTURADA BASICA",
+    "dayLabel": "Lunes",
+    "periodLabel": "Noche",
+    "commission": "1900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3629",
+    "description": "PROGRAMACION ESTRUCTURADA BASICA",
+    "dayLabel": "Martes",
+    "periodLabel": "Mañana",
+    "commission": "2300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "3629",
+    "description": "PROGRAMACION ESTRUCTURADA BASICA",
+    "dayLabel": "Martes",
+    "periodLabel": "Tarde",
+    "commission": "2600",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "14a18"
+  },
+  {
+    "planCode": "3629",
+    "description": "PROGRAMACION ESTRUCTURADA BASICA",
+    "dayLabel": "Jueves",
+    "periodLabel": "Mañana",
+    "commission": "4300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "3629",
+    "description": "PROGRAMACION ESTRUCTURADA BASICA",
+    "dayLabel": "Jueves",
+    "periodLabel": "Tarde",
+    "commission": "4600",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "14a18"
+  },
+  {
+    "planCode": "3629",
+    "description": "PROGRAMACION ESTRUCTURADA BASICA",
+    "dayLabel": "Viernes",
+    "periodLabel": "Noche",
+    "commission": "5900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3630",
+    "description": "INTRODUCCION A LA GESTION DE REQUISITOS",
+    "dayLabel": "Martes",
+    "periodLabel": "Mañana",
+    "commission": "2300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "3630",
+    "description": "INTRODUCCION A LA GESTION DE REQUISITOS",
+    "dayLabel": "Martes",
+    "periodLabel": "Noche",
+    "commission": "2900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3630",
+    "description": "INTRODUCCION A LA GESTION DE REQUISITOS",
+    "dayLabel": "Jueves",
+    "periodLabel": "Mañana",
+    "commission": "4300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "3630",
+    "description": "INTRODUCCION A LA GESTION DE REQUISITOS",
+    "dayLabel": "Jueves",
+    "periodLabel": "Noche",
+    "commission": "4900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3631",
+    "description": "FUNDAMENTOS DE SISTEMAS EMBEBIDOS",
+    "dayLabel": "Lunes",
+    "periodLabel": "Mañana",
+    "commission": "1300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "3631",
+    "description": "FUNDAMENTOS DE SISTEMAS EMBEBIDOS",
+    "dayLabel": "Lunes",
+    "periodLabel": "Tarde",
+    "commission": "1600",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "14a18"
+  },
+  {
+    "planCode": "3631",
+    "description": "FUNDAMENTOS DE SISTEMAS EMBEBIDOS",
+    "dayLabel": "Martes",
+    "periodLabel": "Noche",
+    "commission": "2900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3631",
+    "description": "FUNDAMENTOS DE SISTEMAS EMBEBIDOS",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Mañana",
+    "commission": "3300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "3631",
+    "description": "FUNDAMENTOS DE SISTEMAS EMBEBIDOS",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Noche",
+    "commission": "3900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3632",
+    "description": "INTRODUCCION A LOS PROYECTOS INFORMATICOS",
+    "dayLabel": "Viernes",
+    "periodLabel": "Mañana",
+    "commission": "5300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "3632",
+    "description": "INTRODUCCION A LOS PROYECTOS INFORMATICOS",
+    "dayLabel": "Martes",
+    "periodLabel": "Mañana",
+    "commission": "2300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "3632",
+    "description": "INTRODUCCION A LOS PROYECTOS INFORMATICOS",
+    "dayLabel": "Martes",
+    "periodLabel": "Noche",
+    "commission": "2900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3632",
+    "description": "INTRODUCCION A LOS PROYECTOS INFORMATICOS",
+    "dayLabel": "Viernes",
+    "periodLabel": "Mañana",
+    "commission": "5300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "3632",
+    "description": "INTRODUCCION A LOS PROYECTOS INFORMATICOS",
+    "dayLabel": "Sábado",
+    "periodLabel": "Mañana",
+    "commission": "6300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "3633",
+    "description": "ANALISIS MATEMATICO II",
+    "dayLabel": "Lunes",
+    "periodLabel": "Tarde",
+    "commission": "1600",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "14a18"
+  },
+  {
+    "planCode": "3633",
+    "description": "ANALISIS MATEMATICO II",
+    "dayLabel": "Martes",
+    "periodLabel": "Mañana",
+    "commission": "2300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "3633",
+    "description": "ANALISIS MATEMATICO II",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Noche",
+    "commission": "3900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3633",
+    "description": "ANALISIS MATEMATICO II",
+    "dayLabel": "Jueves",
+    "periodLabel": "Mañana",
+    "commission": "4300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "3633",
+    "description": "ANALISIS MATEMATICO II",
+    "dayLabel": "Viernes",
+    "periodLabel": "Noche",
+    "commission": "5900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3634",
+    "description": "FISICA II",
+    "dayLabel": "Lunes",
+    "periodLabel": "Noche",
+    "commission": "1900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3634",
+    "description": "FISICA II",
+    "dayLabel": "Viernes",
+    "periodLabel": "Mañana",
+    "commission": "5300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "3635",
+    "description": "TOPICOS DE PROGRAMACION",
+    "dayLabel": "Lunes",
+    "periodLabel": "Noche",
+    "commission": "1900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3635",
+    "description": "TOPICOS DE PROGRAMACION",
+    "dayLabel": "Martes",
+    "periodLabel": "Tarde",
+    "commission": "2600",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "14a18"
+  },
+  {
+    "planCode": "3635",
+    "description": "TOPICOS DE PROGRAMACION",
+    "dayLabel": "Martes",
+    "periodLabel": "Noche",
+    "commission": "2900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3635",
+    "description": "TOPICOS DE PROGRAMACION",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Tarde",
+    "commission": "3600",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "14a18"
+  },
+  {
+    "planCode": "3635",
+    "description": "TOPICOS DE PROGRAMACION",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Noche",
+    "commission": "3900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3635",
+    "description": "TOPICOS DE PROGRAMACION",
+    "dayLabel": "Jueves",
+    "periodLabel": "Mañana",
+    "commission": "4300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "3635",
+    "description": "TOPICOS DE PROGRAMACION",
+    "dayLabel": "Jueves",
+    "periodLabel": "Noche",
+    "commission": "4900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3635",
+    "description": "TOPICOS DE PROGRAMACION",
+    "dayLabel": "Viernes",
+    "periodLabel": "Noche",
+    "commission": "5900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3635",
+    "description": "TOPICOS DE PROGRAMACION",
+    "dayLabel": "Sábado",
+    "periodLabel": "Mañana",
+    "commission": "6300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "3636",
+    "description": "BASES DE DATOS",
+    "dayLabel": "Lunes",
+    "periodLabel": "Noche",
+    "commission": "1900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3636",
+    "description": "BASES DE DATOS",
+    "dayLabel": "Martes",
+    "periodLabel": "Noche",
+    "commission": "2900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3636",
+    "description": "BASES DE DATOS",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Noche",
+    "commission": "3900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3636",
+    "description": "BASES DE DATOS",
+    "dayLabel": "Jueves",
+    "periodLabel": "Noche",
+    "commission": "4900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3636",
+    "description": "BASES DE DATOS",
+    "dayLabel": "Sábado",
+    "periodLabel": "Mañana",
+    "commission": "6300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "3637",
+    "description": "ANALISIS DE SISTEMAS",
+    "dayLabel": "Lunes",
+    "periodLabel": "Noche",
+    "commission": "1900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3637",
+    "description": "ANALISIS DE SISTEMAS",
+    "dayLabel": "Martes",
+    "periodLabel": "Mañana",
+    "commission": "2300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "3637",
+    "description": "ANALISIS DE SISTEMAS",
+    "dayLabel": "Jueves",
+    "periodLabel": "Noche",
+    "commission": "4900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3637",
+    "description": "ANALISIS DE SISTEMAS",
+    "dayLabel": "Viernes",
+    "periodLabel": "Mañana",
+    "commission": "5300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "3638",
+    "description": "ARQUITECTURA DE COMPUTADORAS",
+    "dayLabel": "Lunes",
+    "periodLabel": "Noche",
+    "commission": "1900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3638",
+    "description": "ARQUITECTURA DE COMPUTADORAS",
+    "dayLabel": "Martes",
+    "periodLabel": "Tarde",
+    "commission": "2600",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "14a18"
+  },
+  {
+    "planCode": "3638",
+    "description": "ARQUITECTURA DE COMPUTADORAS",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Tarde",
+    "commission": "3600",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "14a18"
+  },
+  {
+    "planCode": "3638",
+    "description": "ARQUITECTURA DE COMPUTADORAS",
+    "dayLabel": "Jueves",
+    "periodLabel": "Noche",
+    "commission": "4900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3638",
+    "description": "ARQUITECTURA DE COMPUTADORAS",
+    "dayLabel": "Viernes",
+    "periodLabel": "Tarde",
+    "commission": "5600",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "14a18"
+  },
+  {
+    "planCode": "3638",
+    "description": "ARQUITECTURA DE COMPUTADORAS",
+    "dayLabel": "Viernes",
+    "periodLabel": "Noche",
+    "commission": "5900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3639",
+    "description": "ANALISIS MATEMATICO III",
+    "dayLabel": "Martes",
+    "periodLabel": "Mañana",
+    "commission": "2300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "3639",
+    "description": "ANALISIS MATEMATICO III",
+    "dayLabel": "Jueves",
+    "periodLabel": "Mañana",
+    "commission": "4300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "3639",
+    "description": "ANALISIS MATEMATICO III",
+    "dayLabel": "Viernes",
+    "periodLabel": "Tarde",
+    "commission": "5600",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "14a18"
+  },
+  {
+    "planCode": "3639",
+    "description": "ANALISIS MATEMATICO III",
+    "dayLabel": "Viernes",
+    "periodLabel": "Noche",
+    "commission": "5900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3640",
+    "description": "ALGORITMOS Y ESTRUCTURAS DE DATOS",
+    "dayLabel": "Lunes",
+    "periodLabel": "Noche",
+    "commission": "1900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3640",
+    "description": "ALGORITMOS Y ESTRUCTURAS DE DATOS",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Mañana",
+    "commission": "3300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "3640",
+    "description": "ALGORITMOS Y ESTRUCTURAS DE DATOS",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Tarde",
+    "commission": "3600",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "14a18"
+  },
+  {
+    "planCode": "3640",
+    "description": "ALGORITMOS Y ESTRUCTURAS DE DATOS",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Noche",
+    "commission": "3900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3641",
+    "description": "BASES DE DATOS APLICADAS",
+    "dayLabel": "Martes",
+    "periodLabel": "Noche",
+    "commission": "2900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3641",
+    "description": "BASES DE DATOS APLICADAS",
+    "dayLabel": "Viernes",
+    "periodLabel": "Tarde",
+    "commission": "5600",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "14a18"
+  },
+  {
+    "planCode": "3642",
+    "description": "PRINCIPIOS DE DISEÑO DE SISTEMAS",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Noche",
+    "commission": "3900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3642",
+    "description": "PRINCIPIOS DE DISEÑO DE SISTEMAS",
+    "dayLabel": "Jueves",
+    "periodLabel": "Mañana",
+    "commission": "4300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "3643",
+    "description": "REDES DE COMPUTADORAS",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Mañana",
+    "commission": "3300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "3643",
+    "description": "REDES DE COMPUTADORAS",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Noche",
+    "commission": "3900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3644",
+    "description": "GESTION DE LAS ORGANIZACIONES",
+    "dayLabel": "Viernes",
+    "periodLabel": "Noche",
+    "commission": "5900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3644",
+    "description": "GESTION DE LAS ORGANIZACIONES",
+    "dayLabel": "Martes",
+    "periodLabel": "Noche",
+    "commission": "2900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3644",
+    "description": "GESTION DE LAS ORGANIZACIONES",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Noche",
+    "commission": "3900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3644",
+    "description": "GESTION DE LAS ORGANIZACIONES",
+    "dayLabel": "Jueves",
+    "periodLabel": "Noche",
+    "commission": "4900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3645",
+    "description": "ALGEBRA Y GEOMETRIA ANALITICA II",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Mañana",
+    "commission": "3300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "3645",
+    "description": "ALGEBRA Y GEOMETRIA ANALITICA II",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Tarde",
+    "commission": "3600",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "14a18"
+  },
+  {
+    "planCode": "3645",
+    "description": "ALGEBRA Y GEOMETRIA ANALITICA II",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Noche",
+    "commission": "3900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3645",
+    "description": "ALGEBRA Y GEOMETRIA ANALITICA II",
+    "dayLabel": "Sábado",
+    "periodLabel": "Mañana",
+    "commission": "6300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "3646",
+    "description": "PARADIGMAS DE PROGRAMACION",
+    "dayLabel": "Martes",
+    "periodLabel": "Noche",
+    "commission": "2900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3646",
+    "description": "PARADIGMAS DE PROGRAMACION",
+    "dayLabel": "Viernes",
+    "periodLabel": "Noche",
+    "commission": "5900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3647",
+    "description": "REQUISITOS AVANZADOS",
+    "dayLabel": "Lunes",
+    "periodLabel": "Noche",
+    "commission": "1900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3647",
+    "description": "REQUISITOS AVANZADOS",
+    "dayLabel": "Martes",
+    "periodLabel": "Noche",
+    "commission": "2900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3648",
+    "description": "DISEÑO DE SOFTWARE",
+    "dayLabel": "Lunes",
+    "periodLabel": "Noche",
+    "commission": "1900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3648",
+    "description": "DISEÑO DE SOFTWARE",
+    "dayLabel": "Jueves",
+    "periodLabel": "Mañana",
+    "commission": "4300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "3649",
+    "description": "SISTEMAS OPERATIVOS",
+    "dayLabel": "Lunes",
+    "periodLabel": "Noche",
+    "commission": "1900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3649",
+    "description": "SISTEMAS OPERATIVOS",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Noche",
+    "commission": "3900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3650",
+    "description": "SEGURIDAD DE LA INFORMACION",
+    "dayLabel": "Jueves",
+    "periodLabel": "Noche",
+    "commission": "4900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3650",
+    "description": "SEGURIDAD DE LA INFORMACION",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Noche",
+    "commission": "3900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3651",
+    "description": "PROBABILIDAD Y ESTADISTICA",
+    "dayLabel": "Martes",
+    "periodLabel": "Noche",
+    "commission": "2900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3651",
+    "description": "PROBABILIDAD Y ESTADISTICA",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Tarde",
+    "commission": "3600",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "14a18"
+  },
+  {
+    "planCode": "3651",
+    "description": "PROBABILIDAD Y ESTADISTICA",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Noche",
+    "commission": "3900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3651",
+    "description": "PROBABILIDAD Y ESTADISTICA",
+    "dayLabel": "Jueves",
+    "periodLabel": "Mañana",
+    "commission": "4300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "3651",
+    "description": "PROBABILIDAD Y ESTADISTICA",
+    "dayLabel": "Viernes",
+    "periodLabel": "Mañana",
+    "commission": "5300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "3652",
+    "description": "PROGRAMACION AVANZADA",
+    "dayLabel": "Jueves",
+    "periodLabel": "Tarde",
+    "commission": "4600",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "14a18"
+  },
+  {
+    "planCode": "3652",
+    "description": "PROGRAMACION AVANZADA",
+    "dayLabel": "Jueves",
+    "periodLabel": "Noche",
+    "commission": "4900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3653",
+    "description": "ARQUITECTURA DE SISTEMAS SOFTWARE",
+    "dayLabel": "Lunes",
+    "periodLabel": "Noche",
+    "commission": "1900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3654",
+    "description": "VIRTUALIZACION DE HARDWARE",
+    "dayLabel": "Martes",
+    "periodLabel": "Noche",
+    "commission": "2900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3654",
+    "description": "VIRTUALIZACION DE HARDWARE",
+    "dayLabel": "Jueves",
+    "periodLabel": "Noche",
+    "commission": "4900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3655",
+    "description": "AUDITORIA Y LEGISLACION",
+    "dayLabel": "Martes",
+    "periodLabel": "Noche",
+    "commission": "2900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3656",
+    "description": "ESTADISTICA APLICADA",
+    "dayLabel": "Martes",
+    "periodLabel": "Noche",
+    "commission": "2900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3656",
+    "description": "ESTADISTICA APLICADA",
+    "dayLabel": "Jueves",
+    "periodLabel": "Noche",
+    "commission": "4900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3657",
+    "description": "AUTOMATAS Y GRAMATICAS",
+    "dayLabel": "Viernes",
+    "periodLabel": "Noche",
+    "commission": "5900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3658",
+    "description": "PROGRAMACION CONCURRENTE",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Noche",
+    "commission": "3900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3659",
+    "description": "GESTION APLICADA AL DESARROLLO DE SOFTWARE I",
+    "dayLabel": "Jueves",
+    "periodLabel": "Noche",
+    "commission": "4900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3660",
+    "description": "SISTEMAS OPERATIVOS AVANZADOS",
+    "dayLabel": "Lunes",
+    "periodLabel": "Noche",
+    "commission": "1900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3660",
+    "description": "SISTEMAS OPERATIVOS AVANZADOS",
+    "dayLabel": "Martes",
+    "periodLabel": "Noche",
+    "commission": "2900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3661",
+    "description": "GESTION DE PROYECTOS",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Noche",
+    "commission": "3900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3662",
+    "description": "MATEMATICA APLICADA",
+    "dayLabel": "Viernes",
+    "periodLabel": "Noche",
+    "commission": "5900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3663",
+    "description": "LENGUAJES Y COMPILADORES",
+    "dayLabel": "Lunes",
+    "periodLabel": "Noche",
+    "commission": "1900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3663",
+    "description": "LENGUAJES Y COMPILADORES",
+    "dayLabel": "Martes",
+    "periodLabel": "Noche",
+    "commission": "2900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3664",
+    "description": "INTELIGENCIA ARTIFICIAL",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Noche",
+    "commission": "3900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3665",
+    "description": "GESTION APLICADA AL DESARROLLO DE SOFTWARE II",
+    "dayLabel": "Martes",
+    "periodLabel": "Noche",
+    "commission": "2900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3666",
+    "description": "SEGURIDAD APLICADA Y FORENSIA",
+    "dayLabel": "Lunes",
+    "periodLabel": "Noche",
+    "commission": "1900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3667",
+    "description": "GESTION DE LA CALIDAD EN PROCESOS DE SISTEMAS",
+    "dayLabel": "Martes",
+    "periodLabel": "Noche",
+    "commission": "2900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3668",
+    "description": "INTELIGENCIA ARTIFICIAL APLICADA",
+    "dayLabel": "Viernes",
+    "periodLabel": "Noche",
+    "commission": "5900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3669",
+    "description": "INNOVACION Y EMPRENDEDORISMO",
+    "dayLabel": "Martes",
+    "periodLabel": "Noche",
+    "commission": "2900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3670",
+    "description": "CIENCIA DE DATOS",
+    "dayLabel": "Jueves",
+    "periodLabel": "Noche",
+    "commission": "4900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3671",
+    "description": "PROYECTO FINAL DE CARRERA",
+    "dayLabel": "Sábado",
+    "periodLabel": "Tarde",
+    "commission": "6600",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "14a18"
+  },
+  {
+    "planCode": "3675",
+    "description": "PRACTICA PROFESIONAL SUPERVISADA",
+    "dayLabel": "Viernes",
+    "periodLabel": "Tarde",
+    "commission": "5600",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "14a18"
+  },
+  {
+    "planCode": "3676",
+    "description": "RESPONSABILIDAD SOCIAL UNIVERSITARIA",
+    "dayLabel": "Lunes",
+    "periodLabel": "Noche",
+    "commission": "1900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3676",
+    "description": "RESPONSABILIDAD SOCIAL UNIVERSITARIA",
+    "dayLabel": "Martes",
+    "periodLabel": "Noche",
+    "commission": "2900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3676",
+    "description": "RESPONSABILIDAD SOCIAL UNIVERSITARIA",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Mañana",
+    "commission": "3300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "3676",
+    "description": "RESPONSABILIDAD SOCIAL UNIVERSITARIA",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Tarde",
+    "commission": "3600",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "14a18"
+  },
+  {
+    "planCode": "3676",
+    "description": "RESPONSABILIDAD SOCIAL UNIVERSITARIA",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Noche",
+    "commission": "3900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3676",
+    "description": "RESPONSABILIDAD SOCIAL UNIVERSITARIA",
+    "dayLabel": "Viernes",
+    "periodLabel": "Mañana",
+    "commission": "5300",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "08a12"
+  },
+  {
+    "planCode": "3677",
+    "description": "LENGUAJE ORIENTADO A NEGOCIOS",
+    "dayLabel": "Miércoles",
+    "periodLabel": "Noche",
+    "commission": "3900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3678",
+    "description": "TECNOLOGIAS EN SEGURIDAD",
+    "dayLabel": "Lunes",
+    "periodLabel": "Noche",
+    "commission": "1900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3679",
+    "description": "VISION ARTIFICIAL",
+    "dayLabel": "Jueves",
+    "periodLabel": "Noche",
+    "commission": "4900",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "19a23"
+  },
+  {
+    "planCode": "3680",
+    "description": "TALLER DE INTEGRACION",
+    "dayLabel": "Sábado",
+    "periodLabel": "Tarde",
+    "commission": "7600",
+    "modality": "Presencial",
+    "location": "UADE",
+    "schedule": "12a14"
+  }
+]

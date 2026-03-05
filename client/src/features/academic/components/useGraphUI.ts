@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import type { Subject } from '../../../shared/types/academic';
 
 export const useGraphUI = () => {
@@ -23,3 +23,4 @@ export const useGraphUI = () => {
         containerClass,
     };
 };
+

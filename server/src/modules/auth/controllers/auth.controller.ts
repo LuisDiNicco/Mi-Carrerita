@@ -1,5 +1,16 @@
-import { Controller, Get, Post, Req, Res, UseGuards, Body } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+  Body,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { ConfigService } from '@nestjs/config';
+import { Throttle } from '@nestjs/throttler';
 import type { Request, Response } from 'express';
 import { AuthService } from '../services/auth.service';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
@@ -11,23 +22,31 @@ const REFRESH_COOKIE = 'refresh_token';
 const REFRESH_DAYS = 7;
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
-const getRefreshCookieOptions = () => ({
-  httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
-  sameSite: process.env.NODE_ENV === 'production' ? ('none' as const) : ('strict' as const),
-  maxAge: REFRESH_DAYS * MS_PER_DAY,
-  path: '/',
-});
-
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly configService: ConfigService,
+  ) { }
+
+  private getRefreshCookieOptions() {
+    const isProd = this.configService.get('NODE_ENV') === 'production';
+    return {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: isProd ? ('none' as const) : ('strict' as const),
+      maxAge: REFRESH_DAYS * MS_PER_DAY,
+      path: '/',
+    };
+  }
 
   @Post('register')
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
   async register(@Body() dto: RegisterDto, @Res() res: Response) {
     const result = await this.authService.register(dto);
 
-    res.cookie(REFRESH_COOKIE, result.refreshToken, getRefreshCookieOptions());
+    res.cookie(REFRESH_COOKIE, result.refreshToken, this.getRefreshCookieOptions());
 
     return res.json({
       accessToken: result.accessToken,
@@ -37,10 +56,11 @@ export class AuthController {
   }
 
   @Post('login')
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
   async login(@Body() dto: LoginDto, @Res() res: Response) {
     const result = await this.authService.login(dto);
 
-    res.cookie(REFRESH_COOKIE, result.refreshToken, getRefreshCookieOptions());
+    res.cookie(REFRESH_COOKIE, result.refreshToken, this.getRefreshCookieOptions());
 
     return res.json({
       accessToken: result.accessToken,
@@ -77,9 +97,9 @@ export class AuthController {
     };
     const { accessToken, refreshToken } =
       await this.authService.issueTokens(user);
-    const clientUrl = process.env.CLIENT_URL ?? 'http://localhost:5173';
+    const clientUrl = this.configService.get('CLIENT_URL') ?? 'http://localhost:5173';
 
-    res.cookie(REFRESH_COOKIE, refreshToken, getRefreshCookieOptions());
+    res.cookie(REFRESH_COOKIE, refreshToken, this.getRefreshCookieOptions());
 
     return res.redirect(`${clientUrl}/?${ACCESS_TOKEN_PARAM}=${accessToken}`);
   }
@@ -102,7 +122,7 @@ export class AuthController {
     const result = await this.authService.refreshAccessToken(refreshToken);
 
     // Actualiza el cookie con el nuevo refresh token
-    res.cookie(REFRESH_COOKIE, result.refreshToken, getRefreshCookieOptions());
+    res.cookie(REFRESH_COOKIE, result.refreshToken, this.getRefreshCookieOptions());
 
     return res.json({
       accessToken: result.accessToken,

@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import type { Subject } from '../../../shared/types/academic';
 import { SubjectStatus } from '../../../shared/types/academic';
 import { RetroButton, RetroCalendar } from '../../../shared/ui';
-import { Calendar } from 'lucide-react';
+import { Calendar, AlertTriangle } from 'lucide-react';
 import { fromISODate, toISODate } from '../../../shared/lib/utils';
 
 interface SubjectUpdatePanelProps {
@@ -102,7 +102,7 @@ export const SubjectUpdatePanel = ({ subject, isOpen, onClose, onSave }: Subject
       const normalizedGrade = gradeValue !== null && Number.isNaN(gradeValue) ? null : gradeValue;
       const difficultyValue = difficulty.trim() === '' ? null : Number(difficulty);
       const normalizedDifficulty = difficultyValue !== null && Number.isNaN(difficultyValue) ? null : difficultyValue;
-      // Convert DD/MM/YYYY → ISO before sending to API
+      // Convert DD/MM/YYYY †’ ISO before sending to API
       const isoDate = statusDate.trim() === '' ? null : toISODate(statusDate);
       const statusDateValue = isoDate || null;
       const notesValue = notes.trim() === '' ? null : notes.trim();
@@ -162,9 +162,9 @@ export const SubjectUpdatePanel = ({ subject, isOpen, onClose, onSave }: Subject
             </label>
 
             {isStatusLocked && (
-              <div className="mt-4 p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg text-xs tracking-wide">
-                <span className="text-blue-400 font-bold mb-1 block">INFO:</span>
-                El estado <strong className="text-blue-300">Disponible</strong> se calcula automáticamente. Para modificar la materia, elegí un estado real.
+              <div className="mt-4 p-3 bg-primary/10 border border-primary/30 rounded-lg text-xs tracking-wide">
+                <span className="text-primary font-bold mb-1 block">INFO:</span>
+                El estado <strong className="text-primary">Disponible</strong> se calcula automáticamente. Para modificar la materia, elegí un estado real.
               </div>
             )}
           </div>
@@ -175,7 +175,7 @@ export const SubjectUpdatePanel = ({ subject, isOpen, onClose, onSave }: Subject
           <div className="flex justify-between items-start mb-6">
             <h3 className="text-lg font-retro text-app border-b-2 border-unlam-500/30 pb-1 inline-block">Detalles</h3>
             <button
-              className="text-muted hover:text-red-400 bg-surface border border-transparent hover:border-red-400/50 transition-all text-xl font-bold w-8 h-8 flex items-center justify-center rounded-lg shadow-sm"
+              className="text-muted hover:text-destructive bg-surface border border-transparent hover:border-destructive/50 transition-all text-xl font-bold w-8 h-8 flex items-center justify-center rounded-lg shadow-sm"
               onClick={onClose}
               aria-label="Cerrar"
             >
@@ -187,7 +187,7 @@ export const SubjectUpdatePanel = ({ subject, isOpen, onClose, onSave }: Subject
             <div className="space-y-4 flex-1 flex flex-col justify-center animate-[fadeIn_0.3s_ease-out]">
               <div className="p-5 border-2 border-yellow-500/50 bg-yellow-500/10 rounded-xl shadow-soft">
                 <h3 className="text-xl font-bold text-yellow-500 mb-3 font-retro flex items-center gap-2">
-                  <span className="text-2xl">⚠️</span> ¿Forzar Cambio?
+                  <AlertTriangle size={24} /> ¿Forzar Cambio?
                 </h3>
                 <p className="text-sm text-app/90 leading-relaxed">
                   Esta materia figura como <strong className="bg-yellow-500/20 px-1 rounded text-yellow-400">PENDIENTE</strong> (bloqueada).
@@ -220,7 +220,7 @@ export const SubjectUpdatePanel = ({ subject, isOpen, onClose, onSave }: Subject
                   <span className="font-bold flex justify-between">
                     Nota
                     {status === SubjectStatus.APROBADA ? (
-                      <span className="font-bold text-[10px] text-red-500 bg-red-500/10 px-1.5 py-0.5 rounded border border-red-500/20">* Obligatorio</span>
+                      <span className="font-bold text-[10px] text-destructive bg-destructive/10 px-1.5 py-0.5 rounded border border-destructive/20">* Obligatorio</span>
                     ) : (
                       <span className="font-normal text-[10px] bg-surface px-1.5 py-0.5 rounded border border-app-border">Opcional</span>
                     )}
@@ -238,7 +238,7 @@ export const SubjectUpdatePanel = ({ subject, isOpen, onClose, onSave }: Subject
                     }}
                     disabled={status === SubjectStatus.RECURSADA}
                   />
-                  {status === SubjectStatus.RECURSADA && <span className="text-[10px] text-red-400 tracking-wide">* Nota asignada auto x recursar</span>}
+                  {status === SubjectStatus.RECURSADA && <span className="text-[10px] text-destructive tracking-wide">* Nota asignada auto x recursar</span>}
                 </label>
 
                 <label className="flex flex-col gap-2 text-sm text-muted">
@@ -298,14 +298,14 @@ export const SubjectUpdatePanel = ({ subject, isOpen, onClose, onSave }: Subject
                   className="w-full h-full min-h-[80px] bg-elevated border-2 border-app-border rounded-lg px-3 py-2.5 text-app resize-none focus:border-unlam-500 focus:ring-2 focus:ring-unlam-500/20 outline-none transition-all placeholder:text-muted/50"
                   value={notes}
                   onChange={(event) => setNotes(event.target.value)}
-                  placeholder="Ej: El final es oral y toma diseño de DB..."
+                  placeholder="Ej: El final es oral y toma diseío de DB..."
                 />
               </label>
 
               {error && (
-                <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg animate-[fadeIn_0.2s_ease-in]">
-                  <p className="text-sm text-red-400 font-bold flex items-center gap-2">
-                    <span>⛔</span> {error}
+                <div className="p-3 bg-destructive/10 border border-destructive/30 rounded-lg animate-[fadeIn_0.2s_ease-in]">
+                  <p className="text-sm text-destructive font-bold flex items-center gap-2">
+                    <AlertTriangle size={16} /> {error}
                   </p>
                 </div>
               )}
@@ -335,3 +335,4 @@ export const SubjectUpdatePanel = ({ subject, isOpen, onClose, onSave }: Subject
 
   return createPortal(modalContent, document.body);
 };
+

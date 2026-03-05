@@ -44,14 +44,14 @@ describe('AcademicCareerService', () => {
   });
 
   describe('getCareerGraph', () => {
-    it('debería lanzar NotFoundException si no existe el user', async () => {
+    it('deberña lanzar NotFoundException si no existe el user', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
       await expect(service.getCareerGraph('test@test.com')).rejects.toThrow(
         NotFoundException,
       );
     });
 
-    it('debería retornar el grafo de materias correctamente formateado', async () => {
+    it('deberña retornar el grafo de materias correctamente formateado', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue({ id: 'u1' });
       mockPrismaService.subject.findMany.mockResolvedValue([
         {
@@ -83,7 +83,7 @@ describe('AcademicCareerService', () => {
   });
 
   describe('updateSubjectRecord', () => {
-    it('debería lanzar NotFoundException si no existe el user', async () => {
+    it('deberña lanzar NotFoundException si no existe el user', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
       await expect(
         service.updateSubjectRecord('t@t.com', 's1', {
@@ -92,7 +92,7 @@ describe('AcademicCareerService', () => {
       ).rejects.toThrow(NotFoundException);
     });
 
-    it('debería lanzar NotFoundException si no existe la materia', async () => {
+    it('deberña lanzar NotFoundException si no existe la materia', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue({ id: 'u1' });
       mockPrismaService.subject.findUnique.mockResolvedValue(null);
       await expect(
@@ -102,7 +102,7 @@ describe('AcademicCareerService', () => {
       ).rejects.toThrow(NotFoundException);
     });
 
-    it('debería actualizar satisfactoriamente y emitir el eventEmitter', async () => {
+    it('deberña actualizar satisfactoriamente y emitir el eventEmitter', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue({ id: 'u1' });
       mockPrismaService.subject.findUnique.mockResolvedValue({ id: 's1' });
 

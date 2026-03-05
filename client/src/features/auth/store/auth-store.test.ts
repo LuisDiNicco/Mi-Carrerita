@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+﻿import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { useAuthStore } from './auth-store';
 
 describe('useAuthStore', () => {
@@ -13,13 +13,13 @@ describe('useAuthStore', () => {
         vi.restoreAllMocks();
     });
 
-    it('debería inicializar vacío y como guest', () => {
+    it('deberí­a inicializar vací­o y como guest', () => {
         const state = useAuthStore.getState();
         expect(state.user).toBeNull();
         expect(state.isGuest).toBe(true);
     });
 
-    it('login debería establecer el usuario en state y localStorage', () => {
+    it('login deberí­a establecer el usuario en state y localStorage', () => {
         useAuthStore.getState().login(mockUser);
 
         expect(useAuthStore.getState().user).toEqual(mockUser);
@@ -28,7 +28,7 @@ describe('useAuthStore', () => {
         expect(localStorage.getItem('mi-carrerita-guest')).toBeNull();
     });
 
-    it('logout debería purgar el usuario de state y localStorage', () => {
+    it('logout deberí­a purgar el usuario de state y localStorage', () => {
         useAuthStore.getState().login(mockUser);
         useAuthStore.getState().logout();
 
@@ -38,7 +38,7 @@ describe('useAuthStore', () => {
         expect(localStorage.getItem('mi-carrerita-guest')).toBe('true');
     });
 
-    it('continueAsGuest debería purgar user y setear flags the guest', () => {
+    it('continueAsGuest deberí­a purgar user y setear flags the guest', () => {
         useAuthStore.getState().login(mockUser);
         useAuthStore.getState().continueAsGuest();
 
@@ -49,7 +49,7 @@ describe('useAuthStore', () => {
     });
 
     describe('hydrate', () => {
-        it('debería recuperar al usuario desde localStorage si existe y no reventar', () => {
+        it('deberí­a recuperar al usuario desde localStorage si existe y no reventar', () => {
             localStorage.setItem('mi-carrerita-user', JSON.stringify(mockUser));
             useAuthStore.getState().hydrate();
 
@@ -57,7 +57,7 @@ describe('useAuthStore', () => {
             expect(useAuthStore.getState().isGuest).toBe(false);
         });
 
-        it('debería ignorar la recuperación si el JSON de localStorage es corrupto', () => {
+        it('deberí­a ignorar la recuperacií³n si el JSON de localStorage es corrupto', () => {
             localStorage.setItem('mi-carrerita-user', 'invalid JSON');
             useAuthStore.getState().hydrate();
 
@@ -67,3 +67,4 @@ describe('useAuthStore', () => {
         });
     });
 });
+

@@ -1,60 +1,37 @@
 // server/src/main.ts
 import { NestFactory } from '@nestjs/core';
+import { WinstonModule } from 'nest-winston';
+import * as winston from 'winston';
 import { AppModule } from './app.module';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import cookieParser from 'cookie-parser';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'; // <--- Importar
 import { GlobalExceptionFilter } from './common/filters/http-exception.filter';
+import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import helmet from 'helmet';
-import { execSync } from 'node:child_process';
-import path from 'node:path';
-import fs from 'node:fs';
-
-async function ensureDevDatabase() {
-  if (process.env.NODE_ENV === 'production') {
-    return;
-  }
-
-  let projectRoot = path.resolve(process.cwd());
-  let schemaPath = path.resolve(projectRoot, 'prisma', 'schema.prisma');
-
-  if (!fs.existsSync(schemaPath)) {
-    projectRoot = path.resolve(__dirname, '..');
-    schemaPath = path.resolve(projectRoot, 'prisma', 'schema.prisma');
-  }
-
-  const autoReset = process.env.AUTO_DB_RESET !== 'false';
-
-  if (autoReset) {
-    execSync(
-      `npx prisma migrate reset --force --skip-generate --schema "${schemaPath}"`,
-      {
-        stdio: 'inherit',
-        cwd: projectRoot,
-      },
-    );
-  } else {
-    execSync(`npx prisma migrate deploy --schema "${schemaPath}"`, {
-      stdio: 'inherit',
-      cwd: projectRoot,
-    });
-  }
-
-  try {
-    execSync(`npx prisma db seed --schema "${schemaPath}"`, {
-      stdio: 'inherit',
-      cwd: projectRoot,
-    });
-  } catch {
-    // Seeding is optional for dev; ignore failures.
-  }
-}
-
+import { Request, Response } from 'express';
 async function bootstrap() {
-  await ensureDevDatabase();
+  const isProd = process.env.NODE_ENV === 'production';
 
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: WinstonModule.createLogger({
+      level: isProd ? 'info' : 'debug',
+      format: isProd
+        ? winston.format.combine(
+          winston.format.timestamp(),
+          winston.format.json()
+        )
+        : winston.format.combine(
+          winston.format.timestamp(),
+          winston.format.ms(),
+          winston.format.cli()
+        ),
+      transports: [
+        new winston.transports.Console()
+      ],
+    }),
+  });
   const logger = new Logger('Bootstrap');
   const configService = app.get(ConfigService);
 
@@ -67,6 +44,10 @@ async function bootstrap() {
 
   app.use(cookieParser());
 
+  app.use('/socket.io', (_req: Request, res: Response) => {
+    res.status(204).end();
+  });
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -76,6 +57,7 @@ async function bootstrap() {
   );
 
   app.useGlobalFilters(new GlobalExceptionFilter());
+  app.useGlobalInterceptors(new LoggingInterceptor());
 
   // --- CONFIGURACIÓN DE SWAGGER (DOCUMENTACIÓN) ---
   const config = new DocumentBuilder()

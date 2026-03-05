@@ -22,7 +22,8 @@ export const TROPHY_DEFINITIONS: TrophySeedDefinition[] = [
   {
     code: 'FIRST_SUBJECT_COMPLETED',
     name: 'Primer Paso',
-    description: 'Aprobar tu primera materia. ¡El viaje de mil materias empieza por una!',
+    description:
+      'Aprobar tu primera materia. ¡El viaje de mil materias empieza por una!',
     tier: TrophyTier.BRONZE,
     icon: 'https://via.placeholder.com/64?text=🥇',
     rarity: 85,
@@ -31,7 +32,8 @@ export const TROPHY_DEFINITIONS: TrophySeedDefinition[] = [
   {
     code: 'PERFECT_SCORE_10',
     name: 'Perfección',
-    description: 'Lograr un 10 perfecto en alguna materia. La nota máxima de la escala.',
+    description:
+      'Lograr un 10 perfecto en alguna materia. La nota máxima de la escala.',
     tier: TrophyTier.BRONZE,
     icon: 'https://via.placeholder.com/64?text=🌟',
     rarity: 15,
@@ -39,8 +41,9 @@ export const TROPHY_DEFINITIONS: TrophySeedDefinition[] = [
   },
   {
     code: 'TEN_SUBJECTS_PASSED',
-    name: 'Doble Dígito',
-    description: 'Aprobar 10 materias o más. Ya dejaste atrás el cuarto del primer año.',
+    name: 'Doble Dñgito',
+    description:
+      'Aprobar 10 materias o más. Ya dejaste atrás el cuarto del primer año.',
     tier: TrophyTier.BRONZE,
     icon: 'https://via.placeholder.com/64?text=🔟',
     rarity: 50,
@@ -49,7 +52,8 @@ export const TROPHY_DEFINITIONS: TrophySeedDefinition[] = [
   {
     code: 'YEAR_1_COMPLETION',
     name: 'Primer Año',
-    description: 'Completar todas las materias del 1er año. La base está sólida.',
+    description:
+      'Completar todas las materias del 1er año. La base está sólida.',
     tier: TrophyTier.BRONZE,
     icon: 'https://via.placeholder.com/64?text=📗',
     rarity: 40,
@@ -58,7 +62,8 @@ export const TROPHY_DEFINITIONS: TrophySeedDefinition[] = [
   {
     code: 'YEAR_2_COMPLETION',
     name: 'Segundo Año',
-    description: 'Completar todas las materias del 2do año. Ya pasaste el ecuador del inicial.',
+    description:
+      'Completar todas las materias del 2do año. Ya pasaste el ecuador del inicial.',
     tier: TrophyTier.BRONZE,
     icon: 'https://via.placeholder.com/64?text=📘',
     rarity: 25,
@@ -77,7 +82,8 @@ export const TROPHY_DEFINITIONS: TrophySeedDefinition[] = [
   {
     code: 'HOURS_100_COMPLETED',
     name: 'Maratonista',
-    description: 'Acumular 100 o más horas aprobadas. El esfuerzo se mide en horas.',
+    description:
+      'Acumular 100 o más horas aprobadas. El esfuerzo se mide en horas.',
     tier: TrophyTier.BRONZE,
     icon: 'https://via.placeholder.com/64?text=⏱️',
     rarity: 70,
@@ -86,7 +92,8 @@ export const TROPHY_DEFINITIONS: TrophySeedDefinition[] = [
   {
     code: 'CONSISTENCY_BRONZE',
     name: 'Constante',
-    description: 'Tener aprobaciones en 4 o más cuatrimestres distintos. La continuidad es clave.',
+    description:
+      'Tener aprobaciones en 4 o más cuatrimestres distintos. La continuidad es clave.',
     tier: TrophyTier.BRONZE,
     icon: 'https://via.placeholder.com/64?text=📅',
     rarity: 28,
@@ -95,7 +102,8 @@ export const TROPHY_DEFINITIONS: TrophySeedDefinition[] = [
   {
     code: 'AVERAGE_80_OVERALL',
     name: 'Sólido',
-    description: 'Mantener un promedio general ≥ 8. Solidez académica demostrada.',
+    description:
+      'Mantener un promedio general ≥ 8. Solidez académica demostrada.',
     tier: TrophyTier.BRONZE,
     icon: 'https://via.placeholder.com/64?text=📊',
     rarity: 40,
@@ -104,7 +112,8 @@ export const TROPHY_DEFINITIONS: TrophySeedDefinition[] = [
   {
     code: 'SEMESTER_AVERAGE_NINE',
     name: 'Excelencia Semestral',
-    description: 'Tener un promedio ≥ 9 en algún cuatrimestre. Ese fue un semestre redondo.',
+    description:
+      'Tener un promedio ≥ 9 en algún cuatrimestre. Ese fue un semestre redondo.',
     tier: TrophyTier.BRONZE,
     icon: 'https://via.placeholder.com/64?text=✨',
     rarity: 25,
@@ -114,7 +123,7 @@ export const TROPHY_DEFINITIONS: TrophySeedDefinition[] = [
     code: 'MIXED_STATUS_PASS',
     name: 'Versátil',
     description:
-      'Tener materias en ambos regímenes: regularizadas y aprobadas con final. Lo tuyo es la adaptabilidad.',
+      'Tener materias en ambos regñmenes: regularizadas y aprobadas con final. Lo tuyo es la adaptabilidad.',
     tier: TrophyTier.BRONZE,
     icon: 'https://via.placeholder.com/64?text=🔀',
     rarity: 45,
@@ -154,7 +163,7 @@ export const TROPHY_DEFINITIONS: TrophySeedDefinition[] = [
     code: 'ALL_OPTIONALS_COMPLETED',
     name: 'Completista',
     description:
-      'Completar las 3 materias electivas. Fuiste más allá del mínimo requerido.',
+      'Completar las 3 materias electivas. Fuiste más allá del mñnimo requerido.',
     tier: TrophyTier.BRONZE,
     icon: 'https://via.placeholder.com/64?text=➕',
     rarity: 20,
@@ -175,7 +184,8 @@ export const TROPHY_DEFINITIONS: TrophySeedDefinition[] = [
   {
     code: 'INTERMEDIATE_DEGREE',
     name: 'Grado Intermedio',
-    description: 'Completar todas las materias del título intermedio. Un logro en sí mismo.',
+    description:
+      'Completar todas las materias del tñtulo intermedio. Un logro en sñ mismo.',
     tier: TrophyTier.SILVER,
     icon: 'https://via.placeholder.com/64?text=📜',
     rarity: 40,
@@ -184,7 +194,8 @@ export const TROPHY_DEFINITIONS: TrophySeedDefinition[] = [
   {
     code: 'CONSISTENCY_SILVER',
     name: 'Persistente',
-    description: 'Tener aprobaciones en 8 o más cuatrimestres distintos. ¡Ocho temporadas de lucha!',
+    description:
+      'Tener aprobaciones en 8 o más cuatrimestres distintos. ¡Ocho temporadas de lucha!',
     tier: TrophyTier.SILVER,
     icon: 'https://via.placeholder.com/64?text=🔥',
     rarity: 25,
@@ -193,7 +204,8 @@ export const TROPHY_DEFINITIONS: TrophySeedDefinition[] = [
   {
     code: 'HIGH_DIFFICULTY_MASTERY',
     name: 'Conquistador',
-    description: 'Aprobar 5 materias con dificultad percibida alta (≥ 70). Cada una fue una batalla.',
+    description:
+      'Aprobar 5 materias con dificultad percibida alta (≥ 70). Cada una fue una batalla.',
     tier: TrophyTier.SILVER,
     icon: 'https://via.placeholder.com/64?text=⚔️',
     rarity: 20,
@@ -202,7 +214,8 @@ export const TROPHY_DEFINITIONS: TrophySeedDefinition[] = [
   {
     code: 'QUICK_PROGRESS',
     name: 'Velocidad',
-    description: 'Aprobar materias que suman 15 o más horas en un solo cuatrimestre.',
+    description:
+      'Aprobar materias que suman 15 o más horas en un solo cuatrimestre.',
     tier: TrophyTier.SILVER,
     icon: 'https://via.placeholder.com/64?text=⚡',
     rarity: 32,
@@ -211,7 +224,8 @@ export const TROPHY_DEFINITIONS: TrophySeedDefinition[] = [
   {
     code: 'EXCELLENCE_85_PLUS',
     name: 'Distinguido',
-    description: 'Mantener un promedio general ≥ 8.5. Tu consistencia es admirable.',
+    description:
+      'Mantener un promedio general ≥ 8.5. Tu consistencia es admirable.',
     tier: TrophyTier.SILVER,
     icon: 'https://via.placeholder.com/64?text=🏅',
     rarity: 28,
@@ -220,7 +234,8 @@ export const TROPHY_DEFINITIONS: TrophySeedDefinition[] = [
   {
     code: 'YEAR_3_COMPLETION',
     name: 'Tercer Año',
-    description: 'Completar todas las materias del 3er año. Ya sos un veterano.',
+    description:
+      'Completar todas las materias del 3er año. Ya sos un veterano.',
     tier: TrophyTier.SILVER,
     icon: 'https://via.placeholder.com/64?text=📙',
     rarity: 22,
@@ -253,7 +268,8 @@ export const TROPHY_DEFINITIONS: TrophySeedDefinition[] = [
     tier: TrophyTier.SILVER,
     icon: 'https://via.placeholder.com/64?text=🌐',
     rarity: 35,
-    criteria: 'All 4 English Transversal subjects approved (901, 902, 903, 904)',
+    criteria:
+      'All 4 English Transversal subjects approved (901, 902, 903, 904)',
   },
 
   // =================== GOLD (7) ===================
@@ -270,7 +286,8 @@ export const TROPHY_DEFINITIONS: TrophySeedDefinition[] = [
   {
     code: 'PERFECT_AVERAGE',
     name: 'Genio Académico',
-    description: 'Mantener un promedio general ≥ 9. Estás en la élite académica.',
+    description:
+      'Mantener un promedio general ≥ 9. Estás en la élite académica.',
     tier: TrophyTier.GOLD,
     icon: 'https://via.placeholder.com/64?text=🧠',
     rarity: 5,
@@ -288,7 +305,7 @@ export const TROPHY_DEFINITIONS: TrophySeedDefinition[] = [
   },
   {
     code: 'CHALLENGE_ACCEPTED',
-    name: 'Desafío Aceptado',
+    name: 'Desafño Aceptado',
     description:
       'Aprobar 10 o más materias con dificultad percibida alta (≥ 70). Sos un rompe-promedios.',
     tier: TrophyTier.GOLD,
@@ -299,7 +316,8 @@ export const TROPHY_DEFINITIONS: TrophySeedDefinition[] = [
   {
     code: 'MARATHON_CHAMPION',
     name: 'Campeón Maratonista',
-    description: 'Acumular 230 o más horas aprobadas. Ya sos un atleta académico de élite.',
+    description:
+      'Acumular 230 o más horas aprobadas. Ya sos un atleta académico de élite.',
     tier: TrophyTier.GOLD,
     icon: 'https://via.placeholder.com/64?text=🏃',
     rarity: 10,
@@ -308,7 +326,8 @@ export const TROPHY_DEFINITIONS: TrophySeedDefinition[] = [
   {
     code: 'CONSISTENCY_GOLD',
     name: 'Imparable',
-    description: 'Tener aprobaciones en 12 o más cuatrimestres distintos. Doce temporadas sin rendirse.',
+    description:
+      'Tener aprobaciones en 12 o más cuatrimestres distintos. Doce temporadas sin rendirse.',
     tier: TrophyTier.GOLD,
     icon: 'https://via.placeholder.com/64?text=🚀',
     rarity: 10,

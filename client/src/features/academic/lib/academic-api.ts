@@ -1,4 +1,4 @@
-import type { Subject } from "../../../shared/types/academic";
+﻿import type { Subject } from "../../../shared/types/academic";
 import { SubjectStatus } from "../../../shared/types/academic";
 import { authFetch } from "../../auth/lib/api";
 
@@ -13,15 +13,15 @@ export async function fetchAcademicGraph(options?: {
 
   const response = await (options?.guestMode
     ? fetch(endpoint, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
     : authFetch(endpoint, {
-    headers: {
-      "Content-Type": "application/json",
-    },
-  }));
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }));
 
   if (!response.ok) {
     throw new Error(`Error ${response.status}: ${response.statusText}`);
@@ -62,7 +62,7 @@ export async function migrateGuestProgressToAccount(
       difficulty: subject.difficulty ?? null,
       notes: subject.notes ?? null,
       statusDate: subject.statusDate ?? null,
-      // isIntermediate is NOT part of UpdateSubjectRecordDto — omitted intentionally
+      // isIntermediate is NOT part of UpdateSubjectRecordDto €” omitted intentionally
     });
   }
 }
@@ -204,3 +204,4 @@ export async function batchSaveHistory(
 
   return response.json();
 }
+

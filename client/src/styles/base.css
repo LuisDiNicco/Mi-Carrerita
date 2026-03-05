@@ -1,0 +1,183 @@
+/* ========================================
+   CONFIGURACIÓN BASE RETRO
+   ======================================== */
+@layer base {
+  :root {
+    --app-bg: #0E1510;
+    --app-surface: #121B14;
+    --app-elevated: #17221A;
+    --app-text: #E8F2E8;
+    --app-muted: #A7B8A7;
+    --app-border: #1F2E21;
+
+    --app-accent: #7BCB7A;
+    --app-accent-strong: #6AD16F;
+    --app-accent-ink: #0B2A14;
+
+    --background: 130 20% 7%;
+    --foreground: 120 20% 95%;
+    --primary: 119 59% 49%;
+    --primary-foreground: 120 60% 10%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+    --success: 142 76% 36%;
+    --info: 217 91% 60%;
+
+    --scanlines: repeating-linear-gradient(0deg,
+        rgba(0, 0, 0, 0.08),
+        rgba(0, 0, 0, 0.08) 1px,
+        transparent 1px,
+        transparent 3px);
+
+    --crt-curve: 0.02;
+    --scanline-opacity: 0.1;
+
+    --retro-shadow-color: rgba(0, 0, 0, 0.6);
+    --retro-shadow-inset: rgba(0, 0, 0, 0.4);
+    --retro-glow: rgba(123, 203, 122, 0.4);
+    --retro-glow-strong: rgba(123, 203, 122, 0.6);
+  }
+
+  [data-theme="light"] {
+    --app-bg: #EAECEE;
+    --app-surface: #F4F5F7;
+    --app-elevated: #FFFFFF;
+    --app-text: #111827;
+    --app-muted: #374151;
+    --app-border: #9CA3AF;
+    --app-accent: #059669;
+    --app-accent-strong: #047857;
+    --app-accent-ink: #FFFFFF;
+    --retro-shadow-color: rgba(15, 23, 42, 0.4);
+    --retro-shadow-inset: rgba(15, 23, 42, 0.2);
+
+    --background: 210 20% 92%;
+    --foreground: 222 47% 11%;
+    --primary: 160 84% 30%;
+    --primary-foreground: 0 0% 100%;
+    --destructive: 0 84% 50%;
+    --destructive-foreground: 210 40% 98%;
+    --success: 142 76% 30%;
+    --info: 217 91% 60%;
+  }
+
+  * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply font-retro;
+    background-color: var(--app-bg);
+    color: var(--app-text);
+    font-size: 22px;
+    line-height: 1.6;
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.03) 2px, rgba(0, 0, 0, 0.03) 4px),
+      radial-gradient(circle at 20% 50%, rgba(107, 168, 111, 0.04) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(107, 168, 111, 0.03) 0%, transparent 50%);
+    user-select: none;
+    overflow-x: hidden;
+  }
+
+  input,
+  textarea,
+  select {
+    @apply font-retro px-3 py-2;
+    background-color: var(--app-surface);
+    color: var(--app-text);
+    border: 2px solid var(--app-border);
+    @apply focus:outline-none;
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--app-accent) 30%, transparent);
+    image-rendering: pixelated;
+    user-select: text;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-retro font-bold tracking-wider;
+    text-shadow: none;
+  }
+
+  a {
+    color: var(--app-accent-strong);
+    @apply transition-colors duration-200;
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-shadow: none;
+  }
+}
+
+/* ========================================
+   SCROLLBAR PERSONALIZADO RETRO
+   ======================================== */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: var(--app-bg);
+  border: 1px solid var(--app-border);
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-unlam-500;
+  border: 2px solid var(--app-bg);
+  image-rendering: pixelated;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-unlam-600;
+}
+
+::-webkit-scrollbar-corner {
+  background-color: var(--app-bg);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--app-accent) var(--app-bg);
+}
+
+/* ========================================
+   RESPONSIVE ADJUSTMENTS
+   ======================================== */
+@media (max-width: 768px) {
+  body { font-size: 14px; }
+  .btn-retro { @apply px-4 py-2 text-sm; }
+  h1 { font-size: 1.75rem; }
+  h2 { font-size: 1.5rem; }
+  h3 { font-size: 1.25rem; }
+}
+
+/* ========================================
+   ACCESIBILIDAD
+   ======================================== */
+@media (prefers-contrast: high) {
+  :root {
+    --app-text: #FFFFFF;
+    --app-bg: #000000;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+*:focus-visible {
+  outline: 3px solid var(--app-accent);
+  outline-offset: 4px;
+}

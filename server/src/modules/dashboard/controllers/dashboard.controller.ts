@@ -1,10 +1,11 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {  ApiOperation, ApiResponse , ApiTags } from '@nestjs/swagger';
 import { DashboardService } from '../services/dashboard.service';
 import { DashboardDataDto } from '../dto';
 import { EnvironmentAuthGuard } from '../../../common/guards/environment-auth.guard';
 import { CurrentUser } from '../../../common/decorators/current-user.decorator';
 
+@ApiTags('Dashboard')
 @Controller('dashboard')
 @UseGuards(EnvironmentAuthGuard)
 export class DashboardController {

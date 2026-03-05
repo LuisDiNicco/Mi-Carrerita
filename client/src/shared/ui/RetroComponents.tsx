@@ -1,5 +1,6 @@
-import type { ReactNode } from 'react';
+﻿import type { ReactNode } from 'react';
 import { cn } from '../lib/utils';
+import { RETRO_UI_VARIANTS } from '../../styles/design-constants';
 
 interface RetroCardProps {
   children: ReactNode;
@@ -85,12 +86,12 @@ export const RetroError = ({
 }: RetroErrorProps) => {
   return (
     <div className="flex flex-col items-center justify-center space-y-6 p-8">
-      <div className="text-6xl text-red-500 font-retro">
-        ⚠️
+      <div className="text-6xl text-destructive font-retro">
+        š ï¸
       </div>
 
       <div className="text-center space-y-2">
-        <h2 className="font-retro text-3xl text-red-500 tracking-wider">
+        <h2 className="font-retro text-3xl text-destructive tracking-wider">
           {title}
         </h2>
         <p className="font-retro text-lg text-muted max-w-md">
@@ -102,7 +103,7 @@ export const RetroError = ({
         <button
           onClick={onRetry}
           className="font-retro text-xl px-6 py-3
-                     bg-red-500 border-2 border-red-700 text-white
+                     bg-destructive border-2 border-destructive text-white
                      shadow-subtle
                      transition-all duration-100"
         >
@@ -128,10 +129,10 @@ export const RetroBadge = ({
 }: RetroBadgeProps) => {
   const variants = {
     default: 'bg-gray-600 border-gray-800 text-white',
-    success: 'bg-[#73D216] border-[#4E9A06] text-white',
-    warning: 'bg-[#FCE94F] border-[#C4A000] text-[#2E3436]',
-    danger: 'bg-[#EF2929] border-[#CC0000] text-white',
-    info: 'bg-[#729FCF] border-[#3465A4] text-white',
+    success: RETRO_UI_VARIANTS.success.base,
+    warning: RETRO_UI_VARIANTS.warning.base,
+    danger: RETRO_UI_VARIANTS.danger.base,
+    info: RETRO_UI_VARIANTS.info.base,
   };
 
   return (
@@ -149,3 +150,4 @@ export const RetroBadge = ({
     </span>
   );
 };
+

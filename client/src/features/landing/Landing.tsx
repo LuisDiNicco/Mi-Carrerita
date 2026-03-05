@@ -1,4 +1,4 @@
-import { BarChart3, GitBranch, Target, Trophy } from 'lucide-react';
+﻿import { BarChart3, GitBranch, Target, Trophy } from 'lucide-react';
 
 interface LandingProps {
   onStart: () => void;
@@ -113,7 +113,7 @@ export const Landing = ({ onStart }: LandingProps) => {
               Potencia Tu Carrera
             </h2>
             <p className="text-app/70 text-lg max-w-2xl mx-auto">
-              Herramientas profesionales diseñadas para maximizar tu éxito académico
+              Herramientas profesionales diseíadas para maximizar tu éxito académico
             </p>
           </div>
 
@@ -175,3 +175,4 @@ export const Landing = ({ onStart }: LandingProps) => {
     </div>
   );
 };
+

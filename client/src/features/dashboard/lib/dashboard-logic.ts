@@ -1,4 +1,4 @@
-import { type Subject, SubjectStatus } from '../../../shared/types/academic';
+﻿import { type Subject, SubjectStatus } from '../../../shared/types/academic';
 import type {
     DashboardDataDto,
     SubjectVolumeChartDto,
@@ -19,18 +19,18 @@ export const TOTAL_CAREER_SUBJECTS = 62; // 62 obligatorias (sin Taller de Integ
 /**
  * Returns the academic quarter (1, 2 or 3) for a given month (0-indexed, JS convention).
  *
- * UNLAM academic calendar — actas are passed at end of each quarter:
- *   Q3 (Verano):           Jan–Mar  → months 0–2  (actas en feb/marzo)
- *   Q1 (1er cuatrimestre): Apr–Aug  → months 3–7  (actas en julio/agosto)
- *   Q2 (2do cuatrimestre): Sep–Dec  → months 8–11 (actas en nov/diciembre)
+ * UNLAM academic calendar €” actas are passed at end of each quarter:
+ *   Q3 (Verano):           Jan€“Mar  †’ months 0€“2  (actas en feb/marzo)
+ *   Q1 (1er cuatrimestre): Apr€“Aug  †’ months 3€“7  (actas en julio/agosto)
+ *   Q2 (2do cuatrimestre): Sep€“Dec  †’ months 8€“11 (actas en nov/diciembre)
  *
  * Note: Q3 of year Y is the summer between 2C(Y-1) and 1C(Y).
- * E.g. 05/03/2022 → Q3 → label "3C2022".
+ * E.g. 05/03/2022 †’ Q3 †’ label "3C2022".
  */
 function getQuarter(month: number): 1 | 2 | 3 {
-    if (month >= 0 && month <= 2) return 3;  // Jan–Mar (Verano / 3er cuatrimestre)
-    if (month >= 3 && month <= 7) return 1;  // Apr–Aug (1er cuatrimestre)
-    return 2;                                // Sep–Dec (2do cuatrimestre)
+    if (month >= 0 && month <= 2) return 3;  // Jan€“Mar (Verano / 3er cuatrimestre)
+    if (month >= 3 && month <= 7) return 1;  // Apr€“Aug (1er cuatrimestre)
+    return 2;                                // Sep€“Dec (2do cuatrimestre)
 }
 
 /** Builds the quarter label in format `1C2025` */
@@ -42,7 +42,7 @@ function buildQuarterLabel(year: number, quarter: 1 | 2 | 3): string {
 function quarterSortKey(year: number, quarter: 1 | 2 | 3): number {
     // Q3 of year Y comes BEFORE Q1 of year Y (it's the summer before)
     // We treat Q3 as the start of the year cycle: Q3(Y) < Q1(Y) < Q2(Y)
-    const intraYear = quarter === 3 ? 0 : quarter; // 3→0, 1→1, 2→2
+    const intraYear = quarter === 3 ? 0 : quarter; // 3†’0, 1†’1, 2†’2
     return year * 10 + intraYear;
 }
 
@@ -205,7 +205,7 @@ export function calculateDashboardData(
         data: performanceData,
     };
 
-    // 5. Burn Up Chart — cumulative progress over quarters
+    // 5. Burn Up Chart €” cumulative progress over quarters
     let cumulativeCount = 0;
     const burnUpData = performanceData.map((point) => {
         cumulativeCount += point.passedCount;
@@ -223,7 +223,7 @@ export function calculateDashboardData(
         data: burnUpData,
     };
 
-    // 6. Difficulty Scatter — only subjects with both difficulty and grade
+    // 6. Difficulty Scatter €” only subjects with both difficulty and grade
     const difficultyData = completed
         .filter((s) => s.difficulty && s.grade)
         .map((s) => ({
@@ -286,3 +286,4 @@ export function calculateDashboardData(
         subjectRankingsChart,
     };
 }
+
