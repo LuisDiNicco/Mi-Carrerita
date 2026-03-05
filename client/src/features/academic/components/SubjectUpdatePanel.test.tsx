@@ -35,7 +35,7 @@ describe('SubjectUpdatePanel', () => {
         vi.clearAllMocks();
     });
 
-    it('no deberí­a renderizar si isOpen es falso', () => {
+    it('no debería renderizar si isOpen es falso', () => {
         render(
             <SubjectUpdatePanel
                 subject={mockPendingSubject}
@@ -47,7 +47,7 @@ describe('SubjectUpdatePanel', () => {
         expect(screen.queryByText('Matematica')).not.toBeInTheDocument();
     });
 
-    it('deberí­a renderizar correctamente si isOpen es true', () => {
+    it('debería renderizar correctamente si isOpen es true', () => {
         render(
             <SubjectUpdatePanel
                 subject={mockPendingSubject}
@@ -57,10 +57,10 @@ describe('SubjectUpdatePanel', () => {
             />
         );
         expect(screen.getByText('Matematica')).toBeInTheDocument();
-        expect(screen.getByText('Cí³digo: MAT')).toBeInTheDocument();
+        expect(screen.getByText('Código: MAT')).toBeInTheDocument();
     });
 
-    it('deberí­a mostrar alerta de Forzar Cambio si se intenta guardar desde PENDIENTE a otro estado', async () => {
+    it('debería mostrar alerta de Forzar Cambio si se intenta guardar desde PENDIENTE a otro estado', async () => {
         render(
             <SubjectUpdatePanel
                 subject={mockPendingSubject}
@@ -97,7 +97,7 @@ describe('SubjectUpdatePanel', () => {
         });
     });
 
-    it('deberí­a autocompletar la nota a 2 al seleccionar RECURSADA', () => {
+    it('debería autocompletar la nota a 2 al seleccionar RECURSADA', () => {
         render(
             <SubjectUpdatePanel
                 subject={mockApprovedSubject}
@@ -115,7 +115,7 @@ describe('SubjectUpdatePanel', () => {
         expect((inputs[0] as HTMLInputElement).value).toBe('2');
     });
 
-    it('deberí­a arrojar error si se intenta guardar APROBADA sin nota', async () => {
+    it('debería arrojar error si se intenta guardar APROBADA sin nota', async () => {
         render(
             <SubjectUpdatePanel
                 subject={mockPendingSubject}
@@ -141,7 +141,7 @@ describe('SubjectUpdatePanel', () => {
         expect(mockOnSave).not.toHaveBeenCalled();
     });
 
-    it('deberí­a mostrar fecha en formato DD/MM/YYYY y guardar en ISO', async () => {
+    it('debería mostrar fecha en formato DD/MM/YYYY y guardar en ISO', async () => {
         render(
             <SubjectUpdatePanel
                 subject={mockApprovedSubject}
@@ -168,7 +168,7 @@ describe('SubjectUpdatePanel', () => {
         });
     });
 
-    it('deberí­a cerrar la confirmacií³n al hacer clic en Regresar', async () => {
+    it('debería cerrar la confirmación al hacer clic en Regresar', async () => {
         render(
             <SubjectUpdatePanel
                 subject={mockPendingSubject}
@@ -198,7 +198,7 @@ describe('SubjectUpdatePanel', () => {
         expect(mockOnSave).not.toHaveBeenCalled();
     });
 
-    it('deberí­a arrojar error si la nota ingresada no es un número válido', async () => {
+    it('debería arrojar error si la nota ingresada no es un número válido', async () => {
         render(
             <SubjectUpdatePanel
                 subject={mockApprovedSubject}
@@ -219,7 +219,7 @@ describe('SubjectUpdatePanel', () => {
         expect(mockOnSave).not.toHaveBeenCalled();
     });
 
-    it('deberí­a arrojar error si la dificultad está fuera de rango', async () => {
+    it('debería arrojar error si la dificultad está fuera de rango', async () => {
         render(
             <SubjectUpdatePanel
                 subject={mockApprovedSubject}
@@ -243,7 +243,7 @@ describe('SubjectUpdatePanel', () => {
         expect(mockOnSave).not.toHaveBeenCalled();
     });
 
-    it('deberí­a mostrar error si onSave lanza una excepcií³n', async () => {
+    it('debería mostrar error si onSave lanza una excepción', async () => {
         const errorMessage = 'Error de red al guardar';
         mockOnSave.mockRejectedValueOnce(new Error(errorMessage));
 

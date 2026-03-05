@@ -16,7 +16,7 @@ export const DAYS_FOR_MANUAL: { key: DayOfWeek; label: string }[] = [
 ];
 
 export const PERIODS_FOR_MANUAL: { key: TimePeriod; label: string }[] = [
-    { key: 'M1', label: 'Maíana (08:00 - 12:00)' },
+    { key: 'M1', label: 'Mañana (08:00 - 12:00)' },
     { key: 'T1', label: 'Tarde (14:00 - 18:00)' },
     { key: 'N1', label: 'Noche (19:00 - 23:00)' },
 ];
@@ -31,7 +31,7 @@ const OFFER_DAY_TO_WEEK: Record<string, DayOfWeek> = {
 };
 
 const OFFER_PERIOD_TO_SLOT: Record<string, TimePeriod> = {
-    'Maíana': 'M1',
+    'Mañana': 'M1',
     'Tarde': 'T1',
     'Noche': 'N1',
 };
@@ -151,11 +151,14 @@ export function useScheduleOffers(subjects: Subject[]) {
             return { slotRange: 'A distancia', durationHours: 0, isRemote: true };
         }
         const range = daysRaw.match(/(\d{2}a\d{2})$/)?.[1]
-            ?? (offer.periodLabel === 'Maíana' ? '08a12' : offer.periodLabel === 'Tarde' ? '14a18' : '19a23');
+            ?? (offer.periodLabel === 'Mañana' ? '08a12' : offer.periodLabel === 'Tarde' ? '14a18' : '19a23');
         const parsed = range.match(/^(\d{2})a(\d{2})$/);
         const durationHours = parsed ? Math.max(0, Number(parsed[2]) - Number(parsed[1])) : 4;
         return { slotRange: range, durationHours, isRemote: false };
     };
+
+    const REAL_ELECTIVAS = ['3599', '3677', '3678', '3679'];
+    const GENERIC_ELECTIVAS = ['3672', '3673', '3674'];
 
     const buildTimetablesFromOferta = (offers: ParsedTimetableOffer[]): TimetableDto[] => {
         const availableSubjects = subjects.filter(
@@ -164,9 +167,22 @@ export function useScheduleOffers(subjects: Subject[]) {
         const subjectByPlanCode = new Map(availableSubjects.map((s) => [normalizePlanCode(s.planCode), s]));
         const generated: TimetableDto[] = [];
         for (const offer of offers) {
-            const subject = subjectByPlanCode.get(normalizePlanCode(offer.planCode));
+            const normOfferCode = normalizePlanCode(offer.planCode);
+            let subject = subjectByPlanCode.get(normOfferCode);
+
+            if (!subject && REAL_ELECTIVAS.includes(normOfferCode)) {
+                subject = {
+                    id: normOfferCode,
+                    planCode: normOfferCode,
+                    name: offer.description || `Electiva`,
+                } as any;
+            }
+
             if (!subject) continue;
+
             const meta = parseOfferMeta(offer);
+            const actualSubjectName = offer.description || subject.name;
+
             if (meta.isRemote) {
                 generated.push({
                     id: `offer-${subject.id}-remote-${offer.commission}`,
@@ -174,7 +190,7 @@ export function useScheduleOffers(subjects: Subject[]) {
                     dayOfWeek: 'MONDAY',
                     dayLabel: 'A distancia',
                     period: 'M1',
-                    subjectName: subject.name,
+                    subjectName: actualSubjectName,
                     planCode: subject.planCode,
                     commission: offer.commission,
                     slotRange: meta.slotRange,
@@ -192,7 +208,7 @@ export function useScheduleOffers(subjects: Subject[]) {
                 dayOfWeek,
                 dayLabel: DAYS_FOR_MANUAL.find((day) => day.key === dayOfWeek)?.label ?? dayOfWeek,
                 period,
-                subjectName: subject.name,
+                subjectName: actualSubjectName,
                 planCode: subject.planCode,
                 commission: offer.commission,
                 slotRange: meta.slotRange,
@@ -210,7 +226,24 @@ export function useScheduleOffers(subjects: Subject[]) {
         slotRange?: string;
         durationHours?: number;
         commission?: string;
+        subjectName?: string;
     }) => {
+        if (REAL_ELECTIVAS.includes(data.subjectId)) {
+            const completedElectives = subjects.filter(s =>
+                GENERIC_ELECTIVAS.includes(s.planCode) &&
+                ([SubjectStatus.APROBADA, SubjectStatus.EN_CURSO, SubjectStatus.REGULARIZADA] as SubjectStatus[]).includes(s.status)
+            ).length;
+
+            const plannedElectives = new Set(
+                timetables.filter(t => REAL_ELECTIVAS.includes(t.subjectId)).map(t => t.subjectId)
+            );
+
+            if (!plannedElectives.has(data.subjectId)) {
+                if (completedElectives + plannedElectives.size >= 3) {
+                    throw new Error("Límite alcanzado: Solo puedes cursar hasta 3 materias electivas en total durante la carrera.");
+                }
+            }
+        }
         const subject = subjects.find(s => s.id === data.subjectId);
         const existingSlot = timetables.find(t => t.dayOfWeek === data.day && t.period === data.period && (t.slotRange ?? '') === (data.slotRange ?? ''));
         const newTimetable: TimetableDto = {
@@ -219,7 +252,7 @@ export function useScheduleOffers(subjects: Subject[]) {
             dayOfWeek: data.day,
             dayLabel: data.day,
             period: data.period,
-            subjectName: subject?.name || 'Materia Desconocida',
+            subjectName: data.subjectName || subject?.name || 'Materia Desconocida',
             planCode: subject?.planCode || '',
             slotRange: data.slotRange,
             durationHours: data.durationHours,

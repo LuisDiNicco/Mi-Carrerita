@@ -44,7 +44,7 @@ export const RecommendationsPage = () => {
         <div className="flex items-center gap-3">
           <input ref={ofertaFileRef} type="file" accept=".pdf" className="hidden" onChange={handleOfertaFileSelect} />
           <button onClick={() => ofertaFileRef.current?.click()} disabled={isUploadingOferta}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg border-2 border-dashed border-unlam-500/50 text-unlam-500 hover:bg-unlam-500/10 hover:border-unlam-500 transition-all font-bold text-sm whitespace-nowrap disabled:opacity-50">
+            className="flex items-center gap-2 px-4 py-2 h-[46px] rounded-lg border-2 border-dashed border-unlam-500/50 text-unlam-500 hover:bg-unlam-500/10 hover:border-unlam-500 transition-all font-bold text-sm whitespace-nowrap disabled:opacity-50">
             <Upload size={16} />{isUploadingOferta ? 'Procesando...' : 'Subir Oferta (PDF)'}
           </button>
 
@@ -183,10 +183,10 @@ export const RecommendationsPage = () => {
                   <p className="text-[10px] font-bold uppercase tracking-wider text-muted mb-2">Oferta cargada ({offerEntries.length})</p>
                   <div className="space-y-1.5 max-h-40 overflow-y-auto">
                     {offerEntries.map(t => (
-                      <div key={t.id} className="flex items-center justify-between px-3 py-1.5 bg-app-bg rounded-lg border border-app/30 text-xs">
-                        <span className="font-bold text-app truncate max-w-[60%]">{t.subjectName}</span>
-                        <span className="text-muted font-mono">{t.isRemote ? 'A distancia' : (DAYS_FOR_MANUAL.find(d => d.key === t.dayOfWeek)?.label ?? t.dayOfWeek)} - {t.isRemote ? 'Sin franja fija' : (t.slotRange ?? (PERIODS_FOR_MANUAL.find(p => p.key === t.period)?.label ?? t.period))}</span>
-                        <button onClick={() => saveOfferEntriesLocal(offerEntries.filter(entry => entry.id !== t.id))} className="ml-2 text-destructive hover:text-destructive transition-colors" title="Eliminar"><Trash2 size={12} /></button>
+                      <div key={t.id} className="grid grid-cols-[1fr_140px_24px] items-center gap-2 px-3 py-1.5 bg-app-bg rounded-lg border border-app/30 text-xs text-left">
+                        <span className="font-bold text-app truncate" title={t.subjectName}>{t.subjectName}</span>
+                        <span className="text-muted font-mono whitespace-nowrap text-right">{t.isRemote ? 'A distancia' : (DAYS_FOR_MANUAL.find(d => d.key === t.dayOfWeek)?.label ?? t.dayOfWeek)} - {t.isRemote ? 'Sin franja fija' : (t.slotRange ?? (PERIODS_FOR_MANUAL.find(p => p.key === t.period)?.label ?? t.period))}</span>
+                        <button onClick={() => saveOfferEntriesLocal(offerEntries.filter(entry => entry.id !== t.id))} className="justify-self-end text-destructive hover:text-destructive transition-colors" title="Eliminar"><Trash2 size={12} /></button>
                       </div>
                     ))}
                   </div>

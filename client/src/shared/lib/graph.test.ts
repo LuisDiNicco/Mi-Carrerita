@@ -80,7 +80,7 @@ describe('Graph Algorithms', () => {
         expect(recommendations[0].reasons.some(r => r.includes('Proyecto Final'))).toBe(true);
         // S3 should be second because it gives an intermediate degree (+100)
         expect(recommendations[1].subject.id).toBe('3');
-        expect(recommendations[1].reasons[0]).toContain('Tí­tulo Intermedio');
+        expect(recommendations[1].reasons[0]).toContain('Título Intermedio');
     });
 
     it('getRecommendationsWithReasons should filter out subjects with unapproved requirements', () => {
@@ -100,30 +100,30 @@ describe('Graph Algorithms', () => {
             createMockSubject('B', 'B', 1, SubjectStatus.DISPONIBLE, ['A']), // requires only A
             createMockSubject('C', 'C', 2, SubjectStatus.PENDIENTE, ['B']), // requires only B
         ];
-        
+
         const edges = buildEdges(chainSubjects);
-        
+
         // Build maps like useCareerGraph does
         const parentMap = new Map<string, Set<string>>();
         const childMap = new Map<string, Set<string>>();
-        
+
         chainSubjects.forEach(s => {
             parentMap.set(s.id, new Set());
             childMap.set(s.id, new Set());
         });
-        
+
         edges.forEach(e => {
             parentMap.get(e.to)?.add(e.from);
             childMap.get(e.from)?.add(e.to);
         });
-        
+
         // Simulate hover on A: should mark B as full unlock, NOT C
         const hoveredId = 'A';
         const directDependents = childMap.get(hoveredId) ?? new Set();
-        
+
         expect(directDependents.has('B')).toBe(true);
         expect(directDependents.has('C')).toBe(false); // C is NOT direct dependent of A
-        
+
         // B requires only A, so it's a full unlock
         const prereqsOfB = parentMap.get('B') ?? new Set();
         expect(prereqsOfB.size).toBe(1);
@@ -137,29 +137,29 @@ describe('Graph Algorithms', () => {
             createMockSubject('B', 'B', 1, SubjectStatus.DISPONIBLE),
             createMockSubject('C', 'C', 2, SubjectStatus.PENDIENTE, ['A', 'B']), // requires both A and B
         ];
-        
+
         const edges = buildEdges(diamondSubjects);
-        
+
         // Build maps
         const parentMap = new Map<string, Set<string>>();
         const childMap = new Map<string, Set<string>>();
-        
+
         diamondSubjects.forEach(s => {
             parentMap.set(s.id, new Set());
             childMap.set(s.id, new Set());
         });
-        
+
         edges.forEach(e => {
             parentMap.get(e.to)?.add(e.from);
             childMap.get(e.from)?.add(e.to);
         });
-        
+
         // Hover on A
         const hoveredId = 'A';
         const directDependents = childMap.get(hoveredId) ?? new Set();
-        
+
         expect(directDependents.has('C')).toBe(true);
-        
+
         // C requires 2 prereqs (A and B), so it's partial unlock when hovering A
         const prereqsOfC = parentMap.get('C') ?? new Set();
         expect(prereqsOfC.size).toBe(2);
@@ -178,23 +178,23 @@ describe('Graph Algorithms', () => {
         // C should come before optional B
         expect(recs[0].subject.id).toBe('3');
         expect(recs[1].subject.id).toBe('2');
-        expect(recs[1].reasons).toContain('š ï¸ Materia Optativa (baja prioridad)');
+        expect(recs[1].reasons).toContain('Materia Optativa');
     });
 
-    it('getRecommendationsWithReasons promotes Proyecto Final when all scores are zero', () => {
-        // Isolated subjects with no correlatives so no critical path / no unlocks †’ allScoresZero
+    it('getRecommendationsWithReasons promotes Proyecto Final', () => {
+        // Isolated subjects with no correlatives so no critical path / no unlocks
         const lateSubjects: Subject[] = [
             { ...createMockSubject('2', 'PF', 5, SubjectStatus.DISPONIBLE), name: 'Proyecto Final' },
             { ...createMockSubject('3', 'OT', 5, SubjectStatus.DISPONIBLE), name: 'Otra Materia' },
         ];
         const edges = buildEdges(lateSubjects);
         const recs = getRecommendationsWithReasons(lateSubjects, edges, 5);
-        // Proyecto Final should be first (bonus +200 when allScoresZero)
+        // Proyecto Final should be first (bonus +200)
         expect(recs[0].subject.name).toBe('Proyecto Final');
-        expect(recs[0].reasons).toContain('­ Proyecto Final');
+        expect(recs[0].reasons).toContain('Proyecto Final');
     });
 
-    it('getRecommendationsWithReasons promotes scheduled subjects when all scores are zero', () => {
+    it('getRecommendationsWithReasons promotes scheduled subjects', () => {
         const lateSubjects: Subject[] = [
             { ...createMockSubject('2', 'BM', 5, SubjectStatus.DISPONIBLE), name: 'Mat B' },
             { ...createMockSubject('3', 'CM', 5, SubjectStatus.DISPONIBLE), name: 'Mat C' },
@@ -202,9 +202,9 @@ describe('Graph Algorithms', () => {
         const edges = buildEdges(lateSubjects);
         const timetables = [{ subjectId: '3' }]; // Mat C has a schedule
         const recs = getRecommendationsWithReasons(lateSubjects, edges, 5, [], timetables);
-        // Mat C should be first because it has scheduled slots when allScoresZero
+        // Mat C should be first because it has scheduled slots
         expect(recs[0].subject.id).toBe('3');
-        expect(recs[0].reasons).toContain('“… Horario asignado');
+        expect(recs[0].reasons).toContain('Horario asignado');
     });
 
     it('getRecommendationsWithReasons returns empty when no subjects available', () => {
@@ -229,8 +229,8 @@ describe('Graph Algorithms', () => {
     });
 
     it('getRecommendationsWithReasons sorts by year when scores are tied', () => {
-        // Two fully isolated DISPONIBLE subjects (no edges) †’ allScoresZero=true
-        // After allScoresZero branch, neither is Proyecto Final and neither has a timetable
+        // Two fully isolated DISPONIBLE subjects (no edges)
+        // After processing, neither is Proyecto Final and neither has a timetable
         // so both keep score=0 †’ sort falls through to year tiebreaker
         const tiedSubjects: Subject[] = [
             { ...createMockSubject('2', 'BM', 3, SubjectStatus.DISPONIBLE), name: 'Mat B' },
@@ -238,7 +238,7 @@ describe('Graph Algorithms', () => {
         ];
         const edges = buildEdges(tiedSubjects); // no edges (no correlativeIds)
         const recs = getRecommendationsWithReasons(tiedSubjects, edges, 5);
-        // Both have score=0 after allScoresZero processing †’ sorted by year ascending
+        // Both have score=0 after processing †’ sorted by year ascending
         // Mat C (year=1) should come before Mat B (year=3)
         const ids = recs.map(r => r.subject.id);
         expect(ids.indexOf('3')).toBeLessThan(ids.indexOf('2'));

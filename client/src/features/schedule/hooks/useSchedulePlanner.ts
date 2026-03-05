@@ -2,7 +2,7 @@
 import type { DayOfWeek, TimePeriod, TimetableDto } from '../lib/schedule-api';
 
 export const PERIODS_4H: Array<{ key: TimePeriod; label: string; slotRange: string; durationHours: number }> = [
-    { key: 'M1', label: '08:00 - 12:00 (Maíana)', slotRange: '08a12', durationHours: 4 },
+    { key: 'M1', label: '08:00 - 12:00 (Mañana)', slotRange: '08a12', durationHours: 4 },
     { key: 'T1', label: '14:00 - 18:00 (Tarde)', slotRange: '14a18', durationHours: 4 },
     { key: 'N1', label: '19:00 - 23:00 (Noche)', slotRange: '19a23', durationHours: 4 },
 ];
@@ -28,6 +28,7 @@ interface UseSchedulePlannerProps {
         slotRange?: string;
         durationHours?: number;
         commission?: string;
+        subjectName?: string;
     }) => Promise<void>;
 }
 
@@ -219,6 +220,7 @@ export function useSchedulePlanner({
                 slotRange: selectedOffer.slotRange,
                 durationHours: selectedOffer.durationHours,
                 commission: selectedOffer.commission,
+                subjectName: selectedOffer.subjectName,
             });
             setIsModalOpen(false);
         } catch (error) {

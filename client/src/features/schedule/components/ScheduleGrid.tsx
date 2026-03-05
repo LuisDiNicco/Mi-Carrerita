@@ -40,13 +40,13 @@ export function ScheduleGrid({
     onRemoveTimetable,
 }: ScheduleGridProps) {
     return (
-        <div className="select-none bg-elevated rounded-xl border border-app shadow-soft overflow-hidden relative">
-            <table className="w-full text-xs border-collapse">
+        <div className="select-none bg-elevated rounded-xl border border-app shadow-soft relative overflow-hidden">
+            <table className="w-full text-sm border-collapse table-fixed">
                 <thead>
                     <tr>
-                        <th className="p-2 border-b border-r border-app bg-surface text-center text-muted font-bold font-retro">Turno</th>
+                        <th className="p-1 md:p-2 border-b border-r border-app bg-surface text-center text-muted font-bold font-retro w-[80px] md:w-[120px] text-[10px] md:text-xs">Turno</th>
                         {DAYS.map(day => (
-                            <th key={day.key} className="p-2 border-b border-app bg-surface text-center text-app font-bold uppercase tracking-wider">
+                            <th key={day.key} className="p-1 md:p-2 border-b border-app bg-surface text-center text-app font-bold uppercase tracking-wider text-[10px] md:text-xs">
                                 {day.label}
                             </th>
                         ))}
@@ -55,11 +55,11 @@ export function ScheduleGrid({
                 <tbody>
                     {rowsForMode.map((row) => (
                         <tr key={row.id}>
-                            <td className="p-3 border-r border-b border-app/50 font-mono text-muted text-center bg-surface/50 font-bold">
+                            <td className="p-1 md:p-2 border-r border-b border-app/50 font-mono text-muted text-center bg-surface/50 font-bold">
                                 <div className="space-y-1">
-                                    <div>{row.label}</div>
+                                    <div className="text-[10px] md:text-xs">{row.label}</div>
                                     {!row.isCanonical && (
-                                        <div className="text-[10px] text-amber-600 dark:text-amber-300 font-bold uppercase tracking-wider">No estándar</div>
+                                        <div className="text-xs text-amber-600 dark:text-amber-300 font-bold uppercase tracking-wider">No estándar</div>
                                     )}
                                 </div>
                             </td>
@@ -93,28 +93,36 @@ export function ScheduleGrid({
 
                                         {/* Offer options in step 2 */}
                                         {mode === 'OPTIONS' && offersForCell.length > 0 && (
-                                            <div className="absolute inset-0 p-1.5 overflow-hidden">
-                                                <div className="text-[10px] font-bold text-primary mb-1">
-                                                    {offersForCell.length} opción{offersForCell.length > 1 ? 'es' : ''}
+                                            <div className="absolute inset-0 p-1 md:p-1.5 overflow-hidden flex flex-col gap-1">
+                                                <div className="text-[10px] font-bold text-primary">
+                                                    {offersForCell.length} opc.
                                                 </div>
-                                                <div className="space-y-1">
-                                                    {offersForCell.slice(0, 2).map((offer) => (
-                                                        <div key={offer.id} className={cn('rounded border px-1.5 py-1 text-[10px] font-bold truncate', colorForSubject(offer.subjectId))}>
-                                                            {offer.subjectName}
-                                                        </div>
-                                                    ))}
-                                                    {offersForCell.length > 2 && (
-                                                        <div className="text-[10px] text-muted">+{offersForCell.length - 2} más...</div>
-                                                    )}
+                                                <div className="flex-1 overflow-y-auto space-y-1 scrollbar-thin">
+                                                    {offersForCell.map((offer) => {
+                                                        const isSelected = timetableItem && timetableItem.subjectId === offer.subjectId;
+                                                        return (
+                                                            <div
+                                                                key={offer.id}
+                                                                className={cn(
+                                                                    'rounded border px-1 py-1 text-[9px] md:text-[10px] font-bold leading-tight transition-all',
+                                                                    isSelected ? 'ring-2 ring-unlam-500 bg-unlam-500/20 shadow-sm opacity-100' : 'opacity-80 hover:opacity-100',
+                                                                    colorForSubject(offer.subjectId)
+                                                                )}
+                                                            >
+                                                                {isSelected ? <span className="text-unlam-500 mr-1">✓</span> : null}
+                                                                {offer.subjectName}
+                                                            </div>
+                                                        );
+                                                    })}
                                                 </div>
                                             </div>
                                         )}
 
                                         {/* Final selection in step 3 */}
                                         {mode === 'FINAL' && timetableItem && (
-                                            <div className="absolute inset-0 m-1 bg-gradient-to-br from-blue-500/20 to-blue-600/10 border border-primary/50 rounded-md overflow-hidden group z-10 shadow-sm backdrop-blur-sm transition-transform hover:scale-[1.02]">
-                                                <div className="p-2 h-full flex flex-col justify-center">
-                                                    <p className="font-bold text-xs md:text-sm text-primary leading-tight line-clamp-2" title={timetableItem.subjectName}>
+                                            <div className={cn("absolute inset-0 m-0.5 md:m-1 border rounded-md overflow-hidden group z-10 shadow-sm backdrop-blur-sm transition-transform hover:scale-[1.02]", colorForSubject(timetableItem.subjectId))}>
+                                                <div className="p-1 md:p-2 h-full flex flex-col justify-center">
+                                                    <p className="font-bold text-[9px] md:text-xs leading-tight" title={timetableItem.subjectName}>
                                                         {timetableItem.subjectName}
                                                     </p>
                                                 </div>
@@ -123,10 +131,10 @@ export function ScheduleGrid({
                                                         e.stopPropagation();
                                                         onRemoveTimetable(timetableItem.subjectId);
                                                     }}
-                                                    className="absolute top-0 right-0 p-1.5 text-destructive opacity-0 group-hover:opacity-100 bg-destructive/60 hover:bg-destructive/90 rounded-bl-lg transition-opacity"
+                                                    className="absolute top-0 right-0 p-1.5 text-destructive opacity-0 group-hover:opacity-100 bg-destructive/10 hover:bg-destructive/20 rounded-bl-lg transition-opacity"
                                                     title="Eliminar"
                                                 >
-                                                    <Trash2 size={12} />
+                                                    <Trash2 size={14} />
                                                 </button>
                                             </div>
                                         )}

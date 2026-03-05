@@ -1,4 +1,4 @@
-﻿import { Lock, Unlock } from 'lucide-react';
+﻿import { Lock, Unlock, Star, MapPin, Target, Flame, Key, Calendar as CalendarIcon, GraduationCap } from 'lucide-react';
 
 interface RecommendationCardProps {
     rec: any;
@@ -9,6 +9,17 @@ interface RecommendationCardProps {
     onToggleLock: (id: string) => void;
     onToggleExclude: (id: string) => void;
 }
+
+const getReasonIcon = (reason: string) => {
+    if (reason.includes('Proyecto Final')) return <Star size={12} className="inline flex-shrink-0 mr-1 text-yellow-500" />;
+    if (reason.includes('Título Intermedio')) return <MapPin size={12} className="inline flex-shrink-0 mr-1 text-red-500" />;
+    if (reason.includes('Desbloquea Proyecto Final')) return <Target size={12} className="inline flex-shrink-0 mr-1 text-blue-500" />;
+    if (reason.includes('Camino Crítico')) return <Flame size={12} className="inline flex-shrink-0 mr-1 text-orange-500" />;
+    if (reason.includes('Desbloquea') || reason.includes('materia')) return <Key size={12} className="inline flex-shrink-0 mr-1 text-emerald-500" />;
+    if (reason.includes('Horario asignado')) return <CalendarIcon size={12} className="inline flex-shrink-0 mr-1 text-purple-500" />;
+    if (reason.includes('Título Final')) return <GraduationCap size={12} className="inline flex-shrink-0 mr-1 text-app" />;
+    return <span className="inline-block flex-shrink-0 w-1.5 h-1.5 mr-1.5 rounded-full bg-unlam-500" />;
+};
 
 export function RecommendationCard({
     rec,
@@ -52,8 +63,9 @@ export function RecommendationCard({
             {rec.reasons.length > 0 && (
                 <div className="space-y-1.5 mb-4 border-l-2 border-unlam-500/30 pl-2">
                     {rec.reasons.map((reason: string, idx: number) => (
-                        <div key={idx} className="text-[11px] text-app">
-                            {reason}
+                        <div key={idx} className="flex text-left items-center text-[11px] text-app">
+                            {getReasonIcon(reason)}
+                            <span className="truncate">{reason}</span>
                         </div>
                     ))}
                 </div>

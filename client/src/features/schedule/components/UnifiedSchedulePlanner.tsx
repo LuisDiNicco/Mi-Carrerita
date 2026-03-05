@@ -16,6 +16,7 @@ interface UnifiedSchedulePlannerProps {
         slotRange?: string;
         durationHours?: number;
         commission?: string;
+        subjectName?: string;
     }) => Promise<void>;
     onRemoveTimetable: (subjectId: string) => Promise<void>;
     recommendedIds: Set<string>;
