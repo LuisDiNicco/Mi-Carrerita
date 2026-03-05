@@ -1,5 +1,12 @@
 ﻿import { useState, memo } from 'react';
 import { Lock, BookOpen, PenTool, CheckCircle, GraduationCap, ShieldCheck, AlertTriangle } from 'lucide-react';
+import {
+  NODE_LAYOUT,
+  NODE_TYPOGRAPHY,
+  NODE_EFFECTS,
+  STATUS_UI_STYLES,
+  TOOLTIP_STYLES
+} from '../../../styles/design-constants';
 import { Handle, Position } from '@xyflow/react';
 import type { Node, NodeProps } from '@xyflow/react';
 import { SubjectStatus } from '../../../shared/types/academic';
@@ -20,61 +27,36 @@ type SubjectNodeData = {
 
 export type SubjectNodeType = Node<SubjectNodeData, 'subject'>;
 
-const STATUS_STYLES: Record<SubjectStatus, {
-  container: string;
-  badge: string;
-  icon: React.ReactNode;
-  border: string;
-}> = {
+const STATUS_STYLES_WITH_ICONS = {
   [SubjectStatus.EQUIVALENCIA]: {
-    container: 'bg-[#B084CC] text-[#291736]',
-    badge: 'bg-[#8F66A8] border-[#6D4284] text-white',
+    ...STATUS_UI_STYLES[SubjectStatus.EQUIVALENCIA],
     icon: <ShieldCheck size={36} strokeWidth={2.5} />,
-    border: 'border-[#6D4284]',
   },
   [SubjectStatus.PENDIENTE]: {
-    container: 'bg-[#353C35] text-[#C5D2C5]',
-    badge: 'bg-[#3E4A3E] border-[#2A342A] text-[#E8F2E8]',
+    ...STATUS_UI_STYLES[SubjectStatus.PENDIENTE],
     icon: <Lock size={36} strokeWidth={2.5} />,
-    border: 'border-[#2A342A]',
   },
   [SubjectStatus.DISPONIBLE]: {
-    container: 'bg-[#F7E8A3] text-[#2E3436]',
-    badge: 'bg-[#E4C96A] border-[#C4A85B] text-[#2E3436]',
+    ...STATUS_UI_STYLES[SubjectStatus.DISPONIBLE],
     icon: <BookOpen size={36} strokeWidth={2.5} />,
-    border: 'border-[#C4A85B]',
   },
   [SubjectStatus.EN_CURSO]: {
-    container: 'bg-[#8FB5DD] text-[#1C2B3A]',
-    badge: 'bg-[#5F89BF] border-[#3F6FA2] text-white',
+    ...STATUS_UI_STYLES[SubjectStatus.EN_CURSO],
     icon: <PenTool size={36} strokeWidth={2.5} />,
-    border: 'border-[#3F6FA2]',
   },
   [SubjectStatus.REGULARIZADA]: {
-    container: 'bg-[#B4E6A6] text-[#1F2A1F]',
-    badge: 'bg-[#6BBE6E] border-[#4F9C52] text-white',
+    ...STATUS_UI_STYLES[SubjectStatus.REGULARIZADA],
     icon: <CheckCircle size={36} strokeWidth={2.5} />,
-    border: 'border-[#4F9C52]',
   },
   [SubjectStatus.APROBADA]: {
-    container: 'bg-[#7BCB7A] text-[#0B2A14] font-bold',
-    badge: 'bg-[#4FAE59] border-[#2E7D4D] text-[#0B2A14]',
+    ...STATUS_UI_STYLES[SubjectStatus.APROBADA],
     icon: <GraduationCap size={36} strokeWidth={2.5} />,
-    border: 'border-[#2E7D4D]',
   },
   [SubjectStatus.RECURSADA]: {
-    container: 'bg-[#E57373] text-[#2C0B0E]',
-    badge: 'bg-[#EF5350] border-[#B71C1C] text-[#2C0B0E]',
+    ...STATUS_UI_STYLES[SubjectStatus.RECURSADA],
     icon: <AlertTriangle size={36} strokeWidth={2.5} />,
-    border: 'border-[#B71C1C]',
   },
 };
-
-const NODE_WIDTH_PX = 280;
-const SUBJECT_NAME_MAX = 48;
-const TITLE_CLASS = 'text-xl leading-tight';
-const META_CLASS = 'text-lg';
-const BADGE_CLASS = 'text-base';
 
 const SubjectNodeComponent = ({ data, selected }: NodeProps<SubjectNodeType>) => {
   const subject = data.subject;
@@ -84,7 +66,7 @@ const SubjectNodeComponent = ({ data, selected }: NodeProps<SubjectNodeType>) =>
     return <div className="p-4 bg-destructive text-white">ERROR: Materia no encontrada</div>;
   }
 
-  const statusConfig = STATUS_STYLES[subject.status];
+  const statusConfig = STATUS_STYLES_WITH_ICONS[subject.status];
   const renderedIcon = statusConfig.icon;
   const isCritical = Boolean(data.isCritical);
   const isRecentlyUpdated = Boolean(data.isRecentlyUpdated);
@@ -105,7 +87,7 @@ const SubjectNodeComponent = ({ data, selected }: NodeProps<SubjectNodeType>) =>
       )}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      style={{ imageRendering: 'pixelated', width: NODE_WIDTH_PX }}
+      style={{ imageRendering: 'pixelated', width: NODE_LAYOUT.WIDTH_PX }}
     >
       <Handle
         type="target"
@@ -131,15 +113,15 @@ const SubjectNodeComponent = ({ data, selected }: NodeProps<SubjectNodeType>) =>
           subject.status === SubjectStatus.EQUIVALENCIA && 'ring-2 ring-purple-300/40',
           isRecentlyUpdated && 'subject-update-flash subject-update-fill',
           // Hover highlights override all other rings
-          isHoveredNode && 'ring-4 ring-white/80 scale-105 z-50 shadow-lg',
-          isPrerequisite && '!ring-4 !ring-orange-400/90 opacity-100',
-          isFullUnlock && '!ring-4 !ring-green-400/90 opacity-100',
-          isPartialUnlock && '!ring-4 !ring-yellow-300/90 opacity-90',
+          isHoveredNode && NODE_EFFECTS.HOVERED_NODE,
+          isPrerequisite && NODE_EFFECTS.PREREQUISITE,
+          isFullUnlock && NODE_EFFECTS.FULL_UNLOCK,
+          isPartialUnlock && NODE_EFFECTS.PARTIAL_UNLOCK,
         )}
       >
         <div className="flex items-center justify-between mb-2">
           <span className={cn(
-            BADGE_CLASS,
+            NODE_TYPOGRAPHY.BADGE_CLASS,
             'font-bold uppercase tracking-wider px-2 py-1 rounded',
             'border-2',
             statusConfig.badge
@@ -153,16 +135,16 @@ const SubjectNodeComponent = ({ data, selected }: NodeProps<SubjectNodeType>) =>
         </div>
 
         <h3 className={cn(
-          TITLE_CLASS,
+          NODE_TYPOGRAPHY.TITLE_CLASS,
           'mb-3 min-h-[56px]',
           'flex items-center justify-center',
           subject.status === SubjectStatus.APROBADA && 'text-[#0B2A14]',
           subject.status === SubjectStatus.EQUIVALENCIA && 'text-[#291736]'
         )}>
-          {truncateSubjectName(subject.name, SUBJECT_NAME_MAX)}
+          {truncateSubjectName(subject.name, NODE_LAYOUT.SUBJECT_NAME_MAX)}
         </h3>
 
-        <div className={cn('flex items-center justify-between mt-3 pt-2 border-t-2 border-current/30', META_CLASS)}>
+        <div className={cn('flex items-center justify-between mt-3 pt-2 border-t-2 border-current/30', NODE_TYPOGRAPHY.META_CLASS)}>
           <div className="flex items-center gap-1">
             <span>Hs</span>
             <span>{subject.hours || 0}</span>
@@ -180,17 +162,17 @@ const SubjectNodeComponent = ({ data, selected }: NodeProps<SubjectNodeType>) =>
         </div>
 
         {isHovered && (
-          <div className="absolute -top-14 left-1/2 -translate-x-1/2 z-50 origin-bottom
-                          bg-[#1C2B1F] text-white px-4 py-2 rounded-lg
-                          border-2 border-app
+          <div className={`absolute -top-14 left-1/2 -translate-x-1/2 z-50 origin-bottom
+                          ${TOOLTIP_STYLES.BACKGROUND} ${TOOLTIP_STYLES.TEXT} px-4 py-2 rounded-lg
+                          border-2 ${TOOLTIP_STYLES.BORDER}
                           whitespace-nowrap font-bold
                           shadow-lg tracking-wide
-                          animate-[fadeIn_0.2s_ease-out]"
+                          animate-[fadeIn_0.2s_ease-out]`}
             style={{ transform: `translateX(-50%)` }}>
             {getTooltipText(subject)}
-            <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2
-                            w-3 h-3 bg-[#1C2B1F] border-r-2 border-b-2 border-app
-                            rotate-45" />
+            <div className={`absolute -bottom-1.5 left-1/2 -translate-x-1/2
+                            w-3 h-3 ${TOOLTIP_STYLES.BACKGROUND} border-r-2 border-b-2 ${TOOLTIP_STYLES.BORDER}
+                            rotate-45`} />
           </div>
         )}
       </div>

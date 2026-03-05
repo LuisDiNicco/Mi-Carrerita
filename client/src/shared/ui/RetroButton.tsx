@@ -8,11 +8,13 @@ interface RetroButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   pixelated?: boolean;
 }
 
+import { RETRO_UI_VARIANTS } from '../../styles/design-constants';
+
 const variantStyles = {
-  primary: 'bg-unlam-500 border-unlam-800 text-[#0B2A14] hover:bg-unlam-600',
-  success: 'bg-[#73D216] border-[#4E9A06] text-white hover:bg-[#5FB300]',
-  danger: 'bg-[#EF2929] border-[#CC0000] text-white hover:bg-[#D41919]',
-  warning: 'bg-[#FCE94F] border-[#C4A000] text-[#2E3436] hover:bg-[#EDD400]',
+  primary: `${RETRO_UI_VARIANTS.primary.base} ${RETRO_UI_VARIANTS.primary.hover}`,
+  success: `${RETRO_UI_VARIANTS.success.base} ${RETRO_UI_VARIANTS.success.hover}`,
+  danger: `${RETRO_UI_VARIANTS.danger.base} ${RETRO_UI_VARIANTS.danger.hover}`,
+  warning: `${RETRO_UI_VARIANTS.warning.base} ${RETRO_UI_VARIANTS.warning.hover}`,
 };
 
 const sizeStyles = {

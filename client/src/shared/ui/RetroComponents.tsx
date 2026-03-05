@@ -1,5 +1,6 @@
 ﻿import type { ReactNode } from 'react';
 import { cn } from '../lib/utils';
+import { RETRO_UI_VARIANTS } from '../../styles/design-constants';
 
 interface RetroCardProps {
   children: ReactNode;
@@ -128,10 +129,10 @@ export const RetroBadge = ({
 }: RetroBadgeProps) => {
   const variants = {
     default: 'bg-gray-600 border-gray-800 text-white',
-    success: 'bg-[#73D216] border-[#4E9A06] text-white',
-    warning: 'bg-[#FCE94F] border-[#C4A000] text-[#2E3436]',
-    danger: 'bg-[#EF2929] border-[#CC0000] text-white',
-    info: 'bg-[#729FCF] border-[#3465A4] text-white',
+    success: RETRO_UI_VARIANTS.success.base,
+    warning: RETRO_UI_VARIANTS.warning.base,
+    danger: RETRO_UI_VARIANTS.danger.base,
+    info: RETRO_UI_VARIANTS.info.base,
   };
 
   return (
