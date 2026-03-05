@@ -1,0 +1,41 @@
+/* ========================================
+   ESTILOS ESPECÍFICOS DE REACT FLOW
+   ======================================== */
+.react-flow__controls {
+  @apply rounded-lg overflow-hidden;
+  border: 2px solid var(--app-border);
+  background-color: var(--app-surface);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
+}
+
+.react-flow__controls button {
+  background-color: var(--app-accent);
+  border-bottom: 2px solid color-mix(in srgb, var(--app-accent) 60%, #000);
+  color: var(--app-accent-ink);
+  @apply transition-colors duration-200;
+  image-rendering: pixelated;
+}
+
+.react-flow__controls button svg {
+  @apply text-white;
+}
+
+.react-flow__minimap {
+  @apply rounded-lg;
+  border: 2px solid var(--app-border);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.2);
+  background: color-mix(in srgb, var(--app-surface) 85%, transparent) !important;
+}
+
+.react-flow__handle {
+  image-rendering: pixelated;
+  transition: all 0.2s;
+}
+
+.react-flow__handle:hover {
+  transform: scale(1.3);
+}
+
+.react-flow__edge-path {
+  image-rendering: pixelated;
+}

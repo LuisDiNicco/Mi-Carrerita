@@ -1,0 +1,175 @@
+/* ========================================
+   EFECTOS ESPECIALES Y UI DINÁMICA
+   ======================================== */
+.screen-on-effect {
+  animation: powerOn 0.8s ease-out;
+}
+
+.typing-effect {
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 3px solid var(--app-accent);
+  animation: typing 2s steps(30, end), blink 0.75s step-end infinite;
+}
+
+.interactive-retro {
+  transition: all 0.1s ease;
+  cursor: pointer;
+}
+
+.interactive-retro:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.8);
+}
+
+.interactive-retro:active {
+  transform: translate(0, 0);
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.8);
+}
+
+.app-backdrop {
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(circle at 18% 22%, rgba(123, 203, 122, 0.16), transparent 50%),
+    radial-gradient(circle at 82% 18%, rgba(91, 190, 99, 0.12), transparent 45%),
+    radial-gradient(circle at 45% 82%, rgba(123, 203, 122, 0.1), transparent 55%);
+  background-size: 130% 130%;
+  opacity: 0.7;
+  animation: drift 14s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.pixel-noise {
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 10px 10px;
+  mix-blend-mode: soft-light;
+  opacity: 0.4;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.grid-drift {
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(0deg, rgba(0, 0, 0, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(123, 203, 122, 0.04) 1px, transparent 1px);
+  background-size: 100% 8px, 24px 100%;
+  opacity: 0.2;
+  animation: gridDrift 22s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Progress Track Component */
+.progress-track {
+  position: relative;
+  height: 18px;
+  background: color-mix(in srgb, var(--app-accent) 20%, transparent);
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid var(--app-border);
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--app-accent), var(--app-accent-strong));
+  transition: width 3s ease;
+}
+
+.progress-fill-animate {
+  animation: progressPulse 1.4s ease;
+}
+
+.progress-runner {
+  position: absolute;
+  top: -16px;
+  width: 26px;
+  height: 26px;
+  background-image: url('/animated-man-running.gif');
+  background-size: cover;
+  background-position: center;
+  background-color: transparent;
+  border-radius: 4px;
+  border: 2px solid var(--app-accent);
+  animation: walk 0.6s steps(2) infinite;
+}
+
+.progress-runner::after {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  background: var(--app-accent);
+  border-radius: 2px;
+}
+
+.progress-checkpoint {
+  position: absolute;
+  top: -6px;
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  background: var(--app-surface);
+  border: 2px solid var(--app-border);
+}
+
+/* Subject Updates */
+.subject-update-flash {
+  animation: subjectFlash 1.2s ease;
+}
+
+.subject-update-fill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, rgba(123, 203, 122, 0.25), transparent);
+  opacity: 0;
+  animation: subjectFill 1.2s ease;
+  pointer-events: none;
+}
+
+.critical-glow {
+  box-shadow: 0 0 16px rgba(232, 93, 93, 0.55);
+}
+
+/* Spark Effects */
+.spark-edge {
+  width: 10px;
+  height: 30px;
+}
+
+.spark-edge::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 3px;
+  height: 100%;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow:
+    0 0 8px #fff,
+    0 0 15px var(--app-accent),
+    0 0 25px var(--app-accent-strong);
+  animation: electric-flicker 0.15s infinite alternate;
+  z-index: 2;
+}
+
+.spark-edge::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 30px;
+  height: 30px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 10%, var(--app-accent) 30%, rgba(255, 255, 255, 0) 60%);
+  transform: translate(-50%, -50%) scale(0);
+  animation: spark-particles 0.8s linear infinite;
+  z-index: 1;
+  opacity: 0.7;
+}
