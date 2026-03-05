@@ -34,14 +34,14 @@ describe('DashboardService', () => {
   });
 
   describe('getDashboardData', () => {
-    it('debería lanzar NotFound si no se encuentra el usuario', async () => {
+    it('deberña lanzar NotFound si no se encuentra el usuario', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
       await expect(service.getDashboardData('t@t.com')).rejects.toThrow(
         NotFoundException,
       );
     });
 
-    it('debería calcular todos los charts correctamente usando los helpers con data variada', async () => {
+    it('deberña calcular todos los charts correctamente usando los helpers con data variada', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue({ id: 'u1' });
 
       const records = [
@@ -92,7 +92,7 @@ describe('DashboardService', () => {
       expect(result.performanceChart.data.length).toBe(3);
     });
 
-    it('debería formatear correctamente un historial vacío', async () => {
+    it('deberña formatear correctamente un historial vacño', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue({ id: 'u1' });
       mockPrismaService.academicRecord.findMany.mockResolvedValue([]);
 
@@ -103,7 +103,7 @@ describe('DashboardService', () => {
       expect(result.performanceChart.data.length).toBe(0);
     });
 
-    it('debería detectar rachas de promedios excelentes', async () => {
+    it('deberña detectar rachas de promedios excelentes', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue({ id: 'u1' });
 
       const records = [

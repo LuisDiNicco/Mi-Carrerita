@@ -7,7 +7,7 @@
 ## Código de Conducta
 
 - Sé respetuoso y profésional
-- Acepta crítica constructiva
+- Acepta crñtica constructiva
 - Enfócate en lo que es mejor para la comunidad
 - Reporta comportamientos abusivos a los mantenedores
 
@@ -19,7 +19,7 @@
 
 Crea un issue con:
 
-**Título:** `[BUG] Descripción corta del problema`
+**Tñtulo:** `[BUG] Descripción corta del problema`
 
 **Descripción:**
 ```markdown
@@ -32,7 +32,7 @@ Descripción clara y concisa del bug.
 3. Observa el error
 
 ## Comportamiento Esperado
-Qué debería pasar
+Qué deberña pasar
 
 ## Comportamiento Actual
 Qué pasa realmente
@@ -58,7 +58,7 @@ Qué pasa realmente
 
 Crea un issue con:
 
-**Título:** `[FEATURE] Descripción corta de la idea`
+**Tñtulo:** `[FEATURE] Descripción corta de la idea`
 
 **Descripción:**
 ```markdown
@@ -66,7 +66,7 @@ Crea un issue con:
 Qué problema resuelve esta feature?
 
 ## Solución Propuesta
-Cómo debería funcionar?
+Cómo deberña funcionar?
 
 ## Alternativas Consideradas
 Otras formas de resolver esto?
@@ -169,7 +169,7 @@ Links a documentación, issues relacionados, etc.
 
 ---
 
-## Guías de Estilo
+## Guñas de Estilo
 
 ### TypeScript
 
@@ -345,7 +345,7 @@ Tu PR será revisado por al menos un mantenedor:
 3. **Type Safety:** Revisamos tipos TypeScript
 4. **Documentación:** Verificamos que esté actualizada
 
-Puede haber feedback. **No toma a pecho las críticas** - queremos mejorar juntos.
+Puede haber feedback. **No toma a pecho las crñticas** - queremos mejorar juntos.
 
 ---
 
@@ -367,13 +367,13 @@ Puede haber feedback. **No toma a pecho las críticas** - queremos mejorar junto
 - [ ] Diseñar nuevas features grandes
 - [ ] Cambios de arquitectura
 - [ ] Integraciones complejas
-- [ ] Optimizaciones críticas
+- [ ] Optimizaciones crñticas
 
 ---
 
 ## Recursos
 
-- [SETUP.md](SETUP.md) - Guía de instalación
+- [SETUP.md](SETUP.md) - Guña de instalación
 - [ARCHITECTURE.md](ARCHITECTURE.md) - Diseño del proyecto
 - [API.md](API.md) - Documentación de endpoints
 - [FAQ.md](FAQ.md) - Preguntas comunes

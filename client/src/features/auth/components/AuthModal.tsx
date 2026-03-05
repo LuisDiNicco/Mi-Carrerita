@@ -5,7 +5,7 @@ import { registerUser, loginUser } from '../lib/api';
 import { useAcademicStore } from '../../academic/store/academic-store';
 import { migrateGuestProgressToAccount } from '../../academic/lib/academic-api';
 import { RetroButton } from '../../../shared/ui/RetroButton';
-import { Eye, EyeOff, X } from 'lucide-react';
+import { Eye, EyeOff, X, AlertTriangle } from 'lucide-react';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -43,22 +43,22 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
     }
 
     if (trimmedPassword.length < 8) {
-      setError('La contraseña debe tener al menos 8 caracteres.');
+      setError('La contraseía debe tener al menos 8 caracteres.');
       return;
     }
 
     if (mode === 'register' && !/[A-Z]/.test(trimmedPassword)) {
-      setError('La contraseña debe incluir al menos una letra mayúscula.');
+      setError('La contraseía debe incluir al menos una letra mayúscula.');
       return;
     }
 
     if (mode === 'register' && !/[a-z]/.test(trimmedPassword)) {
-      setError('La contraseña debe incluir al menos una letra minúscula.');
+      setError('La contraseía debe incluir al menos una letra minúscula.');
       return;
     }
 
     if (mode === 'register' && !/\d/.test(trimmedPassword)) {
-      setError('La contraseña debe incluir al menos un número.');
+      setError('La contraseía debe incluir al menos un número.');
       return;
     }
 
@@ -212,7 +212,7 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
                 />
               </label>
               <label className="flex flex-col gap-1 text-sm text-muted">
-                <span className="font-bold">Contraseña</span>
+                <span className="font-bold">Contraseía</span>
                 <div className="relative">
                   <input
                     type={showPassword ? 'text' : 'password'}
@@ -225,7 +225,7 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
                     type="button"
                     className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-muted hover:text-app"
                     onClick={() => setShowPassword((prev) => !prev)}
-                    title={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                    title={showPassword ? 'Ocultar contraseía' : 'Mostrar contraseía'}
                   >
                     {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
@@ -240,7 +240,7 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
 
             {error && (
               <div className="mt-4 p-3 bg-destructive/10 border-2 border-destructive/30 rounded-lg">
-                <p className="text-sm text-destructive font-bold">›” {error}</p>
+                <p className="text-sm text-destructive font-bold flex items-center gap-1"><AlertTriangle size={16} /> {error}</p>
               </div>
             )}
 

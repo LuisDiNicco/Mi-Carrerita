@@ -198,7 +198,7 @@ describe('SubjectUpdatePanel', () => {
         expect(mockOnSave).not.toHaveBeenCalled();
     });
 
-    it('deberí­a arrojar error si la nota ingresada no es un níºmero válido', async () => {
+    it('deberí­a arrojar error si la nota ingresada no es un número válido', async () => {
         render(
             <SubjectUpdatePanel
                 subject={mockApprovedSubject}
@@ -215,7 +215,7 @@ describe('SubjectUpdatePanel', () => {
 
         fireEvent.click(screen.getByText('Guardar Cambios'));
 
-        expect(await screen.findByText(/La nota debe ser un níºmero entre 1 y 10/)).toBeInTheDocument();
+        expect(await screen.findByText(/La nota debe ser un número entre 1 y 10/)).toBeInTheDocument();
         expect(mockOnSave).not.toHaveBeenCalled();
     });
 
@@ -239,7 +239,7 @@ describe('SubjectUpdatePanel', () => {
 
         fireEvent.click(screen.getByText('Guardar Cambios'));
 
-        expect(await screen.findByText(/La dificultad debe ser un níºmero entre 1 y 100/)).toBeInTheDocument();
+        expect(await screen.findByText(/La dificultad debe ser un número entre 1 y 100/)).toBeInTheDocument();
         expect(mockOnSave).not.toHaveBeenCalled();
     });
 

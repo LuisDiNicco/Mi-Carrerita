@@ -1,14 +1,16 @@
-﻿interface SideNavProps {
+﻿import { Network, Calendar, BarChart3, Library, Trophy } from 'lucide-react';
+
+interface SideNavProps {
   active: string;
   onChange: (section: string) => void;
 }
 
 const items = [
-  { id: 'tree', label: 'írbol de Materias', icon: '²' },
-  { id: 'schedule', label: 'Planificador', icon: '📅' },
-  { id: 'dashboard', label: 'Dashboard', icon: '📊' },
-  { id: 'history', label: 'Historia Acadímica', icon: '📚' },
-  { id: 'trophies', label: 'Sala de Trofeos', icon: '†' },
+  { id: 'tree', label: 'Árbol de Materias', icon: <Network size={18} /> },
+  { id: 'schedule', label: 'Planificador', icon: <Calendar size={18} /> },
+  { id: 'dashboard', label: 'Dashboard', icon: <BarChart3 size={18} /> },
+  { id: 'history', label: 'Historia Académica', icon: <Library size={18} /> },
+  { id: 'trophies', label: 'Sala de Trofeos', icon: <Trophy size={18} /> },
 ];
 
 export const SideNav = ({ active, onChange }: SideNavProps) => {
@@ -35,4 +37,3 @@ export const SideNav = ({ active, onChange }: SideNavProps) => {
     </nav>
   );
 };
-

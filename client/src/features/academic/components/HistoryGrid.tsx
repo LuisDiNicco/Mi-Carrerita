@@ -1,4 +1,4 @@
-﻿import { ArrowUpDown, Edit2, Trash2, AlertTriangle } from 'lucide-react';
+﻿import { ArrowUpDown, Edit2, Trash2, AlertTriangle, X } from 'lucide-react';
 import { cn, formatDate, formatGrade } from '../../../shared/lib/utils';
 import { STATUS_OPTIONS } from '../hooks/useHistoryTable';
 import type { SortKey, SortDirection } from '../hooks/useHistoryTable';
@@ -81,7 +81,7 @@ export function HistoryGrid({
                 <div className="flex items-center gap-2 px-4 py-3 rounded-xl border border-destructive/30 bg-destructive/10 text-destructive text-sm font-bold">
                     <AlertTriangle size={16} />
                     {deleteError}
-                    <button onClick={() => setDeleteError(null)} className="ml-auto text-muted hover:text-app">í—</button>
+                    <button onClick={() => setDeleteError(null)} className="ml-auto text-muted hover:text-app"><X size={14} /></button>
                 </div>
             )}
 
@@ -107,7 +107,7 @@ export function HistoryGrid({
                                     className="py-3 px-4 font-medium cursor-pointer hover:text-app transition-colors select-none group w-16 text-center"
                                     onClick={() => handleSort('year')}
                                 >
-                                    <div className="flex items-center gap-1">Año {sortConfig.key === 'year' && <ArrowUpDown size={12} className="text-unlam-500" />}</div>
+                                    <div className="flex items-center gap-1">Aío {sortConfig.key === 'year' && <ArrowUpDown size={12} className="text-unlam-500" />}</div>
                                 </th>
                                 <th
                                     className="py-3 px-4 font-medium cursor-pointer hover:text-app transition-colors select-none group"
@@ -167,11 +167,11 @@ export function HistoryGrid({
                                                         row.difficulty >= 34 ? 'bg-yellow-500/10 text-yellow-400' :
                                                             'bg-green-500/10 text-green-400'
                                                 )}>{row.difficulty}</span>
-                                            ) : <span className="text-muted">€”</span>}
+                                            ) : <span className="text-muted">—</span>}
                                         </td>
                                         <td className="py-3 px-4 relative max-w-[200px] group/tooltip">
                                             <div className="truncate text-xs text-muted">
-                                                {row.notes || '€”'}
+                                                {row.notes || '—'}
                                             </div>
                                             {/* Hover Preview Tooltip */}
                                             {row.notes && (
@@ -208,4 +208,3 @@ export function HistoryGrid({
         </>
     );
 }
-

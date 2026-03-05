@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import type { Subject } from '../../../shared/types/academic';
 import { SubjectStatus } from '../../../shared/types/academic';
 import { RetroButton, RetroCalendar } from '../../../shared/ui';
-import { Calendar } from 'lucide-react';
+import { Calendar, AlertTriangle } from 'lucide-react';
 import { fromISODate, toISODate } from '../../../shared/lib/utils';
 
 interface SubjectUpdatePanelProps {
@@ -83,7 +83,7 @@ export const SubjectUpdatePanel = ({ subject, isOpen, onClose, onSave }: Subject
       if (grade.trim() !== '') {
         const gradeValue = Number(grade);
         if (Number.isNaN(gradeValue) || gradeValue < 1 || gradeValue > 10) {
-          setError("La nota debe ser un níºmero entre 1 y 10.");
+          setError("La nota debe ser un número entre 1 y 10.");
           setIsSaving(false);
           return;
         }
@@ -92,7 +92,7 @@ export const SubjectUpdatePanel = ({ subject, isOpen, onClose, onSave }: Subject
       if (difficulty.trim() !== '') {
         const diffValue = Number(difficulty);
         if (Number.isNaN(diffValue) || diffValue < 1 || diffValue > 100) {
-          setError("La dificultad debe ser un níºmero entre 1 y 100.");
+          setError("La dificultad debe ser un número entre 1 y 100.");
           setIsSaving(false);
           return;
         }
@@ -187,7 +187,7 @@ export const SubjectUpdatePanel = ({ subject, isOpen, onClose, onSave }: Subject
             <div className="space-y-4 flex-1 flex flex-col justify-center animate-[fadeIn_0.3s_ease-out]">
               <div className="p-5 border-2 border-yellow-500/50 bg-yellow-500/10 rounded-xl shadow-soft">
                 <h3 className="text-xl font-bold text-yellow-500 mb-3 font-retro flex items-center gap-2">
-                  <span className="text-2xl">⚠️</span> ¿Forzar Cambio?
+                  <AlertTriangle size={24} /> ¿Forzar Cambio?
                 </h3>
                 <p className="text-sm text-app/90 leading-relaxed">
                   Esta materia figura como <strong className="bg-yellow-500/20 px-1 rounded text-yellow-400">PENDIENTE</strong> (bloqueada).
@@ -298,14 +298,14 @@ export const SubjectUpdatePanel = ({ subject, isOpen, onClose, onSave }: Subject
                   className="w-full h-full min-h-[80px] bg-elevated border-2 border-app-border rounded-lg px-3 py-2.5 text-app resize-none focus:border-unlam-500 focus:ring-2 focus:ring-unlam-500/20 outline-none transition-all placeholder:text-muted/50"
                   value={notes}
                   onChange={(event) => setNotes(event.target.value)}
-                  placeholder="Ej: El final es oral y toma diseño de DB..."
+                  placeholder="Ej: El final es oral y toma diseío de DB..."
                 />
               </label>
 
               {error && (
                 <div className="p-3 bg-destructive/10 border border-destructive/30 rounded-lg animate-[fadeIn_0.2s_ease-in]">
                   <p className="text-sm text-destructive font-bold flex items-center gap-2">
-                    <span>›”</span> {error}
+                    <AlertTriangle size={16} /> {error}
                   </p>
                 </div>
               )}

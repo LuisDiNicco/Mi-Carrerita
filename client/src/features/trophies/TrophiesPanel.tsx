@@ -1,7 +1,7 @@
 ﻿import { useEffect, useMemo, useState } from 'react';
 import { fetchTrophyCase, checkAndUnlockTrophies } from './lib/trophies-api';
 import type { TrophyCaseDto, TrophyDto } from './lib/trophies-api';
-import { Trophy, CheckCircle, AlertTriangle } from 'lucide-react';
+import { Trophy, CheckCircle, AlertTriangle, Loader2, X } from 'lucide-react';
 
 const TROPHY_TIER_ORDER: Record<string, number> = {
   BRONZE: 1,
@@ -134,7 +134,7 @@ export const TrophiesPanel = () => {
           <span className="relative z-10 flex items-center gap-2">
             {checking ? (
               <>
-                <span className="animate-spin">†»</span> Verificando...
+                <Loader2 size={16} className="animate-spin" /> Verificando...
               </>
             ) : (
               <>Verificar Trofeos</>
@@ -150,7 +150,7 @@ export const TrophiesPanel = () => {
           }`}>
           {trophyMessage.type === 'success' ? <CheckCircle size={16} /> : trophyMessage.type === 'error' ? <AlertTriangle size={16} /> : <Trophy size={16} />}
           {trophyMessage.text}
-          <button onClick={() => setTrophyMessage(null)} className="ml-auto text-muted hover:text-app">í—</button>
+          <button onClick={() => setTrophyMessage(null)} className="ml-auto text-muted hover:text-app"><X size={14} /></button>
         </div>
       )}
 

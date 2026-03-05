@@ -28,7 +28,7 @@ describe('PdfParserService', () => {
      */
 
     it('should return empty array when no rows match the pattern', async () => {
-      const mockText = 'No hay tabla aquí, solo texto libre.\nOtra línea.';
+      const mockText = 'No hay tabla aquñ, solo texto libre.\nOtra lñnea.';
       (pdfParse as jest.Mock).mockResolvedValue({ text: mockText });
 
       const result = await service.parseHistoriaAcademica(Buffer.from('fake'));
@@ -198,7 +198,7 @@ describe('PdfParserService', () => {
       const mockText = [
         'Código  Descripción',
         'Cod.',
-        'Comisión  Turno  Días  Modalidad',
+        'Comisión  Turno  Dñas  Modalidad',
         '0901INGLES NIVEL I1300Lu08a12 Semipresencial',
       ].join('\n');
 

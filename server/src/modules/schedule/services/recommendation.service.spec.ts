@@ -41,14 +41,14 @@ describe('RecommendationService', () => {
   });
 
   describe('generateRecommendation', () => {
-    it('debería lanzar NotFound si no se encuenta el usuario', async () => {
+    it('deberña lanzar NotFound si no se encuenta el usuario', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
       await expect(
         service.generateRecommendation('test@test.com'),
       ).rejects.toThrow(NotFoundException);
     });
 
-    it('debería retornar las recomendaciones ignorando las materias que el usuario ya aprobó', async () => {
+    it('deberña retornar las recomendaciones ignorando las materias que el usuario ya aprobó', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue({ id: 'u1' });
       // Materia M1 ya aprobada
       mockPrismaService.academicRecord.findMany.mockResolvedValue([
@@ -84,7 +84,7 @@ describe('RecommendationService', () => {
       expect(result.hasConflicts).toBe(false);
     });
 
-    it('debería mapear conflictos si hay recs MANTENIDA que chocan con otros horarios MANTENIDA', async () => {
+    it('deberña mapear conflictos si hay recs MANTENIDA que chocan con otros horarios MANTENIDA', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue({ id: 'u1' });
       mockPrismaService.academicRecord.findMany.mockResolvedValue([]); // Nada aprobado
       mockPrismaService.subject.findMany.mockResolvedValue([
@@ -138,7 +138,7 @@ describe('RecommendationService', () => {
   });
 
   describe('updateRecommendationStatus', () => {
-    it('debería lanzar NotFound si el usuario no existe', async () => {
+    it('deberña lanzar NotFound si el usuario no existe', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
       await expect(
         service.updateRecommendationStatus('t@t.com', {
@@ -148,7 +148,7 @@ describe('RecommendationService', () => {
       ).rejects.toThrow(NotFoundException);
     });
 
-    it('debería lanzar NotFound si la materia no existe', async () => {
+    it('deberña lanzar NotFound si la materia no existe', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue({ id: 'u1' });
       mockPrismaService.subject.findUnique.mockResolvedValue(null);
       await expect(
@@ -159,7 +159,7 @@ describe('RecommendationService', () => {
       ).rejects.toThrow(NotFoundException);
     });
 
-    it('debería lanzar BadRequest si estado es MANTENIDA y no hay timetable propuesto', async () => {
+    it('deberña lanzar BadRequest si estado es MANTENIDA y no hay timetable propuesto', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue({ id: 'u1' });
       mockPrismaService.subject.findUnique.mockResolvedValue({ id: 's1' });
       await expect(
@@ -170,7 +170,7 @@ describe('RecommendationService', () => {
       ).rejects.toThrow(BadRequestException);
     });
 
-    it('debería upsert recommendation y upsert timetable si es MANTENIDA', async () => {
+    it('deberña upsert recommendation y upsert timetable si es MANTENIDA', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue({ id: 'u1' });
       mockPrismaService.subject.findUnique.mockResolvedValue({ id: 's1' });
 
@@ -184,7 +184,7 @@ describe('RecommendationService', () => {
       expect(mockPrismaService.timetable.upsert).toHaveBeenCalled();
     });
 
-    it('debería borrar horarios si es DELETED', async () => {
+    it('deberña borrar horarios si es DELETED', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue({ id: 'u1' });
       mockPrismaService.subject.findUnique.mockResolvedValue({ id: 's1' });
 
@@ -201,7 +201,7 @@ describe('RecommendationService', () => {
   });
 
   describe('getRecommendations', () => {
-    it('debería llamar a generateRecommendation internamente', async () => {
+    it('deberña llamar a generateRecommendation internamente', async () => {
       const spy = jest
         .spyOn(service, 'generateRecommendation')
         .mockResolvedValue({

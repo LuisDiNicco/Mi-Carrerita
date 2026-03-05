@@ -116,7 +116,7 @@ export interface ParsedTimetableOffer {
     planCode: string;
     description: string;
     dayLabel: string;     // e.g. "Lunes"
-    periodLabel: string;  // e.g. "Noche", "Tarde", "Mañana"
+    periodLabel: string;  // e.g. "Noche", "Tarde", "Maíana"
     commission: string;
     modality: string;
     location: string;

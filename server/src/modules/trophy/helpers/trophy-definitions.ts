@@ -41,7 +41,7 @@ export const TROPHY_DEFINITIONS: TrophySeedDefinition[] = [
   },
   {
     code: 'TEN_SUBJECTS_PASSED',
-    name: 'Doble Dígito',
+    name: 'Doble Dñgito',
     description:
       'Aprobar 10 materias o más. Ya dejaste atrás el cuarto del primer año.',
     tier: TrophyTier.BRONZE,
@@ -123,7 +123,7 @@ export const TROPHY_DEFINITIONS: TrophySeedDefinition[] = [
     code: 'MIXED_STATUS_PASS',
     name: 'Versátil',
     description:
-      'Tener materias en ambos regímenes: regularizadas y aprobadas con final. Lo tuyo es la adaptabilidad.',
+      'Tener materias en ambos regñmenes: regularizadas y aprobadas con final. Lo tuyo es la adaptabilidad.',
     tier: TrophyTier.BRONZE,
     icon: 'https://via.placeholder.com/64?text=🔀',
     rarity: 45,
@@ -163,7 +163,7 @@ export const TROPHY_DEFINITIONS: TrophySeedDefinition[] = [
     code: 'ALL_OPTIONALS_COMPLETED',
     name: 'Completista',
     description:
-      'Completar las 3 materias electivas. Fuiste más allá del mínimo requerido.',
+      'Completar las 3 materias electivas. Fuiste más allá del mñnimo requerido.',
     tier: TrophyTier.BRONZE,
     icon: 'https://via.placeholder.com/64?text=➕',
     rarity: 20,
@@ -185,7 +185,7 @@ export const TROPHY_DEFINITIONS: TrophySeedDefinition[] = [
     code: 'INTERMEDIATE_DEGREE',
     name: 'Grado Intermedio',
     description:
-      'Completar todas las materias del título intermedio. Un logro en sí mismo.',
+      'Completar todas las materias del tñtulo intermedio. Un logro en sñ mismo.',
     tier: TrophyTier.SILVER,
     icon: 'https://via.placeholder.com/64?text=📜',
     rarity: 40,
@@ -305,7 +305,7 @@ export const TROPHY_DEFINITIONS: TrophySeedDefinition[] = [
   },
   {
     code: 'CHALLENGE_ACCEPTED',
-    name: 'Desafío Aceptado',
+    name: 'Desafño Aceptado',
     description:
       'Aprobar 10 o más materias con dificultad percibida alta (≥ 70). Sos un rompe-promedios.',
     tier: TrophyTier.GOLD,

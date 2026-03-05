@@ -113,7 +113,7 @@ export const Landing = ({ onStart }: LandingProps) => {
               Potencia Tu Carrera
             </h2>
             <p className="text-app/70 text-lg max-w-2xl mx-auto">
-              Herramientas profesionales diseñadas para maximizar tu éxito académico
+              Herramientas profesionales diseíadas para maximizar tu éxito académico
             </p>
           </div>
 
@@ -149,7 +149,7 @@ export const Landing = ({ onStart }: LandingProps) => {
 
         {/* Footer CTA */}
         <div className="mt-20 text-center">
-          <p className="text-muted mb-6 text-lg">¿Listo para transformar tu experiencia acadímica?</p>
+          <p className="text-muted mb-6 text-lg">¿Listo para transformar tu experiencia académica?</p>
           <button
             onClick={onStart}
             className="group relative overflow-hidden rounded-lg px-10 py-4 font-bold text-lg transition-all duration-300 hover:scale-105"

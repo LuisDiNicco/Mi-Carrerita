@@ -63,14 +63,14 @@ describe('AcademicHistoryService', () => {
   });
 
   describe('getHistory', () => {
-    it('debería lanzar NotFound si no se encuentra el usuario', async () => {
+    it('deberña lanzar NotFound si no se encuentra el usuario', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
       await expect(service.getHistory('test@test.com', {})).rejects.toThrow(
         NotFoundException,
       );
     });
 
-    it('debería retornar datos paginados mapeados correctamente', async () => {
+    it('deberña retornar datos paginados mapeados correctamente', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue({ id: 'u1' });
       (historyHelpers.buildWhereClause as jest.Mock).mockReturnValue({
         userId: 'u1',
@@ -116,7 +116,7 @@ describe('AcademicHistoryService', () => {
   });
 
   describe('updateRecord', () => {
-    it('debería lanzar NotFound si no se encuentra el usuario', async () => {
+    it('deberña lanzar NotFound si no se encuentra el usuario', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
       await expect(
         service.updateRecord('t@t.com', 'r1', {
@@ -125,7 +125,7 @@ describe('AcademicHistoryService', () => {
       ).rejects.toThrow(NotFoundException);
     });
 
-    it('debería lanzar NotFound si no se encuentra el record', async () => {
+    it('deberña lanzar NotFound si no se encuentra el record', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue({ id: 'u1' });
       mockPrismaService.academicRecord.findUnique.mockResolvedValue(null);
       await expect(
@@ -135,7 +135,7 @@ describe('AcademicHistoryService', () => {
       ).rejects.toThrow(NotFoundException);
     });
 
-    it('debería lanzar ForbiddenException si el record no pertenece al user', async () => {
+    it('deberña lanzar ForbiddenException si el record no pertenece al user', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue({ id: 'u1' });
       mockPrismaService.academicRecord.findUnique.mockResolvedValue({
         userId: 'u2',
@@ -147,7 +147,7 @@ describe('AcademicHistoryService', () => {
       ).rejects.toThrow(ForbiddenException);
     });
 
-    it('debería validar, actualizar y emitir evento si está ok', async () => {
+    it('deberña validar, actualizar y emitir evento si está ok', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue({ id: 'u1' });
       mockPrismaService.academicRecord.findUnique.mockResolvedValue({
         userId: 'u1',
@@ -194,14 +194,14 @@ describe('AcademicHistoryService', () => {
   });
 
   describe('deleteRecord', () => {
-    it('debería lanzar NotFound si no se encuentra el user', async () => {
+    it('deberña lanzar NotFound si no se encuentra el user', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
       await expect(service.deleteRecord('t@t.com', 'r1')).rejects.toThrow(
         NotFoundException,
       );
     });
 
-    it('debería lanzar NotFound si no se encuentra el record', async () => {
+    it('deberña lanzar NotFound si no se encuentra el record', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue({ id: 'u1' });
       mockPrismaService.academicRecord.findUnique.mockResolvedValue(null);
       await expect(service.deleteRecord('t@t.com', 'r1')).rejects.toThrow(
@@ -209,7 +209,7 @@ describe('AcademicHistoryService', () => {
       );
     });
 
-    it('debería lanzar ForbiddenException si el record no es del usuario', async () => {
+    it('deberña lanzar ForbiddenException si el record no es del usuario', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue({ id: 'u1' });
       mockPrismaService.academicRecord.findUnique.mockResolvedValue({
         userId: 'u2',
@@ -219,7 +219,7 @@ describe('AcademicHistoryService', () => {
       );
     });
 
-    it('debería eliminar y emitir evento', async () => {
+    it('deberña eliminar y emitir evento', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue({ id: 'u1' });
       mockPrismaService.academicRecord.findUnique.mockResolvedValue({
         userId: 'u1',
@@ -238,14 +238,14 @@ describe('AcademicHistoryService', () => {
   });
 
   describe('deleteAll', () => {
-    it('debería lanzar NotFound si no user en deleteAll', async () => {
+    it('deberña lanzar NotFound si no user en deleteAll', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
       await expect(service.deleteAll('t@t.com')).rejects.toThrow(
         NotFoundException,
       );
     });
 
-    it('debería eliminar todos y emitir evento', async () => {
+    it('deberña eliminar todos y emitir evento', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue({ id: 'u1' });
       mockPrismaService.academicRecord.deleteMany.mockResolvedValue({
         count: 5,

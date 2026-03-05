@@ -2,7 +2,6 @@
 import {
     cn,
     truncateSubjectName,
-    getSubjectEmoji,
     getRandomRetroColor,
     calculateProgress,
     groupBySemester,
@@ -21,12 +20,6 @@ describe('Shared Utils', () => {
     it('truncateSubjectName trunca nombres largos', () => {
         expect(truncateSubjectName('Corta')).toBe('Corta');
         expect(truncateSubjectName('Esta es una materia con un nombre muy pero muy largo', 20)).toBe('Esta es una mater...');
-    });
-
-    it('getSubjectEmoji retorna emojis adecudos segíºn el estado', () => {
-        expect(getSubjectEmoji('APROBADA')).toBe('†');
-        expect(getSubjectEmoji('PENDIENTE')).toBe('”’');
-        expect(getSubjectEmoji('INEXISTENTE')).toBe('“');
     });
 
     it('getRandomRetroColor genera un color retro', () => {
@@ -54,18 +47,18 @@ describe('Shared Utils', () => {
     });
 
     it('formatGrade formatea la nota correctamente', () => {
-        expect(formatGrade(null)).toBe('€”');
-        expect(formatGrade(9)).toBe('­ 9');
-        expect(formatGrade(8)).toBe('­ 8');
-        expect(formatGrade(7)).toBe('œ“ 7');
-        expect(formatGrade(6)).toBe('œ“ 6');
+        expect(formatGrade(null)).toBe('—');
+        expect(formatGrade(9)).toBe('9');
+        expect(formatGrade(8)).toBe('8');
+        expect(formatGrade(7)).toBe('7');
+        expect(formatGrade(6)).toBe('6');
         expect(formatGrade(4)).toBe('4');
     });
 
     it('formatDate formatea fechas', () => {
-        expect(formatDate(null)).toBe('€”');
-        expect(formatDate(undefined)).toBe('€”');
-        expect(formatDate('')).toBe('€”');
+        expect(formatDate(null)).toBe('—');
+        expect(formatDate(undefined)).toBe('—');
+        expect(formatDate('')).toBe('—');
         // Local date string comparison might vary per environment, so just test it returns a string
         expect(typeof formatDate('2024-01-01')).toBe('string');
     });
@@ -78,7 +71,7 @@ describe('Shared Utils', () => {
         vi.useRealTimers();
     });
 
-    it('debounce retrasa la ejecucií³n', () => {
+    it('debounce retrasa la ejecución', () => {
         vi.useFakeTimers();
         const func = vi.fn();
         const debounced = debounce(func, 1000);

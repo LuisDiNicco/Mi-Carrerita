@@ -16,19 +16,6 @@ export function truncateSubjectName(name: string, maxLength = 30): string {
   return name.slice(0, maxLength - 3) + "...";
 }
 
-/**
- * Obtener emoji basado en el estado de la materia
- */
-export function getSubjectEmoji(status: string): string {
-  const emojiMap: Record<string, string> = {
-    PENDIENTE: "”’",
-    DISPONIBLE: "Ž¯",
-    EN_CURSO: "“š",
-    REGULARIZADA: "œ…",
-    APROBADA: "†",
-  };
-  return emojiMap[status] || "“";
-}
 
 /**
  * Generar color aleatorio para efectos visuales
@@ -77,9 +64,7 @@ export function groupBySemester<T extends { semester: number }>(
  * Formatear nota con estilo retro
  */
 export function formatGrade(grade: number | null): string {
-  if (grade === null) return "€”";
-  if (grade >= 8) return `­ ${grade}`;
-  if (grade >= 6) return `œ“ ${grade}`;
+  if (grade === null) return "—";
   return `${grade}`;
 }
 
@@ -87,7 +72,7 @@ export function formatGrade(grade: number | null): string {
  * Formatear fecha YYYY-MM-DD a formato legible DD/MM/YYYY
  */
 export function formatDate(date: string | null | undefined): string {
-  if (!date) return '€”';
+  if (!date) return '—';
   return new Date(date + 'T00:00:00').toLocaleDateString('es-AR');
 }
 

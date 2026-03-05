@@ -199,7 +199,7 @@ export class AuthService {
 
     if (!/\d/.test(password)) {
       throw new BadRequestException(
-        'La contraseña debe contener al menos un dígito.',
+        'La contraseña debe contener al menos un dñgito.',
       );
     }
   }

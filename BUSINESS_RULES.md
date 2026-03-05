@@ -1,6 +1,6 @@
 # 🏢 Reglas de Negocio (Business Rules)
 
-Centraliza todas las lógicas del dominio universitario de `Mi Carrerita`. Todo cambio en la reglamentación académica debe reflejarse aquí primero y luego derivarse al código.
+Centraliza todas las lógicas del dominio universitario de `Mi Carrerita`. Todo cambio en la reglamentación académica debe reflejarse aquñ primero y luego derivarse al código.
 
 ---
 
@@ -20,8 +20,8 @@ La facultad opera en tres turnos fijos. No existe oferta académica fuera de est
 - **Taller de Integración** (`3680`) puede cursarse en franjas no estándar (por ejemplo `12a14`).
 - **Inglés** (`0901`–`0904`) y **Computación** (`0911`–`0912`) pueden tener:
    - menos de 4 horas semanales,
-   - distribución en 2 días (ej: `MaVi12a14`),
-   - modalidad **A distancia** sin ocupar celda física de grilla.
+   - distribución en 2 dñas (ej: `MaVi12a14`),
+   - modalidad **A distancia** sin ocupar celda fñsica de grilla.
 - En estos casos, el sistema debe permitir su representación aun cuando no coincida con los 3 turnos clásicos.
 
 ---
@@ -36,12 +36,12 @@ Una materia pasa a `DISPONIBLE` solo si el estudiante cumplió el estado requeri
    - Puede haber solapamientos entre materias.
    - Debe mostrarse completa, sin aplicar anti-colisión.
 2. **Cursada elegida (alumno):** es la selección final del alumno a partir de la oferta.
-   - Aquí sí aplica anti-colisión (no puede estar en dos aulas al mismo tiempo).
+   - Aquñ sñ aplica anti-colisión (no puede estar en dos aulas al mismo tiempo).
    - Solo una materia por celda/slot de cursada final.
 
 ### 2.3 Tipos de Recomendaciones
 - **Motor Real (Ideal Scheduler):** Toma materias `DISPONIBLES` o `RECURSADAS`, descarta combinaciones que colisionan y genera un calendario base.
-- **Motor "Materias Clave":** Análisis de grafo que rankea materias pendientes por peso en la ruta crítica (cuántas materias siguientes destraban). Ignora horarios.
+- **Motor "Materias Clave":** Análisis de grafo que rankea materias pendientes por peso en la ruta crñtica (cuántas materias siguientes destraban). Ignora horarios.
 
 ---
 
@@ -63,13 +63,13 @@ Las materias con origen `Equivalencia` en el PDF de Historia Académica son mate
 5. **Conteo de materias**: aprobadas + equivalencias cuentan como "materias completadas". La distinción es solo burocrática.
 
 ### 3.3 Materias Optativas
-Solo impactan los totales del Dashboard (pendientes, en curso, etc.) si el alumno tiene un registro activo (`APROBADA`, `EQUIVALENCIA`, `REGULARIZADA`, `EN_CURSO`). De lo contrario no engrosan la currícula.
+Solo impactan los totales del Dashboard (pendientes, en curso, etc.) si el alumno tiene un registro activo (`APROBADA`, `EQUIVALENCIA`, `REGULARIZADA`, `EN_CURSO`). De lo contrario no engrosan la currñcula.
 
 ### 3.4 Equivalencia de Electivas concretas
 Para la carrera, las electivas genéricas son `3672` (Electiva I), `3673` (Electiva II) y `3674` (Electiva III). Las materias concretas de oferta asociadas son:
 - `3599` (Redes Móviles e IoT)
 - `3677` (Lenguaje Orientado a Negocios)
-- `3678` (Tecnologías en Seguridad)
+- `3678` (Tecnologñas en Seguridad)
 - `3679` (Visión Artificial)
 
 Regla funcional:
@@ -82,11 +82,11 @@ Regla funcional:
 
 El año lectivo tiene **3 cuatrimestres**:
 
-| # | Nombre              | Período aproximado                    | Duración |
+| # | Nombre              | Perñodo aproximado                    | Duración |
 |---|---------------------|---------------------------------------|----------|
 | 1 | 1er cuatrimestre    | Marzo–Julio                           | 16 sem.  |
 | 2 | 2do cuatrimestre    | Agosto–Diciembre                      | 16 sem.  |
-| 3 | Cuatrimestre verano | Enero–Febrero (puede iniciar en últimos días de enero y terminar a principios de marzo) | 5 sem.   |
+| 3 | Cuatrimestre verano | Enero–Febrero (puede iniciar en últimos dñas de enero y terminar a principios de marzo) | 5 sem.   |
 
 **Clasificación por mes** (usado en gráficos):
 - Q1 → meses 3–7 (Marzo a Julio)
@@ -103,7 +103,7 @@ Ejemplos: `1C2025` (1er cuatrimestre 2025), `3C2022` (verano 2022).
 ### 5.1 Burn Up (Progreso Acumulado)
 - **Eje X**: muestra todos los cuatrimestres en los que el estudiante aprobó al menos una materia, usando el formato `1C/2C/3C + año`. No se proyectan cuatrimestres futuros.
 - **Eje Y**: porcentaje de la carrera completado (materias aprobadas + equivalencias / total).
-- Si entre dos cuatrimestres activos no hubo avances, ese período intermedio se omite del eje.
+- Si entre dos cuatrimestres activos no hubo avances, ese perñodo intermedio se omite del eje.
 
 ### 5.2 Evolución del Promedio
 - **Eje X**: mismos cuatrimestres activos que el Burn Up.

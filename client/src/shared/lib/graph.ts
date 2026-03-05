@@ -276,26 +276,26 @@ export function getRecommendationsWithReasons(
     // Prioridad 1: Título Intermedio (+100)
     if (subject.isIntermediateDegree) {
       score += 100;
-      reasons.push("📍 Título Intermedio");
+      reasons.push("Título Intermedio");
     }
 
     // Prioridad 2: Desbloquea Proyecto Final (+80)
     if (unlocksThesis.has(subject.id)) {
-      reasons.push("🎯 Desbloquea Proyecto Final");
+      reasons.push("Desbloquea Proyecto Final");
       score += 80;
     }
 
     // Prioridad 3: Camino Crítico (+50)
     if (criticalNodes.has(subject.id)) {
       score += 50;
-      reasons.push("🔥 Camino Crítico");
+      reasons.push("Camino Crítico");
     }
 
     // Prioridad 4: Desbloquea otras materias (+10 por cada una)
     const unlocksCount = unlockMap.get(subject.id) ?? 0;
     if (unlocksCount > 0) {
       reasons.push(
-        `👉 Desbloquea ${unlocksCount} ${unlocksCount === 1 ? "materia" : "materias"}`,
+        `Desbloquea ${unlocksCount} ${unlocksCount === 1 ? "materia" : "materias"}`,
       );
       score += unlocksCount * 10;
     }
@@ -307,7 +307,7 @@ export function getRecommendationsWithReasons(
     // Penalización: materias optativas tienen prioridad mínima
     if (subject.isOptional) {
       score -= 200;
-      reasons.push("⚙️ Materia Optativa (baja prioridad)");
+      reasons.push("Optativa: Materia Optativa (baja prioridad)");
     }
 
     return {
@@ -318,7 +318,7 @@ export function getRecommendationsWithReasons(
   });
 
   // Detectar si todas las disponibles tienen score base 0
-  // (caso típico de alumnos de 5to año donde ya no quedan correlativas que desbloquear)
+  // (caso típico de alumnos de 5to aío donde ya no quedan correlativas que desbloquear)
   const allScoresZero = scored.every((s) => s.score === 0);
 
   if (allScoresZero) {
@@ -335,13 +335,13 @@ export function getRecommendationsWithReasons(
       scored.forEach((s) => {
         if (scheduledIds.has(s.subject.id)) {
           s.score += 10;
-          s.reasons.push("“… Horario asignado");
+          s.reasons.push("Horario asignado");
         }
       });
     }
   }
 
-  // Ordenar por score (descendente), luego por año (ascendente)
+  // Ordenar por score (descendente), luego por aío (ascendente)
   scored.sort((a, b) => {
     if (b.score !== a.score) return b.score - a.score;
     return a.subject.year - b.subject.year;

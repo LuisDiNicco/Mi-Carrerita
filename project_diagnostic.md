@@ -21,7 +21,7 @@ Análisis punto por punto de cada archivo de reglas de `.agent` contra el códig
   - [client/src/features/academic/components/useCareerGraph.test.ts](file:///c:/Users/luisd/Desktop/Proyectos/Mi-Carrerita/client/src/features/academic/components/useCareerGraph.test.ts)
 - **Complejidad:** Media. Requiere tipar payloads de `pdf2json` y responses de APIs externas. En tests, reemplazar por `jest.Mocked<T>` o `unknown`.
 - **Solución:** Crear interfaces/types para cada payload dinámico. En tests, usar `as jest.Mocked<ServiceType>`.
-- **¿Vale la pena?** **Sí.** `any` desactiva la validación del compilador en lógica crítica (parseo de PDFs, trofeos).
+- **¿Vale la pena?** **Sñ.** `any` desactiva la validación del compilador en lógica crñtica (parseo de PDFs, trofeos).
 
 ---
 
@@ -34,7 +34,7 @@ Análisis punto por punto de cada archivo de reglas de `.agent` contra el códig
   - [server/src/main.ts](file:///c:/Users/luisd/Desktop/Proyectos/Mi-Carrerita/server/src/main.ts) (en [ensureDevDatabase()](file:///c:/Users/luisd/Desktop/Proyectos/Mi-Carrerita/server/src/main.ts#15-54), justificable por ser bootstrap)
 - **Complejidad:** Baja. Reemplazar por `ConfigService.get()` o `registerAs()` factory.
 - **Solución:** Crear `auth.config.ts` con `registerAs('auth', () => ({...}))` e inyectar en los módulos/servicios.
-- **¿Vale la pena?** **Sí.** Mejora testabilidad, previene crashes por envs faltantes, y centraliza la configuración.
+- **¿Vale la pena?** **Sñ.** Mejora testabilidad, previene crashes por envs faltantes, y centraliza la configuración.
 
 ---
 
@@ -53,7 +53,7 @@ Análisis punto por punto de cada archivo de reglas de `.agent` contra el códig
   - [client/src/shared/ui/RetroComponents.tsx](file:///c:/Users/luisd/Desktop/Proyectos/Mi-Carrerita/client/src/shared/ui/RetroComponents.tsx) — `bg-red-500`
 - **Complejidad:** Media. Requiere definir variables CSS semánticas (`--destructive`, `--info`, `--success`) en [index.css](file:///c:/Users/luisd/Desktop/Proyectos/Mi-Carrerita/client/src/index.css) y referenciarlas con `var()`.
 - **Solución:** Crear paleta semántica en CSS variables y crear clases utilitarias (`bg-destructive`, `bg-info`, `text-success`). Luego reemplazar globalmente.
-- **¿Vale la pena?** **Sí, a mediano plazo.** No es urgente, pero escala mucho mejor con temas (light/dark) y facilita un rediseño futuro sin tocar componentes.
+- **¿Vale la pena?** **Sñ, a mediano plazo.** No es urgente, pero escala mucho mejor con temas (light/dark) y facilita un rediseño futuro sin tocar componentes.
 
 ---
 
@@ -63,7 +63,7 @@ Análisis punto por punto de cada archivo de reglas de `.agent` contra el códig
   - [client/src/index.css](file:///c:/Users/luisd/Desktop/Proyectos/Mi-Carrerita/client/src/index.css)
 - **Complejidad:** Baja (inmediata). Cambiar a `#09090b` o equivalente.
 - **Solución:** `Find & Replace` de `#000000` → `#09090b` y verificar visualmente.
-- **¿Vale la pena?** **Sí (imprescindible).** Cambio de 1 minuto con impacto real en confort visual.
+- **¿Vale la pena?** **Sñ (imprescindible).** Cambio de 1 minuto con impacto real en confort visual.
 
 ---
 
@@ -76,23 +76,23 @@ Análisis punto por punto de cada archivo de reglas de `.agent` contra el códig
   - [dashboard.controller.ts](file:///c:/Users/luisd/Desktop/Proyectos/Mi-Carrerita/server/src/modules/dashboard/controllers/dashboard.controller.ts)
   - [schedule.controller.ts](file:///c:/Users/luisd/Desktop/Proyectos/Mi-Carrerita/server/src/modules/schedule/controllers/schedule.controller.ts)
   - [trophy.controller.ts](file:///c:/Users/luisd/Desktop/Proyectos/Mi-Carrerita/server/src/modules/trophy/controllers/trophy.controller.ts)
-- **Nota positiva:** `@ApiOperation` y `@ApiProperty` SÍ están implementados en la mayoría de endpoints/DTOs. El `DocumentBuilder` y `SwaggerModule.setup` están correctos en [main.ts](file:///c:/Users/luisd/Desktop/Proyectos/Mi-Carrerita/server/src/main.ts).
-- **Complejidad:** Baja. Agregar 1 línea `@ApiTags('Nombre')` al inicio de cada controller.
+- **Nota positiva:** `@ApiOperation` y `@ApiProperty` SÍ están implementados en la mayorña de endpoints/DTOs. El `DocumentBuilder` y `SwaggerModule.setup` están correctos en [main.ts](file:///c:/Users/luisd/Desktop/Proyectos/Mi-Carrerita/server/src/main.ts).
+- **Complejidad:** Baja. Agregar 1 lñnea `@ApiTags('Nombre')` al inicio de cada controller.
 - **Solución:** Agregar `@ApiTags('Academic Career')`, `@ApiTags('Auth')`, etc.
-- **¿Vale la pena?** **Sí.** Organiza automáticamente los endpoints en la UI de Swagger sin costo.
+- **¿Vale la pena?** **Sñ.** Organiza automáticamente los endpoints en la UI de Swagger sin costo.
 
 ---
 
-### 1.6 — God Services (Límite de Líneas: Services < 200, Controllers < 80)
+### 1.6 — God Services (Lñmite de Lñneas: Services < 200, Controllers < 80)
 **Fuentes:** [backend.instructions.md](file:///c:/Users/luisd/Desktop/Proyectos/Mi-Carrerita/.agent/instructions/backend.instructions.md), [02_typing_dtos_patterns.md](file:///c:/Users/luisd/Desktop/Proyectos/Mi-Carrerita/.agent/development_rules/02_typing_dtos_patterns.md)
 - **Archivos afectados:**
-  - [server/src/modules/trophy/services/trophy.service.ts](file:///c:/Users/luisd/Desktop/Proyectos/Mi-Carrerita/server/src/modules/trophy/services/trophy.service.ts) — **~736 líneas** (3.7x el límite)
-  - [server/src/modules/academic-history/services/academic-history.service.ts](file:///c:/Users/luisd/Desktop/Proyectos/Mi-Carrerita/server/src/modules/academic-history/services/academic-history.service.ts) — **> 200 líneas**
-  - [server/src/modules/academic-history/controllers/academic-history.controller.ts](file:///c:/Users/luisd/Desktop/Proyectos/Mi-Carrerita/server/src/modules/academic-history/controllers/academic-history.controller.ts) — **149 líneas** (1.9x el límite)
-  - [server/src/modules/schedule/controllers/schedule.controller.ts](file:///c:/Users/luisd/Desktop/Proyectos/Mi-Carrerita/server/src/modules/schedule/controllers/schedule.controller.ts) — **~109 líneas** (1.4x el límite)
+  - [server/src/modules/trophy/services/trophy.service.ts](file:///c:/Users/luisd/Desktop/Proyectos/Mi-Carrerita/server/src/modules/trophy/services/trophy.service.ts) — **~736 lñneas** (3.7x el lñmite)
+  - [server/src/modules/academic-history/services/academic-history.service.ts](file:///c:/Users/luisd/Desktop/Proyectos/Mi-Carrerita/server/src/modules/academic-history/services/academic-history.service.ts) — **> 200 lñneas**
+  - [server/src/modules/academic-history/controllers/academic-history.controller.ts](file:///c:/Users/luisd/Desktop/Proyectos/Mi-Carrerita/server/src/modules/academic-history/controllers/academic-history.controller.ts) — **149 lñneas** (1.9x el lñmite)
+  - [server/src/modules/schedule/controllers/schedule.controller.ts](file:///c:/Users/luisd/Desktop/Proyectos/Mi-Carrerita/server/src/modules/schedule/controllers/schedule.controller.ts) — **~109 lñneas** (1.4x el lñmite)
 - **Complejidad:** Alta. Requiere extraer validadores, estrategias de evaluación de trofeos, lógica de reglas de negocio a clases especializadas.
 - **Solución:** Para [trophy.service.ts](file:///c:/Users/luisd/Desktop/Proyectos/Mi-Carrerita/server/src/modules/trophy/services/trophy.service.ts): patrón Strategy o Chain of Responsibility para evaluadores individuales de cada trofeo. Para controllers: extraer lógica de parseo de PDF a un servicio dedicado.
-- **¿Vale la pena?** **Sí, prioritario para [trophy.service.ts](file:///c:/Users/luisd/Desktop/Proyectos/Mi-Carrerita/server/src/modules/trophy/services/trophy.service.ts).** Un archivo de 736 líneas es un cuello de botella de mantenimiento. Los controllers de ~100-150 líneas son aceptables si solo enrutan.
+- **¿Vale la pena?** **Sñ, prioritario para [trophy.service.ts](file:///c:/Users/luisd/Desktop/Proyectos/Mi-Carrerita/server/src/modules/trophy/services/trophy.service.ts).** Un archivo de 736 lñneas es un cuello de botella de mantenimiento. Los controllers de ~100-150 lñneas son aceptables si solo enrutan.
 
 ---
 
@@ -101,7 +101,7 @@ Análisis punto por punto de cada archivo de reglas de `.agent` contra el códig
 - **Archivos afectados:** [server/src/app.module.ts](file:///c:/Users/luisd/Desktop/Proyectos/Mi-Carrerita/server/src/app.module.ts), endpoints de auth públicos.
 - **Complejidad:** Baja. Instalar `@nestjs/throttler`, registrar `ThrottlerModule.forRoot()` y aplicar `@Throttle()` en endpoints de auth.
 - **Solución:** `npm i @nestjs/throttler`, configurar en `AppModule`, proteger `/auth/login`, `/auth/register`.
-- **¿Vale la pena?** **Sí.** Protección básica anti-brute-force con ~15 min de implementación.
+- **¿Vale la pena?** **Sñ.** Protección básica anti-brute-force con ~15 min de implementación.
 
 ---
 
@@ -119,7 +119,7 @@ Análisis punto por punto de cada archivo de reglas de `.agent` contra el códig
 - **Archivos afectados:** [server/src/app.module.ts](file:///c:/Users/luisd/Desktop/Proyectos/Mi-Carrerita/server/src/app.module.ts) (ausente).
 - **Complejidad:** Baja. `npm i @nestjs/terminus`, crear `HealthModule` con `HealthController`.
 - **Solución:** Implementar endpoint `/health` con check de Prisma/DB.
-- **¿Vale la pena?** **Sí.** Necesario para Docker/K8s y útil como smoke test básico.
+- **¿Vale la pena?** **Sñ.** Necesario para Docker/K8s y útil como smoke test básico.
 
 ---
 
@@ -128,7 +128,7 @@ Análisis punto por punto de cada archivo de reglas de `.agent` contra el códig
 - **Archivos afectados:** Todo el backend. Solo existen interceptors de FileUpload (por `multer`), no hay un interceptor global que registre requests/responses.
 - **Complejidad:** Baja. Crear `LoggingInterceptor` que registre método, URL, duración y status code.
 - **Solución:** Crear e inyectar globalmente desde [main.ts](file:///c:/Users/luisd/Desktop/Proyectos/Mi-Carrerita/server/src/main.ts).
-- **¿Vale la pena?** **Sí.** Diagnóstico de performance y errores en producción se vuelve trivial.
+- **¿Vale la pena?** **Sñ.** Diagnóstico de performance y errores en producción se vuelve trivial.
 
 ---
 
@@ -136,7 +136,7 @@ Análisis punto por punto de cada archivo de reglas de `.agent` contra el códig
 **Fuentes:** [02_typing_dtos_patterns.md](file:///c:/Users/luisd/Desktop/Proyectos/Mi-Carrerita/.agent/development_rules/02_typing_dtos_patterns.md), [backend.instructions.md](file:///c:/Users/luisd/Desktop/Proyectos/Mi-Carrerita/.agent/instructions/backend.instructions.md)
 - **Archivos afectados:** TODOS los módulos del backend. Ningún DTO implementa estos patrones de mapeo.
 - **Complejidad:** Media/Alta. Requiere crear Response DTOs con factory `fromEntity()` y agregar `toEntity()` a los Request DTOs.
-- **Solución:** Implementar en los DTOs críticos (al menos `SubjectNodeDto`, `AcademicHistoryDto`, `TrophyDto`).
+- **Solución:** Implementar en los DTOs crñticos (al menos `SubjectNodeDto`, `AcademicHistoryDto`, `TrophyDto`).
 - **¿Vale la pena?** **Parcialmente.** Es boilerplate significativo para un proyecto pequeño. Recomiendo implementar solo donde el Prisma model difiere considerablemente del response shape.
 
 ---
@@ -146,7 +146,7 @@ Análisis punto por punto de cada archivo de reglas de `.agent` contra el códig
 - **Archivos afectados:** No existe carpeta `domain/errors/` en ningún módulo. Los errores se lanzan como `HttpException` directamente desde servicios.
 - **Complejidad:** Media. Crear clases como `SubjectNotFoundError extends Error` y ajustar el `GlobalExceptionFilter` para mapearlas.
 - **Solución:** Crear errores de dominio, mover los `throw new HttpException()` de los servicios a errores de dominio, y dejar que el filtro traduzca.
-- **¿Vale la pena?** **Sí.** Es el corazón de Clean Architecture. Los servicios no deberían conocer HTTP status codes.
+- **¿Vale la pena?** **Sñ.** Es el corazón de Clean Architecture. Los servicios no deberñan conocer HTTP status codes.
 
 ---
 
@@ -155,7 +155,7 @@ Análisis punto por punto de cada archivo de reglas de `.agent` contra el códig
 - **Archivos afectados:** [client/src/index.css](file:///c:/Users/luisd/Desktop/Proyectos/Mi-Carrerita/client/src/index.css) — No se encontró uso de `var(--)` para colores. Los colores se aplican directamente con clases de Tailwind.
 - **Complejidad:** Media. Definir la paleta completa en CSS variables y mapearla en `tailwind.config`.
 - **Solución:** Implementar sistema semántico: `--background`, `--foreground`, `--primary`, `--muted`, etc. con variantes para dark mode.
-- **¿Vale la pena?** **Sí, pero planificarlo como un sprint completo de diseño.** Es un cambio sistémico que afecta todo el frontend.
+- **¿Vale la pena?** **Sñ, pero planificarlo como un sprint completo de diseño.** Es un cambio sistémico que afecta todo el frontend.
 
 ---
 
@@ -164,7 +164,7 @@ Análisis punto por punto de cada archivo de reglas de `.agent` contra el códig
 - **Archivos afectados:** `client/src/app/` (router principal). No existe `React.lazy()` ni `<Suspense>` en ningún lugar.
 - **Complejidad:** Baja/Media. Envolver las rutas principales en `React.lazy()`.
 - **Solución:** `const Dashboard = React.lazy(() => import('../features/dashboard/Dashboard'))` + `<Suspense fallback={...}>`.
-- **¿Vale la pena?** **Sí.** Mejora LCP significativamente al cargar solo la ruta visible.
+- **¿Vale la pena?** **Sñ.** Mejora LCP significativamente al cargar solo la ruta visible.
 
 ---
 
@@ -173,23 +173,23 @@ Análisis punto por punto de cada archivo de reglas de `.agent` contra el códig
 - **Archivos afectados:** Todo el frontend (no existe ningún componente `Skeleton`).
 - **Complejidad:** Media. Crear componentes `Skeleton` reutilizables para cada vista.
 - **Solución:** Implementar `<Skeleton />` genérico con variantes (line, card, avatar) y usarlos como `fallback` de Suspense.
-- **¿Vale la pena?** **Sí.** Mejora percepción de velocidad. Implementar progresivamente en las vistas más lentas.
+- **¿Vale la pena?** **Sñ.** Mejora percepción de velocidad. Implementar progresivamente en las vistas más lentas.
 
 ---
 
 ### 1.16 — Sin `.env.example`
 **Fuentes:** `security.instructions.md`
-- **Archivos afectados:** Raíz del proyecto y `server/`.
+- **Archivos afectados:** Rañz del proyecto y `server/`.
 - **Complejidad:** Baja (inmediata). Crear `.env.example` con las variables necesarias sin valores reales.
-- **¿Vale la pena?** **Sí.** Documentación mínima obligatoria para cualquier onboarding.
+- **¿Vale la pena?** **Sñ.** Documentación mñnima obligatoria para cualquier onboarding.
 
 ---
 
 ### 1.17 — Sin Dockerfile
 **Fuentes:** `06_devops_git_testing.md`
-- **Archivos afectados:** Raíz del proyecto (no existe `Dockerfile`). Existe `docker-compose.yml` pero es solo para la DB.
+- **Archivos afectados:** Rañz del proyecto (no existe `Dockerfile`). Existe `docker-compose.yml` pero es solo para la DB.
 - **Complejidad:** Media. Crear Dockerfiles multi-stage para `server/` y `client/`.
-- **¿Vale la pena?** **Sí, cuando se planifique el deploy.** No urgente para desarrollo local.
+- **¿Vale la pena?** **Sñ, cuando se planifique el deploy.** No urgente para desarrollo local.
 
 ---
 
@@ -202,29 +202,29 @@ Problemas detectados independientemente de las reglas de `.agent`:
 ---
 
 ### 2.1 — `execSync` en `main.ts` para resetear la DB
-- **Archivos:** `server/src/main.ts` (líneas 15-52).
+- **Archivos:** `server/src/main.ts` (lñneas 15-52).
 - **Problema:** `execSync('npx prisma migrate reset --force')` se ejecuta al inicio del servidor. Si alguna migración falla, el servidor crashea sin feedback claro. Además, si se olvida `AUTO_DB_RESET=false`, la DB se borra en cada reinicio.
 - **Complejidad:** Media.
-- **Solución:** Mover a un script npm separado (`npm run db:reset`). El servidor no debería gestionar migraciones.
-- **¿Vale la pena?** **Sí (crítico).** Es una bomba de tiempo para datos en staging/producción. El error que reportaste (`status: 255`) muy probablemente viene de aquí.
+- **Solución:** Mover a un script npm separado (`npm run db:reset`). El servidor no deberña gestionar migraciones.
+- **¿Vale la pena?** **Sñ (crñtico).** Es una bomba de tiempo para datos en staging/producción. El error que reportaste (`status: 255`) muy probablemente viene de aquñ.
 
 ---
 
-### 2.2 — Catch vacío en seeding (`main.ts` línea 50)
+### 2.2 — Catch vacño en seeding (`main.ts` lñnea 50)
 - **Archivos:** `server/src/main.ts`
-- **Problema:** `try { execSync('npx prisma db seed') } catch { }` — swallow silencioso de excepciones, exactamente lo que las reglas prohíben.
+- **Problema:** `try { execSync('npx prisma db seed') } catch { }` — swallow silencioso de excepciones, exactamente lo que las reglas prohñben.
 - **Complejidad:** Baja.
 - **Solución:** Loguear el error aunque no sea fatal: `catch(e) { logger.warn('Seeding failed', e.message); }`
-- **¿Vale la pena?** **Sí.** Debugging invisible es la peor clase de deuda técnica.
+- **¿Vale la pena?** **Sñ.** Debugging invisible es la peor clase de deuda técnica.
 
 ---
 
 ### 2.3 — Módulos sin carpeta `domain/` (estructura plana)
-- **Archivos:** Varios módulos backend no siguen la estructura hexagonal de `domain/` → `application/` → `infrastructure/`. Los servicios y controladores están mezclados directamente en la raíz del módulo.
+- **Archivos:** Varios módulos backend no siguen la estructura hexagonal de `domain/` → `application/` → `infrastructure/`. Los servicios y controladores están mezclados directamente en la rañz del módulo.
 - **Complejidad:** Alta en refactor completo.
 - **Solución:** Reestructurar progresivamente. Empezar por los módulos más complejos (`trophy`, `academic-history`).
 - **¿Vale la pena?** **Parcialmente.** Para un proyecto de esta escala, una estructura plana modular es aceptable. Solo se justifica la hexagonal completa en `trophy` (por complejidad) y `auth` (por seguridad).
-- **⚠️ Contradicción con `.agent`:** Las reglas de `.agent/development_rules/01_architecture.md` exigen estrictamente la estructura hexagonal. Sin embargo, para un monolito con ~6 módulos simples, esta estructura es sobreingeniería (viola KISS/YAGNI también definido en `.agent`). **Recomendación:** Aplicar hexagonal solo en módulos con lógica de negocio compleja (trophy, auth); mantener estructura plana para CRUD simples.
+- **⚠️ Contradicción con `.agent`:** Las reglas de `.agent/development_rules/01_architecture.md` exigen estrictamente la estructura hexagonal. Sin embargo, para un monolito con ~6 módulos simples, esta estructura es sobreingenierña (viola KISS/YAGNI también definido en `.agent`). **Recomendación:** Aplicar hexagonal solo en módulos con lógica de negocio compleja (trophy, auth); mantener estructura plana para CRUD simples.
 
 ---
 
@@ -233,10 +233,10 @@ Problemas detectados independientemente de las reglas de `.agent`:
   - `client/src/features/recommendations/RecommendationsPage.tsx`
   - `client/src/features/schedule/components/UnifiedSchedulePlanner.tsx`
   - `client/src/features/academic/components/HistoryTable.tsx`
-- **Problema:** Componentes con probablemente más de 500 líneas, mezclando lógica de estado, rendering y estilos.
+- **Problema:** Componentes con probablemente más de 500 lñneas, mezclando lógica de estado, rendering y estilos.
 - **Complejidad:** Media/Alta.
 - **Solución:** Extraer hooks custom, sub-componentes y wrappers de layout.
-- **¿Vale la pena?** **Sí.** Componentes masivos son difíciles de testear y mantener.
+- **¿Vale la pena?** **Sñ.** Componentes masivos son difñciles de testear y mantener.
 
 ---
 
@@ -245,7 +245,7 @@ Problemas detectados independientemente de las reglas de `.agent`:
 - **Problema:** Si un componente React lanza una excepción en render, toda la app crashea sin recuperación.
 - **Complejidad:** Baja. Crear `ErrorBoundary` wrapper.
 - **Solución:** `class ErrorBoundary extends React.Component` o usar `react-error-boundary`.
-- **¿Vale la pena?** **Sí.** Protección básica de UX con 30 minutos de implementación.
+- **¿Vale la pena?** **Sñ.** Protección básica de UX con 30 minutos de implementación.
 
 ---
 
@@ -257,7 +257,7 @@ Lista de todo lo necesario para desplegar en un entorno real, clasificado por cr
 
 ---
 
-### 🔴 Crítico (Seguridad)
+### 🔴 Crñtico (Seguridad)
 
 | # | Item | Estado | Acción |
 |---|------|--------|--------|
@@ -288,7 +288,7 @@ Lista de todo lo necesario para desplegar en un entorno real, clasificado por cr
 | # | Item | Estado | Acción |
 |---|------|--------|--------|
 | 17 | Meta tags dinámicos (title, description) | ⚠️ Verificar | Implementar con `react-helmet-async` o Next.js Head |
-| 18 | Web Vitals (LCP < 2.5s, CLS < 0.1) | ⚠️ Sin medir | React.lazy + Skeleton loaders mejorarían esto |
+| 18 | Web Vitals (LCP < 2.5s, CLS < 0.1) | ⚠️ Sin medir | React.lazy + Skeleton loaders mejorarñan esto |
 | 19 | Favicon y Open Graph tags | ⚠️ Verificar | Agregar para compartir en redes sociales |
 | 20 | `robots.txt` y `sitemap.xml` | ⚠️ Verificar | Crear si la app es pública |
 | 21 | PWA Support (Service Worker) | ❌ Ausente | Opcional para app académica |
@@ -324,7 +324,7 @@ Lista de todo lo necesario para desplegar en un entorno real, clasificado por cr
 
 ---
 
-### Falencias Críticas
+### Falencias Crñticas
 
 #### F1 — Tests basados en implementación, no en requisitos
 **Problema:** Los tests se escribieron leyendo el código, no la especificación. Esto significa que si el código tiene un bug, el test NO lo detecta porque el test reproduce el mismo error.
@@ -340,7 +340,7 @@ Lista de todo lo necesario para desplegar en un entorno real, clasificado por cr
 **Herramienta recomendada:** `dependency-cruiser` con reglas configuradas para las capas del proyecto.
 
 #### F4 — Sin smoke tests
-**Problema:** No existe test que verifique si el servidor arranca correctamente. `standalone.spec.ts` existe pero su cobertura es mínima.
+**Problema:** No existe test que verifique si el servidor arranca correctamente. `standalone.spec.ts` existe pero su cobertura es mñnima.
 **Impacto:** Errores de configuración (variables de entorno faltantes, módulos mal registrados) solo se detectan al ejecutar el servidor manualmente.
 
 #### F5 — Sin tests E2E funcionales (solo configuración de Playwright)
@@ -359,9 +359,9 @@ Lista de todo lo necesario para desplegar en un entorno real, clasificado por cr
 
 ### Plan de Mejora del Testing
 
-#### Filosofía: Testing Trophy (Kent C. Dodds)
+#### Filosofña: Testing Trophy (Kent C. Dodds)
 ```
-        E2E (pocos, flujos críticos)
+        E2E (pocos, flujos crñticos)
        Integration (muchos, contratos HTTP)
       Unit (servicios de dominio, lógica pura)
      Static (TypeScript strict, ESLint, dependency-cruiser)
@@ -369,7 +369,7 @@ Lista de todo lo necesario para desplegar en un entorno real, clasificado por cr
 
 Priorizar integration tests sobre unit tests. Los unit tests solo para lógica de dominio compleja.
 
-#### Metodología recomendada
+#### Metodologña recomendada
 1. **Para cada bug reportado:** Escribir PRIMERO un test que reproduzca el bug (debe fallar), luego corregir.
 2. **Para cada feature nueva:** Escribir tests desde los requisitos (`docs/`), NO desde la implementación.
 3. **Test naming:** `describe('ServiceName') > it('should [resultado esperado] when [condición]')`.
@@ -393,6 +393,6 @@ Priorizar integration tests sobre unit tests. Los unit tests solo para lógica d
 4. Reemplazar todos los `expect(x).toBeDefined()` solos por aserciones concretas sobre el valor esperado.
 
 #### Métricas Target
-- Cobertura de **comportamientos** (no líneas) del 80% en servicios críticos.
+- Cobertura de **comportamientos** (no lñneas) del 80% en servicios crñticos.
 - 0 endpoints sin al menos 1 test de integración que valide `!= 500`.
 - 100% de bugs corregidos acompañados de test de regresión.

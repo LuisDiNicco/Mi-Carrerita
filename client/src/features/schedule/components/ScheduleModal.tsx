@@ -1,4 +1,5 @@
-﻿import { cn } from '../../../shared/lib/utils';
+﻿import { Star } from 'lucide-react';
+import { cn } from '../../../shared/lib/utils';
 import type { DayOfWeek, TimePeriod, TimetableDto } from '../lib/schedule-api';
 import { DAYS } from './ScheduleGrid';
 
@@ -69,10 +70,10 @@ export function ScheduleModal({
                                         )}
                                     >
                                         <span className={cn(
-                                            "font-bold text-sm md:text-base leading-tight",
+                                            "font-bold text-sm md:text-base leading-tight flex items-center gap-1",
                                             isRecommended ? "text-unlam-500" : "text-app"
                                         )}>
-                                            {isRecommended ? "˜… " : ""}{option.subjectName}
+                                            {isRecommended && <Star size={14} className="fill-unlam-500" />}{option.subjectName}
                                         </span>
                                         <span className="text-xs text-muted font-mono">
                                             {option.planCode} · {option.slotRange ?? option.period} · Comisión {option.commission ?? '-'}

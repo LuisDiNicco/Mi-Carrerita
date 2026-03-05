@@ -10,7 +10,7 @@ import { ConfigModule } from '@nestjs/config';
 import authConfig from './config/auth.config';
 
 const authProviders: Provider[] = [AuthService, JwtStrategy];
-// Usamos process.env aquí por limitación de registro síncrono de Providers en NestJS
+// Usamos process.env aquñ por limitación de registro sñncrono de Providers en NestJS
 if (process.env.GOOGLE_CLIENT_ID) {
   authProviders.push(GoogleStrategy);
 }

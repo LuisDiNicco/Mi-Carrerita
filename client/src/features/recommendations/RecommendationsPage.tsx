@@ -1,6 +1,6 @@
 ﻿import { useState } from 'react';
 import { useAcademicStore } from '../academic/store/academic-store';
-import { Calendar, List, Upload, CheckCircle, AlertTriangle, Info, Plus, Trash2, RotateCcw, Wand2, X } from 'lucide-react';
+import { Calendar, List, Upload, CheckCircle, AlertTriangle, Info, Plus, Trash2, RotateCcw, Wand2, X, PartyPopper, Star, MapPin, Target, Flame, Key } from 'lucide-react';
 import { UnifiedSchedulePlanner } from '../schedule/components/UnifiedSchedulePlanner';
 import { SubjectStatus } from '../../shared/types/academic';
 import type { TimePeriod, DayOfWeek } from '../schedule/lib/schedule-api';
@@ -69,7 +69,7 @@ export const RecommendationsPage = () => {
 
       {ofertaData.length > 0 && (
         <div className="flex items-center gap-2 px-4 py-2 rounded-xl border border-app bg-elevated/50 text-xs text-muted">
-          🎉 Oferta cargada: <strong className="text-app">{ofertaData.length}</strong> horarios disponibles.
+          <PartyPopper size={16} className="text-unlam-500 inline mr-1" /> Oferta cargada: <strong className="text-app">{ofertaData.length}</strong> horarios disponibles.
           <button onClick={() => { setOfertaData([]); localStorage.removeItem('oferta_materias'); }} className="ml-auto text-destructive hover:text-destructive text-[10px] font-bold uppercase">Limpiar</button>
         </div>
       )}
@@ -86,12 +86,12 @@ export const RecommendationsPage = () => {
           <div className="mb-3 rounded-lg bg-app-bg border border-app px-4 py-3 text-xs space-y-1.5 text-muted">
             <p className="font-bold text-app text-[11px] uppercase tracking-wider mb-2">Cómo se calcula el score</p>
             <div className="grid gap-1">
-              <p><span className="text-unlam-500 font-bold">+200</span> — ⭐ Es "Proyecto Final"</p>
-              <p><span className="text-unlam-500 font-bold">+100</span> — 📍 Pertenece al Título Intermedio</p>
-              <p><span className="text-unlam-500 font-bold">+80</span>  — 🎯 Desbloquea directamente el Proyecto Final</p>
-              <p><span className="text-unlam-500 font-bold">+50</span>  — 🔥 Está en el Camino Crítico de la carrera</p>
-              <p><span className="text-unlam-500 font-bold">+10</span>  — 🔑 Por cada materia que desbloquea</p>
-              <p><span className="text-unlam-500 font-bold">+10</span>  — 🗓️ Tiene horario asignado</p>
+              <p><span className="text-unlam-500 font-bold">+200</span> — <Star size={12} className="inline mr-1 text-yellow-500" /> Es "Proyecto Final"</p>
+              <p><span className="text-unlam-500 font-bold">+100</span> — <MapPin size={12} className="inline mr-1 text-red-500" /> Pertenece al Título Intermedio</p>
+              <p><span className="text-unlam-500 font-bold">+80</span>  — <Target size={12} className="inline mr-1 text-blue-500" /> Desbloquea directamente el Proyecto Final</p>
+              <p><span className="text-unlam-500 font-bold">+50</span>  — <Flame size={12} className="inline mr-1 text-orange-500" /> Está en el Camino Crítico de la carrera</p>
+              <p><span className="text-unlam-500 font-bold">+10</span>  — <Key size={12} className="inline mr-1 text-emerald-500" /> Por cada materia que desbloquea</p>
+              <p><span className="text-unlam-500 font-bold">+10</span>  — <Calendar size={12} className="inline mr-1 text-purple-500" /> Tiene horario asignado</p>
             </div>
           </div>
         )}

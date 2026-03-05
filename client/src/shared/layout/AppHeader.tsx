@@ -1,5 +1,5 @@
 ﻿import { useEffect, useRef, useState } from 'react';
-import { Sun, Moon } from 'lucide-react';
+import { Sun, Moon, GraduationCap, X, Menu } from 'lucide-react';
 
 interface AppHeaderProps {
   theme: 'light' | 'dark';
@@ -16,7 +16,7 @@ const NAV_ITEMS = [
   { id: 'tree', label: 'Árbol de materias' },
   { id: 'dashboard', label: 'Tablero' },
   { id: 'recommendations', label: 'Planificador' },
-  { id: 'history', label: 'Historia Acadímica', icon: '📚' },
+  { id: 'history', label: 'Historia Académica' },
   { id: 'trophies', label: 'Trofeos' },
 ];
 
@@ -57,8 +57,8 @@ export const AppHeader = ({
             onClick={() => onNavigate('home')}
             className="flex items-center gap-3 transition-transform hover:scale-105"
           >
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg border-2 border-app-border bg-unlam-500 text-xl font-bold text-black">
-              🎓
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg border-2 border-app-border bg-unlam-500 text-black">
+              <GraduationCap size={20} />
             </div>
             <div className="text-left">
               <h1 className="text-xl font-bold leading-none text-app">Mi Carrerita</h1>
@@ -151,8 +151,8 @@ export const AppHeader = ({
             onClick={() => onNavigate('home')}
             className="flex items-center gap-2"
           >
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg border-2 border-app-border bg-unlam-500 text-lg font-bold text-black">
-              🎓
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg border-2 border-app-border bg-unlam-500 text-black">
+              <GraduationCap size={16} />
             </div>
             <span className="text-lg font-bold text-app">Mi Carrerita</span>
           </button>
@@ -170,7 +170,7 @@ export const AppHeader = ({
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle menu"
             >
-              {mobileMenuOpen ? '✕' : '☰'}
+              {mobileMenuOpen ? <X size={16} /> : <Menu size={16} />}
             </button>
           </div>
         </div>

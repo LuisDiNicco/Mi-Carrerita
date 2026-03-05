@@ -24,7 +24,7 @@ export class TrophyController {
   }
 
   @Get(':code')
-  @ApiOperation({ summary: 'Obtener detalles de un trofeo específico' })
+  @ApiOperation({ summary: 'Obtener detalles de un trofeo especñfico' })
   @ApiResponse({ status: 200, description: 'Trophy details' })
   @ApiResponse({ status: 404, description: 'Trophy not found' })
   async getTrophy(

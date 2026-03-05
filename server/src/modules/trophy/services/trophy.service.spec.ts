@@ -70,14 +70,14 @@ describe('TrophyService', () => {
   });
 
   describe('checkAndUnlockTrophies', () => {
-    it('debería lanzar NotFoundException si el usuario no existe', async () => {
+    it('deberña lanzar NotFoundException si el usuario no existe', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
       await expect(
         service.checkAndUnlockTrophies('test@test.com'),
       ).rejects.toThrow('Usuario no encontrado.');
     });
 
-    it('debería desbloquear el trofeo FIRST_SUBJECT_COMPLETED si se aprueba la primera materia', async () => {
+    it('deberña desbloquear el trofeo FIRST_SUBJECT_COMPLETED si se aprueba la primera materia', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue({
         id: 'user-1',
         email: 'test@test.com',
@@ -123,7 +123,7 @@ describe('TrophyService', () => {
       expect(mockPrismaService.userTrophy.upsert).toHaveBeenCalledTimes(1);
     });
 
-    it('no debería re-desbloquear un trofeo ya desbloqueado', async () => {
+    it('no deberña re-desbloquear un trofeo ya desbloqueado', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue({
         id: 'user-1',
         email: 'test@test.com',
@@ -161,7 +161,7 @@ describe('TrophyService', () => {
   });
 
   describe('Efficiency and Resource Checks', () => {
-    it('debería procesar grandes volúmenes de materias (10.000 records ficticios) sin memory limit excedido e iterador', async () => {
+    it('deberña procesar grandes volúmenes de materias (10.000 records ficticios) sin memory limit excedido e iterador', async () => {
       const startMem = process.memoryUsage().heapUsed;
       mockPrismaService.user.findUnique.mockResolvedValue({
         id: 'user-1',
@@ -201,7 +201,7 @@ describe('TrophyService', () => {
 
       const endMem = process.memoryUsage().heapUsed;
       const diffMb = (endMem - startMem) / 1024 / 1024;
-      expect(diffMb).toBeLessThan(50); // No debería haber una fuga masiva al iterar (>50mb)
+      expect(diffMb).toBeLessThan(50); // No deberña haber una fuga masiva al iterar (>50mb)
     });
   });
 });

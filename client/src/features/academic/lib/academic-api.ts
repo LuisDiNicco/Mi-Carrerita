@@ -146,7 +146,7 @@ export async function fetchAcademicHistory(params?: {
 // PDF Upload Functions
 // ========================
 
-/** Parsed record returned by the backend after uploading a Historia Acadímica PDF */
+/** Parsed record returned by the backend after uploading a Historia Académica PDF */
 export interface ParsedAcademicRecord {
   planCode: string;
   name: string;
@@ -156,7 +156,7 @@ export interface ParsedAcademicRecord {
   status?: string;
 }
 
-/** Upload a Historia Acadímica PDF and receive parsed records for preview */
+/** Upload a Historia Académica PDF and receive parsed records for preview */
 export async function uploadHistoriaPdf(
   file: File,
   options?: { guestMode?: boolean },

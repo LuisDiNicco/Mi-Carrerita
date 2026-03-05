@@ -63,7 +63,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     const isGuest = guest || !storedUser;
     set({ user: null, isGuest });
 
-    // Si es invitado, cargar datos acadímicos desde sessionStorage
+    // Si es invitado, cargar datos académicos desde sessionStorage
     if (isGuest) {
       useAcademicStore.getState().hydrateFromLocal();
     }

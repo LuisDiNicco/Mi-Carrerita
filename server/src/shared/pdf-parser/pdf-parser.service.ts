@@ -72,7 +72,7 @@ export class PdfParserService {
       // Filter out header/footer lines
       const contentLines = lines.filter((line: string) => {
         if (/^p[aá]gina\s+\d+\s+de\s+\d+/i.test(line)) return false;
-        if (/^ingenier[ií]a\s+en/i.test(line)) return false;
+        if (/^ingenier[iñ]a\s+en/i.test(line)) return false;
         if (/^alumno:/i.test(line)) return false;
         if (/^nro\s+documento/i.test(line)) return false;
         if (/^n[º°]origenC[oó]digo/i.test(line)) return false;
@@ -267,7 +267,7 @@ export class PdfParserService {
 
         if (!horarioMatch) {
           const subjectStart = line.match(
-            /^(\d{4})([A-Za-zÁÉÍÓÚÑÜáéíóúñü].*)$/,
+            /^(\d{4})([A-Za-zÁÉÍÓÚÑÜáéñóúñü].*)$/,
           );
 
           if (subjectStart) {
@@ -379,7 +379,7 @@ export class PdfParserService {
       /consultar/.test(normalized) ||
       /código\s+descripción/.test(normalized) ||
       /^cod\.?$/i.test(line) ||
-      /comisión\s+turno\s+días/.test(normalized) ||
+      /comisión\s+turno\s+dñas/.test(normalized) ||
       /principal/.test(normalized) ||
       /inscripciones/.test(normalized) ||
       /tr[aá]mites online/.test(normalized) ||
@@ -402,7 +402,7 @@ export class PdfParserService {
     const subjectAndCommission = compact.match(/^(\d{4})\s*(.+?)\s*(\d{4})$/);
     if (
       subjectAndCommission &&
-      /[A-Za-zÁÉÍÓÚÑÜáéíóúñü]/.test(subjectAndCommission[2])
+      /[A-Za-zÁÉÍÓÚÑÜáéñóúñü]/.test(subjectAndCommission[2])
     ) {
       return {
         planCode: this.normalizePlanCode(subjectAndCommission[1]),
@@ -484,7 +484,7 @@ export class PdfParserService {
 
   private detectOfertaLocation(suffix: string): string {
     if (/san\s*justo/i.test(suffix)) return 'San Justo';
-    if (/ramos\s*mej[ií]a/i.test(suffix)) return 'Ramos Mejía';
+    if (/ramos\s*mej[iñ]a/i.test(suffix)) return 'Ramos Mejña';
     return 'Desconocida';
   }
 
@@ -496,7 +496,7 @@ export class PdfParserService {
   private cleanOfferDescription(rawDescription: string): string {
     return rawDescription
       .replace(/\s+/g, ' ')
-      .replace(/\s+(Ituzaingo|San\s*Justo|Ramos\s*Mej[ií]a)$/i, '')
+      .replace(/\s+(Ituzaingo|San\s*Justo|Ramos\s*Mej[iñ]a)$/i, '')
       .trim();
   }
 }
