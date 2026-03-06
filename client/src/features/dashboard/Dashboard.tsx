@@ -1,4 +1,4 @@
-﻿import { useMemo, useState } from 'react';
+﻿import { useMemo, useState, useEffect } from 'react';
 import {
   ResponsiveContainer,
   PieChart,
@@ -18,6 +18,8 @@ import {
 } from 'recharts';
 import { CheckCircle } from 'lucide-react';
 import { useAcademicStore } from '../academic/store/academic-store';
+import { useAuthStore } from '../auth/store/auth-store';
+import { fetchAcademicGraph } from '../academic/lib/academic-api';
 import { SubjectStatus } from '../../shared/types/academic';
 import { calculateDashboardData } from './lib/dashboard-logic';
 import type { DashboardScope } from './lib/dashboard-logic';
@@ -51,8 +53,41 @@ const CHART_HEIGHTS = {
 
 export const Dashboard = () => {
   const subjects = useAcademicStore((state) => state.subjects);
+  const setSubjects = useAcademicStore((state) => state.setSubjects);
+  const setSubjectsFromServer = useAcademicStore((state) => state.setSubjectsFromServer);
+  const isGuest = useAuthStore((state) => state.isGuest);
+
   const [scope, setScope] = useState<DashboardScope>('TOTAL');
   const [targetLoad, setTargetLoad] = useState(DEFAULT_LOAD);
+
+  const [loading, setLoading] = useState(!subjects.length);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    if (subjects.length === 0) {
+      setLoading(true);
+      setError(null);
+      fetchAcademicGraph({ guestMode: isGuest })
+        .then((data) => {
+          if (!active) return;
+          if (isGuest) {
+            setSubjects(data);
+          } else {
+            setSubjectsFromServer(data);
+          }
+          setLoading(false);
+        })
+        .catch((err) => {
+          if (!active) return;
+          setError(err.message || 'Error al cargar datos');
+          setLoading(false);
+        });
+    } else {
+      setLoading(false);
+    }
+    return () => { active = false; };
+  }, [subjects.length, isGuest, setSubjects, setSubjectsFromServer]);
 
   // Calculate data on the fly based on subjects and scope
   const dashboardData = useMemo(() => {
@@ -91,7 +126,9 @@ export const Dashboard = () => {
     }));
   }, [dashboardData]);
 
-  if (!subjects.length) return <div className="p-8 text-center text-muted">Cargando datos...</div>;
+  if (loading) return <div className="p-8 text-center text-muted">Cargando datos...</div>;
+  if (error) return <div className="p-8 text-center text-red-500">Error: {error}</div>;
+  if (!subjects.length) return <div className="p-8 text-center text-muted">No hay datos disponibles.</div>;
 
   return (
     <div className="space-y-12 animate-in fade-in duration-500 pb-16">

@@ -66,7 +66,21 @@ export async function authFetch(
   input: RequestInfo | URL,
   init?: RequestInit,
 ): Promise<Response> {
-  const token = getAccessToken();
+  let token = getAccessToken();
+
+  // Proactive refresh before sending request if token is missing but user is logged in
+  if (!token && useAuthStore.getState().user) {
+    token = await getRefreshedToken();
+    if (!token) {
+      clearAccessToken();
+      useAuthStore.getState().logout();
+      return new Response(
+        JSON.stringify({ message: 'Unauthorized' }),
+        { status: 401, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+  }
+
   const headers = new Headers(init?.headers ?? {});
 
   if (token) {
