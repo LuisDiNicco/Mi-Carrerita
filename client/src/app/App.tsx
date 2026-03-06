@@ -14,15 +14,29 @@ const Dashboard = React.lazy(() => import('../features/dashboard/Dashboard').the
 const HistoryTable = React.lazy(() => import('../features/academic/components/HistoryTable').then(m => ({ default: m.HistoryTable })));
 const TrophiesPanel = React.lazy(() => import('../features/trophies/TrophiesPanel').then(m => ({ default: m.TrophiesPanel })));
 const RecommendationsPage = React.lazy(() => import('../features/recommendations/RecommendationsPage').then(m => ({ default: m.RecommendationsPage })));
-import { clearAccessToken, setAccessToken } from '../features/auth/lib/auth';
+import { clearAccessToken, setAccessToken, getAccessToken } from '../features/auth/lib/auth';
 import { authFetch } from '../features/auth/lib/api';
 
 // Wire the academic store's auth-awareness at module load time.
-// This avoids a circular import (auth-store †’ academic-store is already
+// This avoids a circular import (auth-store → academic-store is already
 // established; this gives academic-store read-only access to auth state).
 configureAcademicStore({
   isGuestGetter: () => useAuthStore.getState().isGuest,
 });
+
+// ─── OAuth callback token extraction ─────────────────────────────────────────
+// Se ejecuta a nivel de módulo, ANTES de que React renderice cualquier componente.
+// Esto evita la race condition donde hydrateAuth() setea isGuest=false (leyendo
+// localStorage de una sesión previa) y los componentes disparan fetches antes de
+// que el access_token del redirect de Google estuviera disponible en memoria.
+const _oauthParams = new URLSearchParams(window.location.search);
+const _oauthToken = _oauthParams.get('access_token');
+if (_oauthToken) {
+  setAccessToken(_oauthToken);
+  // Limpiar el token de la URL inmediatamente para no exponerlo en el historial.
+  window.history.replaceState({}, document.title, window.location.pathname);
+}
+// ─────────────────────────────────────────────────────────────────────────────
 
 function App() {
   const [activeSection, setActiveSection] = useState('home');
@@ -49,17 +63,17 @@ function App() {
   }, [theme]);
 
   useEffect(() => {
-    hydrateAuth();
+    void hydrateAuth();
   }, [hydrateAuth]);
 
+  // Completar el login de Google: identificar al usuario llamando a /auth/me
+  // con el access_token que ya fue capturado sincrónicamente arriba.
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const accessToken = params.get('access_token');
-
-    if (!accessToken) return;
-
-    setAccessToken(accessToken);
-    window.history.replaceState({}, document.title, window.location.pathname);
+    const token = getAccessToken();
+    if (!token) return;
+    // Solo completar el login de OAuth si el usuario aún no está en el store
+    // (evita llamadas innecesarias a /auth/me en cada recarga normal).
+    if (useAuthStore.getState().user) return;
 
     const appApiUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
     authFetch(`${appApiUrl}/auth/me`)
@@ -77,7 +91,7 @@ function App() {
 
   const stats = useMemo(() => {
     // Only count non-optional subjects (62 mandatory: 59 + 3 electivas).
-    // Taller de Integracií³n is optional (isOptional:true) and only counts when active.
+    // Taller de Integración is optional (isOptional:true) and only counts when active.
     const inactiveStatuses: string[] = [SubjectStatus.PENDIENTE, SubjectStatus.DISPONIBLE];
     const countableSubjects = subjects.filter(
       (s) => !s.isOptional || !inactiveStatuses.includes(s.status)
@@ -153,4 +167,3 @@ function App() {
 }
 
 export default App;
-
