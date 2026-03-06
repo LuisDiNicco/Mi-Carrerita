@@ -32,6 +32,7 @@ export const useCareerGraph = () => {
   const subjects = useAcademicStore((state) => state.subjects);
   const updateSubject = useAcademicStore((state) => state.updateSubject);
   const isGuest = useAuthStore((state) => state.isGuest);
+  const isHydrating = useAuthStore((state) => state.isHydrating);
   const nodesRef = useRef<Node[]>([]);
   const [flowInstance, setFlowInstance] = useState<ReactFlowInstance | null>(
     null,
@@ -183,9 +184,16 @@ export const useCareerGraph = () => {
     [buildGraphNodes, setSubjects, setSubjectsFromServer],
   );
 
-  // Run on mount only. The callback is stable so this fires exactly once.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => { fetchCareerData(); }, []);
+  // Esperar a que hydrate() complete antes de disparar el fetch.
+  // Mientras isHydrating=true el accessToken puede no estar en memoria todavía.
+  // Una vez isHydrating=false, el token ya fue renovado (o el usuario es invitado).
+  useEffect(() => {
+    if (isHydrating) return;
+    fetchCareerData();
+    // fetchCareerData es estable (useCallback sin deps que cambien), isHydrating
+    // cambia de true a false una sola vez al iniciar la app.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isHydrating]);
 
   const criticalPath = useMemo(() => {
     if (!showCriticalPath) {
@@ -245,14 +253,14 @@ export const useCareerGraph = () => {
     // ONLY check DIRECT dependents (one edge away)
     const fullUnlocks = new Set<string>();
     const partialUnlocks = new Set<string>();
-    
+
     // Get direct dependents
     const directDependents = childMap.get(hoveredSubjectId) ?? new Set();
-    
+
     directDependents.forEach((dependentId) => {
       const prereqs = parentMap.get(dependentId) ?? new Set();
       const prereqCount = prereqs.size;
-      
+
       if (prereqCount === 1 && prereqs.has(hoveredSubjectId)) {
         // Only requires this node †’ full unlock
         fullUnlocks.add(dependentId);
