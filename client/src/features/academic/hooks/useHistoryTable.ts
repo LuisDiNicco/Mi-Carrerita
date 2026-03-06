@@ -7,7 +7,7 @@ import { SubjectStatus } from '../../../shared/types/academic';
 import { useAuthStore } from '../../auth/store/auth-store';
 import type { ParsedAcademicRecord, BatchAcademicRecordPayload } from '../lib/academic-api';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const API_URL = import.meta.env.VITE_API_URL || '/api';
 
 export type SortKey = 'date' | 'name' | 'grade' | 'planCode' | 'year' | 'difficulty';
 export type SortDirection = 'asc' | 'desc';

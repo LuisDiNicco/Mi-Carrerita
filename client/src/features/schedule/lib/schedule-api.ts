@@ -1,6 +1,6 @@
 ﻿import { authFetch } from "../../auth/lib/api";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+const API_URL = import.meta.env.VITE_API_URL || "/api";
 
 export type TimePeriod =
     | 'M1' | 'M2' | 'M3' | 'M4' | 'M5' | 'M6'

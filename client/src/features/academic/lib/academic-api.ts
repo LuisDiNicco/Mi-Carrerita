@@ -2,7 +2,7 @@
 import { SubjectStatus } from "../../../shared/types/academic";
 import { authFetch } from "../../auth/lib/api";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+const API_URL = import.meta.env.VITE_API_URL || "/api";
 
 export async function fetchAcademicGraph(options?: {
   guestMode?: boolean;

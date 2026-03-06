@@ -22,7 +22,7 @@ import { buildYearSeparatorNodes } from "../lib/year-separators";
 import { useGraphUI } from "./useGraphUI";
 import { useGraphSearch } from "./useGraphSearch";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+const API_URL = import.meta.env.VITE_API_URL || "/api";
 
 export const useCareerGraph = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);

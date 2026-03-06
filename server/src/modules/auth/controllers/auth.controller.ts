@@ -35,7 +35,7 @@ export class AuthController {
     return {
       httpOnly: true,
       secure: isProd,
-      sameSite: isProd ? ('none' as const) : ('strict' as const),
+      sameSite: 'lax' as const, // Gracias al proxy inverso, front y back son same-origin
       maxAge: REFRESH_DAYS * MS_PER_DAY,
       path: '/',
     };
