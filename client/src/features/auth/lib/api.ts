@@ -1,4 +1,4 @@
-﻿import { getAccessToken, setAccessToken, clearAccessToken, getRefreshToken, setRefreshToken, clearRefreshToken } from "./auth";
+﻿import { getAccessToken, setAccessToken, clearAccessToken } from "./auth";
 import { useAuthStore } from "../store/auth-store";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
@@ -26,30 +26,26 @@ function extractApiMessage(payload: unknown, fallback: string): string {
   return fallback;
 }
 
+/**
+ * Renueva el accessToken usando la cookie HttpOnly 'refresh_token'.
+ * El browser adjunta la cookie automáticamente (credentials: 'include').
+ * El frontend nunca ve ni toca el refreshToken.
+ */
 async function refreshAccessToken(): Promise<string | null> {
   try {
-    const token = getRefreshToken();
     const response = await fetch(REFRESH_ENDPOINT, {
       method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ refreshToken: token }),
+      credentials: "include", // El browser adjunta la cookie HttpOnly automáticamente
     });
 
     if (!response.ok) {
-      clearRefreshToken();
       return null;
     }
 
-    const data = (await response.json()) as { accessToken?: string; refreshToken?: string };
+    const data = (await response.json()) as { accessToken?: string };
     if (!data?.accessToken) return null;
 
     setAccessToken(data.accessToken);
-    if (data.refreshToken) {
-      setRefreshToken(data.refreshToken);
-    }
     return data.accessToken;
   } catch {
     return null;
@@ -103,6 +99,7 @@ export async function authFetch(
     credentials: "include",
   });
 }
+
 /**
  * Register a new user with email and password
  */
@@ -117,7 +114,7 @@ export async function registerUser(dto: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(dto),
-    credentials: "include",
+    credentials: "include", // Necesario para que el browser almacene la cookie HttpOnly
   });
 
   if (!response.ok) {
@@ -131,10 +128,8 @@ export async function registerUser(dto: {
   }
 
   const data = await response.json();
+  // Solo guardamos el accessToken en memoria — el refreshToken vive en la cookie HttpOnly
   setAccessToken(data.accessToken);
-  if (data.refreshToken) {
-    setRefreshToken(data.refreshToken);
-  }
   return data;
 }
 
@@ -151,7 +146,7 @@ export async function loginUser(dto: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(dto),
-    credentials: "include",
+    credentials: "include", // Necesario para que el browser almacene la cookie HttpOnly
   });
 
   if (!response.ok) {
@@ -159,15 +154,13 @@ export async function loginUser(dto: {
     throw new Error(
       extractApiMessage(
         errorData,
-        'No se pudo iniciar sesión. Verificá tu correo y contraseía.',
+        'No se pudo iniciar sesión. Verificá tu correo y contraseña.',
       ),
     );
   }
 
   const data = await response.json();
+  // Solo guardamos el accessToken en memoria — el refreshToken vive en la cookie HttpOnly
   setAccessToken(data.accessToken);
-  if (data.refreshToken) {
-    setRefreshToken(data.refreshToken);
-  }
   return data;
 }

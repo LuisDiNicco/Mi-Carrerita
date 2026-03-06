@@ -1,6 +1,8 @@
-﻿let accessToken: string | null = null;
-let refreshToken: string | null = null;
-const REFRESH_TOKEN_KEY = 'refreshToken';
+﻿// El accessToken vive en memoria: no persiste entre recargas (eso es correcto,
+// porque en cada recarga el browser renueva el token via /auth/refresh usando
+// la cookie HttpOnly que maneja automáticamente).
+// El refreshToken NUNCA toca JavaScript — es exclusivamente una cookie HttpOnly.
+let accessToken: string | null = null;
 
 export function setAccessToken(token: string | null) {
   accessToken = token;
@@ -13,25 +15,3 @@ export function getAccessToken() {
 export function clearAccessToken() {
   accessToken = null;
 }
-
-export function setRefreshToken(token: string | null) {
-  refreshToken = token;
-  if (token) {
-    sessionStorage.setItem(REFRESH_TOKEN_KEY, token);
-  } else {
-    sessionStorage.removeItem(REFRESH_TOKEN_KEY);
-  }
-}
-
-export function getRefreshToken() {
-  if (!refreshToken) {
-    refreshToken = sessionStorage.getItem(REFRESH_TOKEN_KEY);
-  }
-  return refreshToken;
-}
-
-export function clearRefreshToken() {
-  refreshToken = null;
-  sessionStorage.removeItem(REFRESH_TOKEN_KEY);
-}
-

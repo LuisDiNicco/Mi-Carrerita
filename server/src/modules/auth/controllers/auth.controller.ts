@@ -46,11 +46,11 @@ export class AuthController {
   async register(@Body() dto: RegisterDto, @Res() res: Response) {
     const result = await this.authService.register(dto);
 
+    // El refreshToken viaja SOLO como cookie HttpOnly — JS nunca lo ve.
     res.cookie(REFRESH_COOKIE, result.refreshToken, this.getRefreshCookieOptions());
 
     return res.json({
       accessToken: result.accessToken,
-      refreshToken: result.refreshToken,
       user: result.user,
     });
   }
@@ -60,11 +60,11 @@ export class AuthController {
   async login(@Body() dto: LoginDto, @Res() res: Response) {
     const result = await this.authService.login(dto);
 
+    // El refreshToken viaja SOLO como cookie HttpOnly — JS nunca lo ve.
     res.cookie(REFRESH_COOKIE, result.refreshToken, this.getRefreshCookieOptions());
 
     return res.json({
       accessToken: result.accessToken,
-      refreshToken: result.refreshToken,
       user: result.user,
     });
   }
@@ -111,22 +111,18 @@ export class AuthController {
   }
 
   @Post('refresh')
-  async refresh(
-    @Req() req: Request,
-    @Res() res: Response,
-    @Body() body?: { refreshToken?: string },
-  ) {
-    // Intenta obtener el refresh token del body primero (para cross-domain)
-    // Si no está, intenta obtenerlo del cookie (para mismo dominio)
-    const refreshToken = body?.refreshToken || req.cookies?.[REFRESH_COOKIE];
+  async refresh(@Req() req: Request, @Res() res: Response) {
+    // El refreshToken viene SOLO desde la cookie HttpOnly.
+    // El frontend no lo toca — el browser lo adjunta automáticamente.
+    const refreshToken = req.cookies?.[REFRESH_COOKIE];
     const result = await this.authService.refreshAccessToken(refreshToken);
 
-    // Actualiza el cookie con el nuevo refresh token
+    // Rotar: guardar el nuevo refreshToken como cookie HttpOnly.
     res.cookie(REFRESH_COOKIE, result.refreshToken, this.getRefreshCookieOptions());
 
+    // Solo devolver el nuevo accessToken — el refreshToken nunca sale al JS.
     return res.json({
       accessToken: result.accessToken,
-      refreshToken: result.refreshToken,
     });
   }
 
@@ -134,7 +130,9 @@ export class AuthController {
   async logout(@Req() req: Request, @Res() res: Response) {
     const refreshToken = req.cookies?.[REFRESH_COOKIE];
     await this.authService.revokeRefreshToken(refreshToken);
-    res.clearCookie(REFRESH_COOKIE, { path: '/' });
+    // Limpiar la cookie con los MISMOS atributos con los que fue creada.
+    // Si no coinciden (ej. SameSite o Secure), el browser ignora el clearCookie.
+    res.clearCookie(REFRESH_COOKIE, this.getRefreshCookieOptions());
     return res.json({ ok: true });
   }
 }
