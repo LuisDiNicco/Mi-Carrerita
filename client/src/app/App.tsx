@@ -71,7 +71,7 @@ function App() {
     if (!token) return;
     if (useAuthStore.getState().user) return; // Ya hay usuario: login previo
 
-    const appApiUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
+    const appApiUrl = import.meta.env.VITE_API_URL || "/api";
     authFetch(`${appApiUrl}/auth/me`)
       .then((response) => (response.ok ? response.json() : null))
       .then((user) => {
@@ -111,7 +111,7 @@ function App() {
 
   const handleLogout = async () => {
     try {
-      const appApiUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
+      const appApiUrl = import.meta.env.VITE_API_URL || "/api";
       await fetch(`${appApiUrl}/auth/logout`, {
         method: 'POST',
         credentials: 'include',
