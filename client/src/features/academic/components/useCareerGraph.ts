@@ -32,7 +32,6 @@ export const useCareerGraph = () => {
   const subjects = useAcademicStore((state) => state.subjects);
   const updateSubject = useAcademicStore((state) => state.updateSubject);
   const isGuest = useAuthStore((state) => state.isGuest);
-  const isHydrating = useAuthStore((state) => state.isHydrating);
   const nodesRef = useRef<Node[]>([]);
   const [flowInstance, setFlowInstance] = useState<ReactFlowInstance | null>(
     null,
@@ -184,16 +183,9 @@ export const useCareerGraph = () => {
     [buildGraphNodes, setSubjects, setSubjectsFromServer],
   );
 
-  // Esperar a que hydrate() complete antes de disparar el fetch.
-  // Mientras isHydrating=true el accessToken puede no estar en memoria todavía.
-  // Una vez isHydrating=false, el token ya fue renovado (o el usuario es invitado).
-  useEffect(() => {
-    if (isHydrating) return;
-    fetchCareerData();
-    // fetchCareerData es estable (useCallback sin deps que cambien), isHydrating
-    // cambia de true a false una sola vez al iniciar la app.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isHydrating]);
+  // Run on mount only. The callback is stable so this fires exactly once.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { fetchCareerData(); }, []);
 
   const criticalPath = useMemo(() => {
     if (!showCriticalPath) {
