@@ -86,9 +86,7 @@ export const RetroError = ({
 }: RetroErrorProps) => {
   return (
     <div className="flex flex-col items-center justify-center space-y-6 p-8">
-      <div className="text-6xl text-destructive font-retro">
-        š ï¸
-      </div>
+      <div className="text-6xl text-destructive font-retro">[ ! ]</div>
 
       <div className="text-center space-y-2">
         <h2 className="font-retro text-3xl text-destructive tracking-wider">
@@ -150,4 +148,5 @@ export const RetroBadge = ({
     </span>
   );
 };
+
 
