@@ -44,6 +44,36 @@ function App() {
   const authUser = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
   const hydrateAuth = useAuthStore((state) => state.hydrate);
+  const isWakingUp = useAuthStore((state) => state.isWakingUp);
+  const setWakingUp = useAuthStore((state) => state.setWakingUp);
+
+  useEffect(() => {
+    let mounted = true;
+    const checkHealth = async () => {
+      try {
+        const appApiUrl = import.meta.env.VITE_API_URL || '/api';
+        const res = await fetch(`${appApiUrl}/health`);
+        // If Vercel returns 504 because Render isn't awake yet
+        if (!res.ok && res.status >= 500) {
+          if (mounted) setWakingUp(true);
+          const interval = setInterval(async () => {
+            try {
+              const check = await fetch(`${appApiUrl}/health`);
+              if (check.ok) {
+                setWakingUp(false);
+                clearInterval(interval);
+              }
+            } catch { }
+          }, 5000);
+        }
+      } catch {
+        // Fetch throwing an error means CORS timeout or network error
+        if (mounted) setWakingUp(true);
+      }
+    };
+    checkHealth();
+    return () => { mounted = false; };
+  }, [setWakingUp]);
 
   useEffect(() => {
     const storedTheme = localStorage.getItem('mi-carrerita-theme');
@@ -155,6 +185,22 @@ function App() {
         </main>
 
         <AuthModal isOpen={authOpen} onClose={() => setAuthOpen(false)} />
+
+        {isWakingUp && (
+          <div className="fixed bottom-6 right-6 z-50 animate-bounce">
+            <div className="bg-surface text-app border-2 border-unlam-500 rounded-lg p-4 shadow-[4px_4px_0px_0px_rgba(16,185,129,0.3)]">
+              <div className="flex items-center space-x-3">
+                <div className="relative w-6 h-6 flex-shrink-0">
+                  <div className="absolute inset-0 border-2 border-unlam-500 border-t-transparent animate-spin rounded-full"></div>
+                </div>
+                <div>
+                  <h3 className="font-retro text-sm text-unlam-500">SERVER OFFLINE</h3>
+                  <p className="text-xs mt-1 text-muted font-medium">Bostezando... despertando (puede demorar ~1 min)</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

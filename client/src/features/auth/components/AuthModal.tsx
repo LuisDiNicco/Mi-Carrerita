@@ -21,6 +21,7 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
   const continueAsGuest = useAuthStore((state) => state.continueAsGuest);
   const authUser = useAuthStore((state) => state.user);
   const isGuest = useAuthStore((state) => state.isGuest);
+  const isWakingUp = useAuthStore((state) => state.isWakingUp);
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -249,22 +250,22 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
                 variant="primary"
                 size="sm"
                 onClick={handleLocalAuth}
-                disabled={isLoading}
+                disabled={isLoading || isWakingUp}
                 className="sm:col-span-2"
               >
                 {isLoading ? 'Procesando...' : mode === 'login' ? 'Entrar con Email' : 'Crear cuenta'}
               </RetroButton>
               <button
-                className="rounded-lg border-2 border-app-border bg-elevated px-4 py-2 text-sm font-bold text-app hover:border-app transition-all"
+                className={`rounded-lg border-2 border-app-border bg-elevated px-4 py-2 text-sm font-bold text-app transition-all ${(isLoading || isWakingUp) ? 'opacity-50 cursor-not-allowed' : 'hover:border-app'}`}
                 onClick={handleGuest}
-                disabled={isLoading}
+                disabled={isLoading || isWakingUp}
               >
                 Invitado
               </button>
               <button
-                className="sm:col-span-3 rounded-lg border-2 border-app-border bg-elevated px-4 py-2 text-sm font-bold text-app hover:border-unlam-500 transition-all"
+                className={`sm:col-span-3 rounded-lg border-2 border-app-border bg-elevated px-4 py-2 text-sm font-bold text-app transition-all ${(isLoading || isWakingUp) ? 'opacity-50 cursor-not-allowed' : 'hover:border-unlam-500'}`}
                 onClick={handleGoogle}
-                disabled={isLoading}
+                disabled={isLoading || isWakingUp}
               >
                 Continuar con Google
               </button>

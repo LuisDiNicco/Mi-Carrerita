@@ -14,6 +14,8 @@ interface AuthState {
   logout: () => void;
   continueAsGuest: () => void;
   hydrate: () => void;
+  isWakingUp: boolean;
+  setWakingUp: (waking: boolean) => void;
 }
 
 const STORAGE_KEY = "mi-carrerita-user";
@@ -22,6 +24,8 @@ const GUEST_KEY = "mi-carrerita-guest";
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   isGuest: true,
+  isWakingUp: false,
+  setWakingUp: (waking) => set({ isWakingUp: waking }),
   login: (user) => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
     localStorage.removeItem(GUEST_KEY);
