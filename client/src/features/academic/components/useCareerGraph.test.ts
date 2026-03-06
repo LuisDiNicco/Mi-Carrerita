@@ -53,7 +53,7 @@ describe('useCareerGraph hook', () => {
         useAcademicStore.setState({ subjects: [] });
         sessionStorage.clear();
         // Default to logged-in so tests that use authFetch use the correct path.
-        useAuthStore.setState({ isGuest: false, isHydrating: false, user: { name: 'Test', email: 'test@test.com' } });
+        useAuthStore.setState({ isGuest: false, user: { name: 'Test', email: 'test@test.com' } });
     });
 
     it('deberí­a inicializar cargando y fetchear los datos de la API', async () => {
@@ -136,7 +136,7 @@ describe('useCareerGraph hook', () => {
     });
 
     it('en modo invitado, handleSaveSubject aplica el cambio localmente sin llamar a la API', async () => {
-        useAuthStore.setState({ isGuest: true, isHydrating: false, user: null });
+        useAuthStore.setState({ isGuest: true, user: null });
         (academicApi.fetchAcademicGraph as any).mockResolvedValue([mockSubject]);
 
         const { result } = renderHook(() => useCareerGraph());
@@ -170,7 +170,7 @@ describe('useCareerGraph hook', () => {
     });
 
     it('en modo invitado, no deberí­a volver a buscar datos del servidor al montar si ya hay materias en el store', async () => {
-        useAuthStore.setState({ isGuest: true, isHydrating: false, user: null });
+        useAuthStore.setState({ isGuest: true, user: null });
 
         // Pre-populate the store as if the user had already loaded data
         useAcademicStore.setState({ subjects: [{ ...mockSubject, status: SubjectStatus.APROBADA }] });

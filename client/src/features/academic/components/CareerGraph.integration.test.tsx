@@ -67,7 +67,7 @@ describe('CareerGraph Integration Flow', () => {
         useAcademicStore.setState({ subjects: [] });
         sessionStorage.clear();
         // Simulate a logged-in user so handleSaveSubject uses authFetch
-        useAuthStore.setState({ isGuest: false, isHydrating: false, user: { name: 'Test', email: 'test@test.com' } });
+        useAuthStore.setState({ isGuest: false, user: { name: 'Test', email: 'test@test.com' } });
     });
 
     it('Flujo E2E Integrado: Carga materias, abre panel, edita estado, intercepta patch localmente', async () => {

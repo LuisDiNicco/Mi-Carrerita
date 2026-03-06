@@ -18,23 +18,21 @@ import { clearAccessToken, setAccessToken, getAccessToken } from '../features/au
 import { authFetch } from '../features/auth/lib/api';
 
 // Wire the academic store's auth-awareness at module load time.
-// This avoids a circular import (auth-store → academic-store is already
-// established; this gives academic-store read-only access to auth state).
 configureAcademicStore({
   isGuestGetter: () => useAuthStore.getState().isGuest,
 });
 
-// ─── OAuth callback token extraction ─────────────────────────────────────────
-// Se ejecuta a nivel de módulo, ANTES de que React renderice cualquier componente.
-// Esto evita la race condition donde hydrateAuth() setea isGuest=false (leyendo
-// localStorage de una sesión previa) y los componentes disparan fetches antes de
-// que el access_token del redirect de Google estuviera disponible en memoria.
-const _oauthParams = new URLSearchParams(window.location.search);
-const _oauthToken = _oauthParams.get('access_token');
-if (_oauthToken) {
-  setAccessToken(_oauthToken);
-  // Limpiar el token de la URL inmediatamente para no exponerlo en el historial.
-  window.history.replaceState({}, document.title, window.location.pathname);
+// ─── Captura síncrona del access_token del OAuth redirect ────────────────────
+// Corre a nivel de módulo, ANTES de que React renderice nada.
+// Esto evita la race condition donde hydrateAuth() restaura isGuest=false
+// y los componentes hacen fetch con accessToken=null en memoria.
+{
+  const _params = new URLSearchParams(window.location.search);
+  const _oauthToken = _params.get('access_token');
+  if (_oauthToken) {
+    setAccessToken(_oauthToken);
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
 }
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -63,17 +61,15 @@ function App() {
   }, [theme]);
 
   useEffect(() => {
-    void hydrateAuth();
+    hydrateAuth();
   }, [hydrateAuth]);
 
-  // Completar el login de Google: identificar al usuario llamando a /auth/me
-  // con el access_token que ya fue capturado sincrónicamente arriba.
+  // Si llegamos de un redirect de Google OAuth (access_token capturado arriba),
+  // completar el login llamando a /auth/me para identificar al usuario.
   useEffect(() => {
     const token = getAccessToken();
     if (!token) return;
-    // Solo completar el login de OAuth si el usuario aún no está en el store
-    // (evita llamadas innecesarias a /auth/me en cada recarga normal).
-    if (useAuthStore.getState().user) return;
+    if (useAuthStore.getState().user) return; // Ya hay usuario: login previo
 
     const appApiUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
     authFetch(`${appApiUrl}/auth/me`)
@@ -87,17 +83,15 @@ function App() {
         }
       })
       .catch(() => null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const stats = useMemo(() => {
-    // Only count non-optional subjects (62 mandatory: 59 + 3 electivas).
-    // Taller de Integración is optional (isOptional:true) and only counts when active.
     const inactiveStatuses: string[] = [SubjectStatus.PENDIENTE, SubjectStatus.DISPONIBLE];
     const countableSubjects = subjects.filter(
       (s) => !s.isOptional || !inactiveStatuses.includes(s.status)
     );
     const total = countableSubjects.length;
-    // EQUIVALENCIA counts as approved (same as APROBADA)
     const approved = countableSubjects.filter(
       (s) => s.status === SubjectStatus.APROBADA || s.status === SubjectStatus.EQUIVALENCIA
     ).length;
