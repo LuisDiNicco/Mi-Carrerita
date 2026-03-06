@@ -21,9 +21,24 @@ interface AuthState {
 const STORAGE_KEY = "mi-carrerita-user";
 const GUEST_KEY = "mi-carrerita-guest";
 
+const getInitialUserState = (): AuthUser | null => {
+  if (typeof window === 'undefined') return null;
+  try {
+    const data = localStorage.getItem(STORAGE_KEY);
+    return data ? JSON.parse(data) : null;
+  } catch {
+    return null;
+  }
+};
+
+const getInitialGuestState = (): boolean => {
+  if (typeof window === 'undefined') return true;
+  return localStorage.getItem(GUEST_KEY) === "true" || !localStorage.getItem(STORAGE_KEY);
+};
+
 export const useAuthStore = create<AuthState>((set) => ({
-  user: null,
-  isGuest: true,
+  user: getInitialUserState(),
+  isGuest: getInitialGuestState(),
   isWakingUp: false,
   setWakingUp: (waking) => set({ isWakingUp: waking }),
   login: (user) => {
