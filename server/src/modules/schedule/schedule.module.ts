@@ -2,6 +2,7 @@ import { Module, Logger } from '@nestjs/common';
 import { ScheduleService } from './services/schedule.service';
 import { RecommendationService } from './services/recommendation.service';
 import { ScheduleController } from './controllers/schedule.controller';
+import { SchedulePublicController } from './controllers/schedule-public.controller';
 import { PrismaModule } from '../../prisma/prisma.module';
 import { DevAuthGuard } from '../../common/guards/dev-auth.guard';
 import { EnvironmentAuthGuard } from '../../common/guards/environment-auth.guard';
@@ -18,7 +19,7 @@ import { PdfParserModule } from '../../shared/pdf-parser/pdf-parser.module';
     JwtAuthGuard,
     EnvironmentAuthGuard,
   ],
-  controllers: [ScheduleController],
+  controllers: [ScheduleController, SchedulePublicController],
   exports: [ScheduleService, RecommendationService],
 })
-export class ScheduleModule {}
+export class ScheduleModule { }

@@ -371,7 +371,7 @@ export function useScheduleOffers(subjects: Subject[]) {
         setIsUploadingOferta(true);
         setOfertaMessage(null);
         try {
-            const result = await uploadOfertaPdf(file);
+            const result = await uploadOfertaPdf(file, { guestMode: isGuest });
             if (result.data.length === 0) {
                 setOfertaMessage({ text: 'No se encontraron ofertas. Verificá que el PDF sea válido.', type: 'error' });
                 return;

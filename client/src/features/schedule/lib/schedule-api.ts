@@ -126,15 +126,25 @@ export interface ParsedTimetableOffer {
 
 /** Upload an Oferta de Materias PDF and receive parsed offerings */
 export async function uploadOfertaPdf(
-    file: File
+    file: File,
+    options?: { guestMode?: boolean }
 ): Promise<{ data: ParsedTimetableOffer[] }> {
     const formData = new FormData();
     formData.append("file", file);
 
-    const response = await authFetch(`${API_URL}/schedule/upload-oferta`, {
-        method: "POST",
-        body: formData,
-    });
+    const endpoint = options?.guestMode
+        ? `${API_URL}/schedule/public-upload-oferta`
+        : `${API_URL}/schedule/upload-oferta`;
+
+    const response = options?.guestMode
+        ? await fetch(endpoint, {
+            method: "POST",
+            body: formData,
+        })
+        : await authFetch(endpoint, {
+            method: "POST",
+            body: formData,
+        });
 
     if (!response.ok) {
         const errorBody = await response.json().catch(() => null);
