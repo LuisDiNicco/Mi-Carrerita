@@ -1,6 +1,8 @@
 ﻿import { useEffect, useMemo, useState } from 'react';
 import { fetchTrophyCase, checkAndUnlockTrophies } from './lib/trophies-api';
 import { useAuthStore } from '../auth/store/auth-store';
+import { useAcademicStore } from '../academic/store/academic-store';
+import { buildGuestTrophyCase } from './lib/guest-trophies';
 import type { TrophyCaseDto, TrophyDto } from './lib/trophies-api';
 import { Trophy, CheckCircle, AlertTriangle, Loader2, X } from 'lucide-react';
 
@@ -39,6 +41,15 @@ export const TrophiesPanel = () => {
   const [checking, setChecking] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const isGuest = useAuthStore((state) => state.isGuest);
+  const subjects = useAcademicStore((state) => state.subjects);
+
+  // Recalculate implicitly for guests when subjects change
+  useEffect(() => {
+    if (isGuest) {
+      setTrophyCase(buildGuestTrophyCase(subjects));
+      setLoading(false);
+    }
+  }, [isGuest, subjects]);
 
   const loadData = async () => {
     if (isGuest) return;
@@ -66,12 +77,26 @@ export const TrophiesPanel = () => {
   };
 
   useEffect(() => {
-    loadData();
+    if (!isGuest) {
+      loadData();
+    }
   }, [isGuest]);
 
   const [trophyMessage, setTrophyMessage] = useState<{ text: string; type: 'success' | 'error' | 'info' } | null>(null);
 
   const handleCheckTrophies = async () => {
+    if (isGuest) {
+      // In guest mode, trophies are reactive to subjects.
+      // Checking manually just recalculates immediately (already done by the effect above)
+      setChecking(true);
+      setTimeout(() => {
+        setChecking(false);
+        setTrophyMessage({ text: 'Los trofeos de invitado se calculan automáticamente con tus materias.', type: 'info' });
+        setTimeout(() => setTrophyMessage(null), 4000);
+      }, 500);
+      return;
+    }
+
     try {
       setChecking(true);
       const newTrophies = await checkAndUnlockTrophies();
@@ -104,20 +129,6 @@ export const TrophiesPanel = () => {
       ([tierA], [tierB]) => (TROPHY_TIER_ORDER[tierA] || 0) - (TROPHY_TIER_ORDER[tierB] || 0)
     );
   }, [trophyCase]);
-
-  if (isGuest) {
-    return (
-      <div className="p-12 text-center bg-elevated rounded-2xl border border-app shadow-subtle flex flex-col items-center gap-4 animate-in fade-in zoom-in duration-500">
-        <div className="p-4 bg-yellow-500/10 rounded-full border border-yellow-500/30">
-          <Trophy className="w-16 h-16 text-yellow-500 opacity-60" />
-        </div>
-        <h2 className="text-3xl font-bold font-retro text-app uppercase tracking-wide">Sala de Trofeos Exclusiva</h2>
-        <p className="text-muted max-w-md mt-2 text-sm leading-relaxed">
-          Para poder desbloquear logros y visualizar tus trofeos académicos resgistrados, necesitás <strong className="text-unlam-500">iniciar sesión</strong> o <strong className="text-unlam-500">crear una cuenta</strong> gratuita.
-        </p>
-      </div>
-    );
-  }
 
   if (loading) return <div className="p-8 text-center text-muted font-retro animate-pulse">Cargando trofeos...</div>;
   if (error) return <div className="p-8 text-center text-destructive font-bold">{error}</div>;
