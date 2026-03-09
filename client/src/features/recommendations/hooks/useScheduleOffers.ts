@@ -5,6 +5,7 @@ import { fetchAcademicGraph } from '../../academic/lib/academic-api';
 import type { Subject } from '../../../shared/types/academic';
 import { SubjectStatus } from '../../../shared/types/academic';
 import { useAcademicStore } from '../../academic/store/academic-store';
+import { useAuthStore } from '../../auth/store/auth-store';
 
 export const DAYS_FOR_MANUAL: { key: DayOfWeek; label: string }[] = [
     { key: 'MONDAY', label: 'Lunes' },
@@ -38,6 +39,8 @@ const OFFER_PERIOD_TO_SLOT: Record<string, TimePeriod> = {
 
 export function useScheduleOffers(subjects: Subject[]) {
     const setSubjects = useAcademicStore((state: any) => state.setSubjects);
+    const setSubjectsFromServer = useAcademicStore((state: any) => state.setSubjectsFromServer);
+    const isGuest = useAuthStore((state) => state.isGuest);
 
     const [isLoading, setIsLoading] = useState(false);
     const [loadError, setLoadError] = useState<string | null>(null);
@@ -65,14 +68,21 @@ export function useScheduleOffers(subjects: Subject[]) {
                 setIsLoading(true);
                 setLoadError(null);
 
+                if (isGuest) {
+                    // Guest: only load local/session data — no API calls needed
+                    _loadLocalData();
+                    return;
+                }
+
+                // Authenticated user: fetch graph and timetables from the server
                 let graphFromApi: Subject[] | null = null;
                 if (subjects.length === 0) {
-                    graphFromApi = await fetchAcademicGraph();
+                    graphFromApi = await fetchAcademicGraph({ guestMode: false });
                 }
                 const timetablesFromApi = await fetchTimetables();
 
                 if (!active) return;
-                if (graphFromApi) setSubjects(graphFromApi);
+                if (graphFromApi) setSubjectsFromServer(graphFromApi);
 
                 const storedTimetables = localStorage.getItem('user_timetables');
                 if (storedTimetables) {
@@ -85,35 +95,7 @@ export function useScheduleOffers(subjects: Subject[]) {
                     setTimetables(timetablesFromApi);
                 }
 
-                const storedAvail = localStorage.getItem('user_availability');
-                if (storedAvail) {
-                    try {
-                        setAvailability(new Map(JSON.parse(storedAvail)));
-                    } catch (e) { }
-                }
-
-                const storedOferta = localStorage.getItem('oferta_materias');
-                if (storedOferta) {
-                    try {
-                        const parsedOffers = JSON.parse(storedOferta) as ParsedTimetableOffer[];
-                        setOfertaData(parsedOffers);
-                        const storedOfferEntries = localStorage.getItem('offer_entries');
-                        if (storedOfferEntries) {
-                            setOfferEntries(JSON.parse(storedOfferEntries));
-                        } else {
-                            const builtEntries = buildTimetablesFromOferta(parsedOffers);
-                            setOfferEntries(builtEntries);
-                            localStorage.setItem('offer_entries', JSON.stringify(builtEntries));
-                        }
-                    } catch (e) { }
-                }
-
-                const storedOfferEntries = localStorage.getItem('offer_entries');
-                if (!storedOferta && storedOfferEntries) {
-                    try {
-                        setOfferEntries(JSON.parse(storedOfferEntries));
-                    } catch (e) { }
-                }
+                _loadLocalData();
 
             } catch (err) {
                 if (!active) return;
@@ -124,9 +106,37 @@ export function useScheduleOffers(subjects: Subject[]) {
             }
         };
 
+        function _loadLocalData() {
+            const storedAvail = localStorage.getItem('user_availability');
+            if (storedAvail) {
+                try { setAvailability(new Map(JSON.parse(storedAvail))); } catch (e) { }
+            }
+
+            const storedOferta = localStorage.getItem('oferta_materias');
+            if (storedOferta) {
+                try {
+                    const parsedOffers = JSON.parse(storedOferta) as ParsedTimetableOffer[];
+                    setOfertaData(parsedOffers);
+                    const storedOfferEntries = localStorage.getItem('offer_entries');
+                    if (storedOfferEntries) {
+                        setOfferEntries(JSON.parse(storedOfferEntries));
+                    } else {
+                        const builtEntries = buildTimetablesFromOferta(parsedOffers);
+                        setOfferEntries(builtEntries);
+                        localStorage.setItem('offer_entries', JSON.stringify(builtEntries));
+                    }
+                } catch (e) { }
+            }
+
+            const storedOfferEntries = localStorage.getItem('offer_entries');
+            if (!storedOferta && storedOfferEntries) {
+                try { setOfferEntries(JSON.parse(storedOfferEntries)); } catch (e) { }
+            }
+        }
+
         loadData();
         return () => { active = false; };
-    }, [setSubjects, subjects.length]);
+    }, [isGuest, setSubjects, setSubjectsFromServer, subjects.length]);
 
     const handleAvailabilityChange = (newMap: Map<string, boolean>) => {
         setAvailability(newMap);

@@ -39,9 +39,12 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       else status = HttpStatus.BAD_REQUEST;
     }
 
-    // Logueamos el error real en el servidor para debugging
-    this.logger.error(
-      `Error en ${request.method} ${request.url}`,
+    // No loguear 401 y 404 como errores críticos para evitar ruido en los logs.
+    const isExpectedError = status === HttpStatus.UNAUTHORIZED || status === HttpStatus.NOT_FOUND;
+    const logMethod = isExpectedError ? 'debug' : 'error';
+
+    this.logger[logMethod](
+      `Respuesta ${status} en ${request.method} ${request.url}`,
       exception instanceof Error ? exception.stack : exception,
     );
 
